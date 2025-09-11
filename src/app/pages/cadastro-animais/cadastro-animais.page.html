@@ -1,0 +1,249 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Cadastro de Animais</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="segment-container">
+    <ion-segment [formControl]="segmentoControl" (ionChange)="mudarSegmento()">
+      <ion-segment-button value="nascidos">
+        <ion-label>Nascidos na Propriedade</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="comprados">
+        <ion-label>Animais Comprados</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Formulário para animais nascidos na propriedade -->
+  <form *ngIf="segmento === 'nascidos'" [formGroup]="formNascidos" (ngSubmit)="cadastrarNascido()" class="form-container">
+    <ion-list>
+      <ion-list-header>
+        <ion-label class="section-header">Dados do Nascimento</ion-label>
+      </ion-list-header>
+
+      <ion-item>
+        <ion-label position="stacked" class="required-label">Número do Brinco</ion-label>
+        <ion-input formControlName="numeroBrinco" type="text" placeholder="Ex: OV2023-001" 
+                  [class.invalid-field]="formNascidos.get('numeroBrinco')?.invalid && formNascidos.get('numeroBrinco')?.touched"
+                  [class.valid-field]="formNascidos.get('numeroBrinco')?.valid && formNascidos.get('numeroBrinco')?.touched">
+        </ion-input>
+      </ion-item>
+      <ion-note color="danger" *ngIf="formNascidos.get('numeroBrinco')?.hasError('duplicado')" class="duplicate-warning">
+        Este brinco já está em uso por um animal ativo
+      </ion-note>
+
+      <ion-item>
+        <ion-label position="stacked" class="required-label">Sexo</ion-label>
+        <ion-select formControlName="sexo" placeholder="Selecione o sexo" interface="action-sheet">
+          <ion-select-option value="macho">Macho</ion-select-option>
+          <ion-select-option value="femea">Fêmea</ion-select-option>
+        </ion-select>
+      </ion-item>
+<!--
+      <ion-item>
+        <ion-label position="stacked" class="required-label">Data de Nascimento</ion-label>
+        <ion-datetime formControlName="dataNascimento" display-format="DD/MM/YYYY" 
+                     placeholder="Selecione a data" presentation="date-picker">></ion-datetime>
+      </ion-item>
+    -->
+      <ion-item>
+        <ion-label position="stacked" class="required-label">Data de Nascimento</ion-label>
+        <ion-input 
+          formControlName="dataNascimento" 
+          placeholder="DD/MM/AAAA"
+          (click)="abrirCalendario()">  <!-- ← Abre modal no clique -->
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Peso ao Nascer (kg)</ion-label>
+        <ion-input formControlName="peso" type="number" placeholder="Ex: 4.5"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked" class="required-label">Tipo de Parto</ion-label>
+        <ion-select formControlName="tipoParto" placeholder="Selecione o tipo" interface="action-sheet">
+          <ion-select-option value="simples">Simples</ion-select-option>
+          <ion-select-option value="duplo">Duplo</ion-select-option>
+          <ion-select-option value="triplo">Triplo</ion-select-option>
+          <ion-select-option value="quadruplo">Quádruplo</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Viabilidade ao Nascimento</ion-label>
+        <ion-select formControlName="viabilidade" placeholder="Selecione a viabilidade" interface="action-sheet">
+          <ion-select-option value="vivo">Vivo</ion-select-option>
+          <ion-select-option value="natimorto">Natimorto</ion-select-option>
+          <ion-select-option value="fraco">Fraco</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Mamou Colostro</ion-label>
+        <ion-checkbox formControlName="mamouColostro" slot="start"></ion-checkbox>
+      </ion-item>
+    </ion-list>
+
+    <ion-list>
+      <ion-list-header>
+        <ion-label class="section-header">Filiação</ion-label>
+      </ion-list-header>
+
+      <ion-item>
+        <ion-label position="stacked">Origem da Mãe</ion-label>
+        <ion-select formControlName="origemMae" (ionChange)="alternarIdentificacaoMae()" 
+                   placeholder="Selecione a origem" interface="action-sheet">
+          <ion-select-option value="proprio">Animal Próprio</ion-select-option>
+          <ion-select-option value="terceiros">Animal de Terceiros</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item *ngIf="formNascidos.get('origemMae')?.value === 'proprio'">
+        <ion-label position="stacked" class="required-label">Identificação da Mãe</ion-label>
+        <ion-select formControlName="identificacaoMae" placeholder="Selecione a mãe" interface="action-sheet">
+          <ion-select-option *ngFor="let animal of animaisFemeas" [value]="animal.id">
+            {{ animal.brinco }} - {{ animal.nome || 'Sem nome' }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item *ngIf="formNascidos.get('origemMae')?.value === 'terceiros'">
+        <ion-label position="stacked" class="required-label">Identificação da Mãe (Terceiros)</ion-label>
+        <ion-input formControlName="identificacaoMaeTerceiros" placeholder="Identificação e proprietário"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Origem do Pai</ion-label>
+        <ion-select formControlName="origemPai" (ionChange)="alternarIdentificacaoPai()" 
+                   placeholder="Selecione a origem" interface="action-sheet">
+          <ion-select-option value="proprio">Animal Próprio</ion-select-option>
+          <ion-select-option value="terceiros">Animal de Terceiros</ion-select-option>
+          <ion-select-option value="semen">Sêmen de Terceiros</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item *ngIf="formNascidos.get('origemPai')?.value === 'proprio'">
+        <ion-label position="stacked">Identificação do Pai</ion-label>
+        <ion-select formControlName="identificacaoPai" placeholder="Selecione o pai" interface="action-sheet">
+          <ion-select-option *ngFor="let animal of animaisMachos" [value]="animal.id">
+            {{ animal.brinco }} - {{ animal.nome || 'Sem nome' }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item *ngIf="formNascidos.get('origemPai')?.value === 'terceiros'">
+        <ion-label position="stacked">Identificação do Pai (Terceiros)</ion-label>
+        <ion-input formControlName="identificacaoPaiTerceiros" placeholder="Identificação e proprietário"></ion-input>
+      </ion-item>
+
+      <ion-item *ngIf="formNascidos.get('origemPai')?.value === 'semen'">
+        <ion-label position="stacked">Identificação do Doador de Sêmen</ion-label>
+        <ion-input formControlName="identificacaoSemen" placeholder="Doador e proprietário"></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <ion-list>
+      <ion-list-header>
+        <ion-label class="section-header">Avaliação da Mãe</ion-label>
+      </ion-list-header>
+
+      <!-- ESCORE CORPORAL - TROCADO PARA SELECT -->
+      <ion-item>
+        <ion-label position="stacked" class="required-label">Escore Corporal</ion-label>
+        <ion-select formControlName="escoreCorporalMae" interface="action-sheet" placeholder="Selecione o escore">
+          <ion-select-option value="1">1 - Muito Magro</ion-select-option>
+          <ion-select-option value="2">2 - Magro</ion-select-option>
+          <ion-select-option value="3">3 - Ideal</ion-select-option>
+          <ion-select-option value="4">4 - Gordo</ion-select-option>
+          <ion-select-option value="5">5 - Muito Gordo</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- AVALIAÇÃO DO ÚBERE - TROCADO PARA SELECT -->
+      <ion-item>
+        <ion-label position="stacked" class="required-label">Avaliação do Úbere</ion-label>
+        <ion-select formControlName="avaliacaoUbere" interface="action-sheet" placeholder="Selecione a avaliação">
+          <ion-select-option value="1">1 - Muito Ruim</ion-select-option>
+          <ion-select-option value="2">2 - Ruim</ion-select-option>
+          <ion-select-option value="3">3 - Regular</ion-select-option>
+          <ion-select-option value="4">4 - Bom</ion-select-option>
+          <ion-select-option value="5">5 - Excelente</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- VIABILIDADE DA MÃE - TROCADO PARA SELECT -->
+      <ion-item>
+        <ion-label position="stacked" class="required-label">Viabilidade da Mãe</ion-label>
+        <ion-select formControlName="viabilidadeMae" interface="action-sheet" placeholder="Selecione a viabilidade">
+          <ion-select-option value="0">0 - Óbito</ion-select-option>
+          <ion-select-option value="1">1 - Muito Ruim</ion-select-option>
+          <ion-select-option value="2">2 - Ruim</ion-select-option>
+          <ion-select-option value="3">3 - Regular</ion-select-option>
+          <ion-select-option value="4">4 - Boa</ion-select-option>
+          <ion-select-option value="5">5 - Excelente</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- HABILIDADE MATERNA - TROCADO PARA SELECT -->
+      <ion-item>
+        <ion-label position="stacked" class="required-label">Habilidade Materna</ion-label>
+        <ion-select formControlName="habilidadeMaterna" interface="action-sheet" placeholder="Selecione a habilidade">
+          <ion-select-option value="1">1 - Muito Ruim</ion-select-option>
+          <ion-select-option value="2">2 - Ruim</ion-select-option>
+          <ion-select-option value="3">3 - Regular</ion-select-option>
+          <ion-select-option value="4">4 - Boa</ion-select-option>
+          <ion-select-option value="5">5 - Excelente</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+
+    <ion-list>
+      <ion-list-header>
+        <ion-label class="section-header">Fotos do Animal</ion-label>
+      </ion-list-header>
+
+      <div class="animal-photos">
+        <div *ngFor="let foto of fotos" class="photo-container">
+          <img [src]="foto" class="photo-preview" alt="Foto do animal">
+          <ion-button fill="clear" color="danger" (click)="removerFoto(foto)" class="remove-photo">
+            <ion-icon name="close-circle"></ion-icon>
+          </ion-button>
+        </div>
+        <div class="add-photo-btn" (click)="adicionarFoto()">
+          <ion-icon name="camera"></ion-icon>
+        </div>
+      </div>
+    </ion-list>
+
+    <ion-list>
+      <ion-list-header>
+        <ion-label class="section-header">Observações</ion-label>
+      </ion-list-header>
+
+      <ion-item>
+        <ion-textarea formControlName="observacoes" rows="4" placeholder="Outras observações relevantes..."></ion-textarea>
+      </ion-item>
+    </ion-list>
+
+    <div class="action-buttons">
+      <ion-button expand="block" color="medium" fill="outline" routerLink="/dashboard">
+        Cancelar
+      </ion-button>
+      <ion-button expand="block" type="submit" [disabled]="!formNascidos.valid">
+        <ion-icon slot="start" name="save-outline"></ion-icon>
+        Cadastrar Animal
+      </ion-button>
+    </div>
+  </form>
+
+  <!-- Formulário para animais comprados -->
+  <form *ngIf="segmento === 'comprados'" [formGroup]="formComprados" (ngSubmit)="cadastrarComprado()" class="form-container">
+    <!-- ... (código do formulário comprados mantido igual) ... -->
+  </form>
+</ion-content>

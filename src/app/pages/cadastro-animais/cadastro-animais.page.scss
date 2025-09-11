@@ -1,0 +1,313 @@
+/* Variáveis de cores atualizadas com a paleta do dashboard */
+:root {
+  --primary: #2c7da0;
+  --secondary: #468faf;
+  --success: #27ae60;
+  --warning: #e67e22;
+  --danger: #c0392b;
+  --light: #ecf0f1;
+  --dark: #2c3e50;
+  --text: #2c3e50;
+  --text-light: #7f8c8d;
+  --card-bg: #ffffff;
+  --background: #f8f9fa;
+  --border: #dce1e5;
+  --card-shadow: 0 4px 15px rgba(248, 242, 242, 0.1);
+}
+
+/* Estilos do header */
+ion-header {
+  .header-toolbar {
+    --background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    --color: var(--light);
+    --border-width: 0;
+    
+    .back-button {
+      --color: var(--light);
+    }
+    
+    .header-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+  }
+}
+
+ion-content {
+  --background: var(--background);
+  --padding: var(--spacing);
+}
+
+// Container do segmento
+.segment-container {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  margin-bottom: var(--spacing);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  
+  .custom-segment {
+    --background: var(--card-bg);
+    
+    .segment-btn {
+      --color: var(--text);
+      --color-checked: var(--light);
+      --background-checked: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      --border-radius: 0;
+      --padding-top: 12px;
+      --padding-bottom: 12px;
+      font-weight: 500;
+    }
+  }
+}
+
+// Container do formulário
+.form-container {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: var(--spacing);
+  margin-bottom: var(--spacing);
+  box-shadow: var(--card-shadow);
+}
+
+// Cabeçalho das seções
+.section-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: var(--light);
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin: 20px 0 15px 0;
+  
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+}
+
+// Lista do formulário
+.form-list {
+  background: transparent;
+  
+  .form-item {
+    --background: transparent;
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --border-color: var(--border);
+    margin-bottom: var(--component-spacing);
+    
+    ion-label[position="stacked"] {
+      color: var(--text);
+      font-weight: 500;
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+    }
+    
+    &.checkbox-item {
+      --min-height: auto;
+      margin: 15px 0;
+      
+      ion-label {
+        color: var(--text);
+        font-size: 0.9rem;
+      }
+    }
+    
+    &.range-item {
+      --min-height: auto;
+      margin: 20px 0;
+    }
+  }
+}
+
+.calendario-modal {
+  --height: auto;
+  --border-radius: 16px;
+  
+  .modal-wrapper {
+    ion-datetime {
+      --background: var(--card-bg);
+      
+      .datetime-buttons {
+        display: flex;
+        justify-content: space-between;
+        padding: 16px;
+        
+        ion-button {
+          --border-radius: 8px;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+// Campos personalizados
+.custom-input, .custom-select, .custom-datetime, .custom-textarea {
+  --background: var(--card-bg);
+  --border-radius: 8px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  border: 1px solid var(--border);
+  font-size: 0.95rem;
+  
+  &.ion-valid {
+    border-color: var(--success);
+  }
+  
+  &.ion-invalid {
+    border-color: var(--danger);
+  }
+}
+
+.custom-range {
+  --bar-background: var(--border);
+  --bar-background-active: var(--primary);
+  --knob-background: var(--primary);
+  --pin-background: var(--primary);
+  --pin-color: var(--light);
+}
+
+.custom-checkbox {
+  --size: 20px;
+  --checkbox-background-checked: var(--primary);
+  --border-color-checked: var(--primary);
+}
+
+// Rótulos obrigatórios
+.required-label::after {
+  content: " *";
+  color: var(--danger);
+}
+
+.duplicate-warning {
+  font-size: 0.8rem;
+  margin-top: 5px;
+  display: block;
+  color: var(--danger);
+}
+
+// Container de range
+.range-container {
+  width: 100%;
+  margin-top: 10px;
+  
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: var(--text-light);
+  }
+}
+
+// Fotos do animal
+.animal-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 15px 0;
+  
+  .photo-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    
+    .photo-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px dashed var(--primary);
+    }
+    
+    .remove-photo {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      --padding-start: 0;
+      --padding-end: 0;
+      --background: var(--card-bg);
+      --border-radius: 50%;
+      width: 24px;
+      height: 24px;
+    }
+  }
+  
+  .add-photo-btn {
+    width: 100px;
+    height: 100px;
+    border: 2px dashed var(--primary);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--primary);
+    font-size: 0.8rem;
+    text-align: center;
+    transition: all 0.3s;
+    
+    ion-icon {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    
+    &:hover {
+      background: rgba(44, 125, 160, 0.1);
+    }
+  }
+}
+
+// Botões de ação
+.action-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 25px;
+  
+  .cancel-btn {
+    --border-radius: 8px;
+    --border-color: var(--border);
+    --color: var(--text-light);
+    --background-hover: var(--light);
+    font-weight: 500;
+  }
+  
+  .submit-btn {
+    --border-radius: 8px;
+    --background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    --background-hover: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+    --box-shadow: 0 4px 10px rgba(44, 125, 160, 0.3);
+    font-weight: 500;
+    
+    &:hover {
+      --box-shadow: 0 6px 15px rgba(44, 125, 160, 0.4);
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  ion-content {
+    --padding: 15px;
+  }
+  
+  .form-container {
+    padding: 15px;
+  }
+  
+  .action-buttons {
+    grid-template-columns: 1fr;
+  }
+  
+  .segment-container .custom-segment .segment-btn {
+    --padding-top: 10px;
+    --padding-bottom: 10px;
+    font-size: 0.9rem;
+  }
+}

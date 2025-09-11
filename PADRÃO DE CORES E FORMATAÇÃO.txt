@@ -1,0 +1,33 @@
+#f9f8f8 - Fundo dos cards (tom suave de branco)
+
+#ffffff - Texto em branco para contraste
+
+#292727 - Texto principal (cinza escuro)
+
+#2c7da0 - Azul principal (títulos, bordas)
+
+#029e3e - Verde para positivos/sucesso
+
+#468faf - Azul secundário (gradientes)
+
+📐 ESPACAMENTOS:
+
+margin: 0 0 10px 0 - Entre componentes
+
+padding: 20px - Container principal
+
+border-radius: 12px - Cantos arredondados
+
+box-shadow: 0 4px 15px rgba(0,0,0,0.1) - Sombra suave
+
+🎯 PADRÕES VISUAIS:
+
+Cards com fundo #f9f8f8 e borda sutil
+
+Títulos em gradiente azul com texto branco
+
+Números grandes e em destaque
+
+Headers com mesmo gradiente do dashboard
+
+Botões seguindo mesma identidade

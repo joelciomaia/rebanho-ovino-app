@@ -1,0 +1,440 @@
+// ==================================================
+// VARIÁVEIS DE CORES DO SISTEMA
+// Define as cores principais que serão usadas em todo o dashboard
+// ==================================================
+:root {
+  --primary: #2c7da0;           // Azul principal para elementos primários
+  --secondary: #468faf;         // Azul secundário para complementar
+  --success: #27ae60;           // Verde para indicar sucesso/positivo
+  --warning: #e67e22;           // Laranja para alertas/aviso
+  --danger: #c0392b;            // Vermelho para perigo/erro
+  --light: #ecf0f1;             // Cinza muito claro para fundos
+  --dark: #2c3e50;              // Azul escuro para textos principais
+  --text: #2c3e50;              // Cor padrão para textos
+  --text-light: #7f8c8d;        // Cor mais clara para textos secundários
+  --card-bg: #ffffff;           // Cor de fundo dos cards (branco)
+  --background: #f8f9fa;        // Cor de fundo da página
+  --border: #dce1e5;            // Cor das bordas dos elementos
+  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); // Sombra padrão dos cards
+}
+
+// ==================================================
+// ESTILO DO CONTEÚDO PRINCIPAL
+// Define o fundo e cores básicas da página
+// ==================================================
+.dashboard-content {
+  --background: #e9eaeb;        // Cor de fundo mais escura para contraste
+  --color: var(--text);          // Herda a cor do texto das variáveis
+  line-height: 1.6;              // Espaçamento entre linhas para melhor leitura
+  padding: 0;                    // Remove padding padrão
+}
+
+// ==================================================
+// CONTAINER PRINCIPAL
+// Centraliza e organiza o conteúdo da página
+// ==================================================
+.container {
+  max-width: 1200px;            // Largura máxima do conteúdo
+  margin: 0 auto;               // Centraliza o container na página
+  padding: 20px;                // Espaçamento interno
+  background: var(--background); // Usa a cor de fundo definida
+  min-height: 100vh;            // Garante que ocupe toda a altura da tela
+}
+
+// ==================================================
+// CABEÇALHO DO DASHBOARD
+// Área superior com título e informações da fazenda
+// ==================================================
+.dashboard-header {
+  background: linear-gradient(135deg, #2c7da0 0%, #468faf 100%); // Gradiente azul
+  color: white;                   // Texto branco para contraste
+  padding: 25px;                  // Espaçamento interno generoso
+  border-radius: 12px;            // Bordas arredondadas
+  margin-bottom: 25px;            // Espaço abaixo do header
+  box-shadow: var(--card-shadow); // Sombra para profundidade
+  border: 1px solid #2c7da0;      // Borda sutil para definição
+}
+
+// ==================================================
+// ESTILO DOS CARDS
+// Define a aparência de todos os cards do dashboard
+// ==================================================
+.stats-card, .alerts-card, .weather-card, .activities-card {
+  
+  background: #f9f8f8 !important; 
+  border-radius: 12px;            // Bordas arredondadas
+  box-shadow: var(--card-shadow); // Sombra para elevar visualmente
+  margin: 0 0 10px 0;             // Remove margem padrão
+  border: 1px solid var(--border); // Borda sutil para definição
+  transition: all 0.3s ease;      // Transição suave para hover effects
+}
+
+// ==================================================
+// TÍTULOS DOS CARDS
+// Estiliza os títulos dentro dos cards
+// ==================================================
+ion-card-title {
+  font-size: 18px;               // Tamanho de fonte médio
+  font-weight: 700;              // Negrito para destaque
+  color: #ffffff ;             // Cor escura para contraste
+  margin: 0;                     // Remove margem padrão
+}
+
+// ==================================================
+// NÚMEROS ESTATÍSTICOS
+// Estiliza os números grandes dos cards de estatísticas
+// ==================================================
+.stat-number {
+  font-size: 36px;               // Tamanho grande para destaque
+  font-weight: 800;              // Negrito pesado
+  margin-bottom: 8px;            // Espaço abaixo do número
+  color: #292727 ;            // Cor escura para contraste
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1); // Sombra sutil no texto
+}
+
+// ==================================================
+// INDICADORES DE VARIAÇÃO
+// Mostra se os números aumentaram ou diminuíram
+// ==================================================
+.stat-change {
+  display: flex;                 // Layout flex para alinhar ícone e texto
+  align-items: center;           // Centraliza verticalmente
+  font-size: 14px;               // Tamanho menor que o número
+  font-weight: 600;              // Semi-negrito
+  color: #029e3e ;      // Cor mais clara para não competir com o número
+}
+
+// ==================================================
+// VARIAÇÃO POSITIVA
+// Estilo específico para quando os números melhoraram
+// ==================================================
+.change-positive {
+  color: var(--success);         // Verde para indicar positivo
+  font-weight: 700;              // Negrito para destaque
+  
+  ion-icon {
+    font-size: 14px;             // Tamanho do ícone
+    margin-right: 6px;           // Espaço entre ícone e texto
+    font-weight: bold;           // Ícone em negrito
+  }
+}
+
+// ==================================================
+// TÍTULOS DE SEÇÃO
+// Estiliza os títulos que separam as seções do dashboard
+// ==================================================
+.section-title {
+  font-size: 22px;               // Tamanho grande para destaque
+  font-weight: 700;              // Negrito
+  margin: 30px 0 20px 0;         // Espaçamento acima e abaixo
+  padding-bottom: 12px;          // Espaço abaixo do texto
+  border-bottom: 3px solid var(--primary); // Linha decorativa abaixo
+  color: #2c7da0;            // Cor escura para contraste
+}
+
+// ==================================================
+// ITENS DE ALERTA
+// Estiliza cada item individual de alerta/lembrete
+// ==================================================
+.alert-item {
+  display: flex;                 // Layout flex para alinhar ícone e conteúdo
+  align-items: flex-start;       // Alinha ao topo
+  margin-bottom: 20px;           // Espaço entre alertas
+  padding-bottom: 20px;          // Espaço interno abaixo
+  border-bottom: 2px solid var(--border); // Linha separadora
+  
+  &:last-child {
+    margin-bottom: 0;            // Remove margem do último item
+    padding-bottom: 0;           // Remove padding do último item
+    border-bottom: none;         // Remove borda do último item
+  }
+}
+
+// ==================================================
+// CONTEÚDO DOS ALERTAS
+// Estiliza o conteúdo textual dos alertas
+// ==================================================
+.alert-content {
+  h4 {
+    font-size: 17px;             // Tamanho de fonte para título do alerta
+    font-weight: 700;            // Negrito para destaque
+    margin: 0 0 8px 0;           // Espaço abaixo do título
+    color: var(--dark);          // Cor escura para contraste
+  }
+}
+
+// ==================================================
+// DATA DOS ALERTAS
+// Estiliza a informação de data/hora dos alertas
+// ==================================================
+.alert-date {
+  font-size: 14px;               // Tamanho menor
+  font-weight: 600;              // Semi-negrito
+  color: var(--primary);         // Cor azul para destaque
+  margin-bottom: 8px;            // Espaço abaixo
+  background: rgba(44, 125, 160, 0.1); // Fundo azul muito claro
+  padding: 4px 10px;             // Espaçamento interno
+  border-radius: 20px;           // Bordas arredondadas (cápsula)
+  display: inline-block;         // Permite background e padding
+}
+
+// ==================================================
+// DESCRIÇÃO DOS ALERTAS
+// Estiliza o texto descritivo dos alertas
+// ==================================================
+.alert-desc {
+  font-size: 15px;               // Tamanho confortável para leitura
+  font-weight: 500;              // Peso normal
+  color: #090707 ;            // Cor padrão de texto
+  margin: 0;                     // Remove margem
+  line-height: 1.5;              // Espaçamento entre linhas
+  background: rgba(3, 8, 9, 0);  // Fundo transparente (corrigido)
+  padding: 10px;                 // Espaçamento interno
+  border-radius: 8px;            // Bordas levemente arredondadas
+  border-left: 4px solid var(--primary); // Borda lateral colorida
+}
+
+// ==================================================
+// ÍCONES DOS CARDS PRINCIPAIS
+// Estiliza os ícones grandes dos cards de estatísticas
+// ==================================================
+.card-icon {
+  width: 50px;                   // Largura fixa
+  height: 50px;                  // Altura fixa (quadrado)
+  border-radius: 12px;           // Bordas arredondadas
+  display: flex;                 // Flex para centralizar conteúdo
+  align-items: center;           // Centraliza verticalmente
+  justify-content: center;       // Centraliza horizontalmente
+  color: white;                  // Ícone branco
+  font-size: 22px;               // Tamanho grande do ícone
+  font-weight: bold;             // Ícone em negrito
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2); // Sombra para profundidade
+}
+
+// ==================================================
+// ÍCONES DOS ALERTAS
+// Estiliza os ícones menores dos itens de alerta
+// ==================================================
+.alert-icon {
+  width: 50px;                   // Tamanho igual aos ícones principais
+  height: 50px;                  // Tamanho igual aos ícones principais
+  border-radius: 12px;           // Bordas arredondadas
+  display: flex;                 // Flex para centralizar
+  align-items: center;           // Centraliza verticalmente
+  justify-content: center;       // Centraliza horizontalmente
+  margin-right: 20px;            // Espaço entre ícone e conteúdo
+  flex-shrink: 0;                // Impede que o ícone encolha
+  font-size: 22px;               // Tamanho grande
+  font-weight: bold;             // Negrito
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); // Sombra mais suave
+}
+
+// ==================================================
+// SEÇÃO DO CLIMA
+// Estiliza a área de informações climáticas
+// ==================================================
+.weather-content {
+  text-align: center;            // Centraliza todo o conteúdo
+  padding: 20px 0;               // Espaçamento vertical
+}
+
+// ==================================================
+// TEMPERATURA
+// Estiliza o número grande da temperatura
+// ==================================================
+.weather-temp {
+  font-size: 48px;               // Tamanho muito grande para destaque
+  font-weight: 800;              // Negrito pesado
+  margin: 15px 0;                // Espaço acima e abaixo
+  color: #343030 ;            // Cor escura
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1); // Sombra sutil
+}
+
+// ==================================================
+// VALORES DAS ESTATÍSTICAS CLIMÁTICAS
+// Estiliza os números de umidade, vento, etc.
+// ==================================================
+.weather-stat-value {
+  font-size: 22px;               // Tamanho grande
+  font-weight: 700;              // Negrito
+  margin-bottom: 8px;            // Espaço abaixo
+  color: var(--dark);            // Cor escura
+}
+
+// ==================================================
+// LABELS DAS ESTATÍSTICAS CLIMÁTICAS
+// Estiliza os textos explicativos (Umidade, Vento, etc.)
+// ==================================================
+.weather-stat-label {
+  font-size: 14px;               // Tamanho menor
+  font-weight: 600;              // Semi-negrito
+  color: var(--text-light);      // Cor mais clara
+}
+
+// ==================================================
+// PREVISÃO DO TEMPO
+// Estiliza a área de texto da previsão
+// ==================================================
+.weather-forecast {
+  background: linear-gradient(135deg, #2c7da0 0%, #468faf 100%); // Gradiente azul
+  padding: 20px;                 // Espaçamento interno
+  border-radius: 12px;           // Bordas arredondadas
+  margin-top: 20px;              // Espaço acima
+  font-size: 15px;               // Tamanho de fonte
+  font-weight: 500;              // Peso normal
+  text-align: center;            // Texto centralizado
+  color: #f6f8f8;            // Cor do texto (precisa ser clara para contraste)
+  line-height: 1.5;              // Espaçamento entre linhas
+  border: 1px solid #cce7f5;     // Borda sutil
+}
+
+// ==================================================
+// ITENS DE ATIVIDADE RECENTE
+// Estiliza cada item do histórico de atividades
+// ==================================================
+.activity-item {
+  display: flex;                 // Layout flex para alinhar ícone e conteúdo
+  margin-bottom: 20px;           // Espaço entre itens
+  padding-bottom: 20px;          // Espaço interno abaixo
+  border-bottom: 2px solid var(--border); // Linha separadora
+  
+  &:last-child {
+    margin-bottom: 0;            // Remove margem do último item
+    padding-bottom: 0;           // Remove padding do último item
+    border-bottom: none;         // Remove borda do último item
+  }
+}
+
+// ==================================================
+// ÍCONES DAS ATIVIDADES
+// Estiliza os ícones do histórico de atividades
+// ==================================================
+.activity-icon {
+  width: 50px;                   // Tamanho igual aos outros ícones
+  height: 50px;                  // Tamanho igual aos outros ícones
+  border-radius: 12px;           // Bordas arredondadas
+  display: flex;                 // Flex para centralizar
+  align-items: center;           // Centraliza verticalmente
+  justify-content: center;       // Centraliza horizontalmente
+  margin-right: 20px;            // Espaço entre ícone e conteúdo
+  flex-shrink: 0;                // Impede que o ícone encolha
+  font-size: 22px;               // Tamanho grande
+  font-weight: bold;             // Negrito
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); // Sombra sutil
+}
+
+// ==================================================
+// CONTEÚDO DAS ATIVIDADES
+// Estiliza o conteúdo textual das atividades
+// ==================================================
+.activity-content {
+  h4 {
+    font-size: 17px;             // Tamanho para título da atividade
+    font-weight: 700;            // Negrito para destaque
+    margin: 0 0 8px 0;           // Espaço abaixo do título
+    color: var(--dark);          // Cor escura
+  }
+}
+
+// ==================================================
+// DESCRIÇÃO DAS ATIVIDADES
+// Estiliza o texto descritivo das atividades
+// ==================================================
+.activity-desc {
+  font-size: 15px;               // Tamanho confortável
+  font-weight: 500;              // Peso normal
+  color: var(--text);            // Cor padrão
+  margin: 0 0 8px 0;             // Espaço abaixo
+  background: rgba(236, 240, 241, 0.5); // Fundo cinza muito claro
+  padding: 8px 12px;             // Espaçamento interno
+  border-radius: 8px;            // Bordas arredondadas
+}
+
+// ==================================================
+// TEMPO DAS ATIVIDADES
+// Estiliza a informação de tempo (há x horas)
+// ==================================================
+.activity-time {
+  font-size: 13px;               // Tamanho pequeno
+  font-weight: 600;              // Semi-negrito
+  color: var(--primary);         // Cor azul para destaque
+  background: rgba(44, 125, 160, 0.1); // Fundo azul muito claro
+  padding: 3px 10px;             // Espaçamento interno
+  border-radius: 15px;           // Bordas arredondadas (cápsula)
+  display: inline-block;         // Permite background e padding
+}
+
+// ==================================================
+// CORES ESPECÍFICAS DOS ÍCONES
+// Define as cores de fundo para cada tipo de ícone
+// ==================================================
+.icon-animals {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); // Gradiente verde
+}
+
+.icon-pregnant {
+  background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%); // Gradiente laranja
+}
+
+.icon-discard {
+  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%); // Gradiente vermelho
+}
+
+.icon-weather {
+  background: linear-gradient(135deg, #2c7da0 0%, #468faf 100%); // Gradiente azul
+}
+
+.alert-vaccine {
+  background: linear-gradient(135deg, rgba(39, 174, 96, 0.15) 0%, rgba(46, 204, 113, 0.15) 100%); // Verde claro
+  color: #27ae60;                // Cor do ícone verde
+}
+
+.alert-breeding {
+  background: linear-gradient(135deg, rgba(230, 126, 34, 0.15) 0%, rgba(243, 156, 18, 0.15) 100%); // Laranja claro
+  color: #e67e22;                // Cor do ícone laranja
+}
+
+.alert-weighing {
+  background: linear-gradient(135deg, rgba(52, 125, 160, 0.15) 0%, rgba(70, 143, 175, 0.15) 100%); // Azul claro
+  color: #2c7da0;                // Cor do ícone azul
+}
+
+// ==================================================
+// CONTEÚDO INTERNO DOS CARDS
+// Espaçamento interno uniforme para todos os cards
+// ==================================================
+ion-card-content {
+  padding: 20px;                 // Espaçamento interno generoso
+}
+
+// ==================================================
+// CABEÇALHO DOS CARDS
+// Estiliza a área superior dentro dos cards
+// ==================================================
+.card-header {
+  padding: 20px 20px 15px 20px;  // Espaçamento interno
+  border-bottom: 2px solid var(--border); // Linha separadora
+  background: linear-gradient(135deg, #2c7da0 0%, #468faf 100%); // Gradiente azul
+  border-radius: 12px 12px 0 0;  // Bordas arredondadas apenas no topo
+}
+
+// ==================================================
+// EFEITO HOVER NOS CARDS
+// Animação quando o usuário passa o mouse sobre os cards
+// ==================================================
+.stats-card:hover, .alerts-card:hover, .weather-card:hover, .activities-card:hover {
+  transform: translateY(-5px);   // Levanta o card levemente
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); // Aumenta a sombra
+}
+
+// ==================================================
+// ESTILOS GLOBAIS DE TEXTO
+// Define padrões para todos os textos da página
+// ==================================================
+* {
+  font-weight: 500;              // Peso médio para todos os textos
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700 !important;   // Títulos sempre em negrito
+}

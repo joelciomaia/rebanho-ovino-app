@@ -1,0 +1,152 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{ isLogin ? 'Login' : 'Cadastro' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<!-- CONTEÚDO PRINCIPAL DA PÁGINA -->
+
+<ion-content [fullscreen]="true" class="auth-content">
+  <div class="container">
+    
+    <!-- CABEÇALHO - ALTERAR NOME E LOGO -->
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">
+
+        <!-- Ícon temporário -->
+        <ion-icon name="paw" class="logo-icon"></ion-icon>
+        <h1>Nome APP??</h1>
+      </div>
+      <p class="subtitle">Gestão inteligente do seu rebanho ovino</p>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-section">
+      <h2>{{ isLogin ? 'Acesse sua conta' : 'Crie sua conta' }}</h2>
+      
+       <!-- SEÇÃO DOS FORMULÁRIOS DE LOGIN/CADASTRO -->
+      <!-- Login Form -->
+      <div *ngIf="isLogin" class="form-container">
+        <ion-item lines="none" class="form-item">
+          <ion-label position="stacked">E-mail</ion-label>
+          <ion-input 
+            type="email" 
+            placeholder="seu@email.com"
+            [(ngModel)]="loginEmail"
+            class="input-field">
+          </ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="form-item">
+          <ion-label position="stacked">Senha</ion-label>
+          <ion-input 
+            type="password" 
+            placeholder="Sua senha"
+            [(ngModel)]="loginPassword"
+            [type]="hidePassword ? 'password' : 'text'"
+            class="input-field">
+          </ion-input>
+          <!-- Botão para mostrar/esconder senha -->
+          <ion-button fill="clear" slot="end" (click)="hidePassword = !hidePassword" class="eye-button">
+            <ion-icon [name]="hidePassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </ion-button>
+        </ion-item>
+
+        <ion-button 
+          expand="block" 
+          color="primary" 
+          (click)="login()"
+          [disabled]="isLoading || !loginEmail || !loginPassword"
+          class="submit-button">
+          <ion-spinner *ngIf="isLoading" name="crescent" class="spinner"></ion-spinner>
+          <span *ngIf="!isLoading">ENTRAR</span>
+        </ion-button>
+
+        <div class="forgot-password">
+          <ion-button fill="clear" color="medium" (click)="forgotPassword()">
+            Esqueceu a senha?
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Register Form -->
+      <div *ngIf="!isLogin" class="form-container">
+        <ion-item lines="none" class="form-item">
+          <ion-label position="stacked">Nome completo</ion-label>
+          <ion-input 
+            type="text" 
+            placeholder="Seu nome completo"
+            [(ngModel)]="registerName"
+            class="input-field">
+          </ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="form-item">
+          <ion-label position="stacked">E-mail</ion-label>
+          <ion-input 
+            type="email" 
+            placeholder="seu@email.com"
+            [(ngModel)]="registerEmail"
+            class="input-field">
+          </ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="form-item">
+          <ion-label position="stacked">Senha</ion-label>
+          <ion-input 
+            type="password" 
+            placeholder="Crie uma senha"
+            [(ngModel)]="registerPassword"
+            [type]="hidePassword ? 'password' : 'text'"
+            class="input-field">
+          </ion-input>
+          <!-- Botão para mostrar/esconder confirmação de senha -->
+          <ion-button fill="clear" slot="end" (click)="hidePassword = !hidePassword" class="eye-button">
+            <ion-icon [name]="hidePassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </ion-button>
+        </ion-item>
+
+        <ion-item lines="none" class="form-item">
+          <ion-label position="stacked">Confirmar senha</ion-label>
+          <ion-input 
+            type="password" 
+            placeholder="Confirme sua senha"
+            [(ngModel)]="registerConfirmPassword"
+            [type]="hideConfirmPassword ? 'password' : 'text'"
+            class="input-field">
+          </ion-input>
+          <ion-button fill="clear" slot="end" (click)="hideConfirmPassword = !hideConfirmPassword" class="eye-button">
+            <ion-icon [name]="hideConfirmPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </ion-button>
+        </ion-item>
+
+        <ion-button 
+          expand="block" 
+          color="primary" 
+          (click)="register()"
+          [disabled]="isLoading || !registerEmail || !registerPassword || !registerConfirmPassword || !registerName"
+          class="submit-button">
+          <ion-spinner *ngIf="isLoading" name="crescent" class="spinner"></ion-spinner>
+          <span *ngIf="!isLoading">CRIAR CONTA</span>
+        </ion-button>
+      </div>
+
+      <!-- ALTERNA ENTRE LOGIN E CADASTRO -->
+      <div class="auth-switch">
+        <p>
+          {{ isLogin ? 'Não tem uma conta?' : 'Já tem uma conta?' }}
+          <ion-button fill="clear" color="primary" (click)="toggleAuthMode()" class="switch-button">
+            {{ isLogin ? 'Registre-se' : 'Fazer login' }}
+          </ion-button>
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>© 2024 Nome APP??? - Todos os direitos reservados</p>
+    </div>
+  </div>
+</ion-content>

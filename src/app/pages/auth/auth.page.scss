@@ -1,0 +1,264 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.auth-content {
+  --background: #f8f9fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  
+  .container {
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+}
+
+.header {
+  text-align: center;
+  padding: 32px 24px 24px;
+  background: linear-gradient(135deg, #2c7da0 0%, #468faf 100%);
+  color: white;
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    
+    .logo-icon {
+      font-size: 32px;
+      margin-right: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 12px;
+      border-radius: 50%;
+    }
+    
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0;
+      color: white;
+    }
+  }
+  
+  .subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+    margin: 0;
+    font-weight: 400;
+  }
+}
+
+.form-section {
+  padding: 32px 24px;
+  
+  h2 {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 24px 0;
+  }
+}
+
+.form-container {
+  .form-item {
+    --background: #f8f9fa;
+    --border-radius: 12px;
+    --padding-start: 16px;
+    --padding-end: 8px;
+    --inner-padding-end: 0;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    border: 2px solid #e9ecef; /* Borda mais destacada */
+    transition: border-color 0.3s ease; /* Transição suave */
+    
+    /* Efeito quando o campo está focado */
+    &:focus-within {
+      border-color: #2c7da0; /* Cor da borda quando focado */
+      --background: #ffffff; /* Fundo branco quando focado */
+      box-shadow: 0 0 0 2px rgba(44, 125, 160, 0.1); /* Sombra suave */
+    }
+    
+    ion-label {
+      font-weight: 600; /* Label mais destacada */
+      color: #495057;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .input-field {
+      --padding-start: 0;
+      --padding-end: 0;
+      font-size: 16px;
+      --color: #2c3e50 !important; /* COR DA FONTE - IMPORTANTE! */
+      --placeholder-color: #6c757d; /* Cor do placeholder */
+      --placeholder-opacity: 0.8;
+      
+      /* Garante que o texto seja visível */
+      input {
+        color: #2c3e50 !important; /* Cor do texto digitado */
+      }
+    }
+    
+    .eye-button {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      margin: 0;
+      
+      ion-icon {
+        color: #6c757d;
+        font-size: 18px;
+      }
+    }
+  }
+  
+  .submit-button {
+    --border-radius: 12px;
+    --padding-top: 18px;
+    --padding-bottom: 18px;
+    font-weight: 600;
+    font-size: 16px;
+    margin: 8px 0 16px;
+    height: 52px;
+    
+    &:not([disabled]) {
+      --box-shadow: 0 4px 12px rgba(44, 125, 160, 0.3);
+    }
+    
+    .spinner {
+      color: white;
+    }
+  }
+  
+  .forgot-password {
+    text-align: center;
+    margin: 8px 0;
+    
+    ion-button {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      font-size: 14px;
+      height: 36px;
+    }
+  }
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+  
+  p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 14px;
+  }
+  
+  .switch-button {
+    --padding-start: 4px;
+    --padding-end: 4px;
+    font-weight: 600;
+    height: 32px;
+    margin: 0;
+  }
+}
+
+.footer {
+  text-align: center;
+  padding: 16px 24px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  
+  p {
+    margin: 0;
+    font-size: 12px;
+    color: #6c757d;
+  }
+}
+
+/* ================================================== */
+/* MELHORIAS ESPECÍFICAS PARA OS CAMPOS DE FORMULÁRIO */
+/* ================================================== */
+
+/* Garante que o texto seja sempre visível */
+ion-input {
+  --color: #2c3e50 !important; /* Cor escura para boa legibilidade */
+  
+  /* Placeholder mais visível */
+  &::placeholder {
+    color: #6c757d !important;
+    opacity: 0.8 !important;
+  }
+  
+  /* Input text visível */
+  input {
+    color: #2c3e50 !important;
+    font-weight: 500 !important;
+  }
+}
+
+/* Estados dos campos */
+.form-item {
+  /* Campo quando está preenchido */
+  &.item-has-value {
+    border-color: #468faf !important;
+    --background: #f0f8ff !important;
+  }
+  
+  /* Campo quando está com erro (futuras validações) */
+  &.item-has-error {
+    border-color: #eb445a !important;
+  }
+}
+
+/* iOS adjustments */
+.ios {
+  .form-container {
+    .form-item {
+      --background: #f8f9fa;
+    }
+  }
+}
+
+/* Material Design adjustments */
+.md {
+  .form-container {
+    .form-item {
+      --background: #ffffff;
+      --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+/* ================================================== */
+/* ESTILOS PARA DESTACAR OS CAMPOS */
+/* ================================================== */
+
+/* Efeito de destaque quando o campo está ativo */
+.form-item:focus-within {
+  transform: translateY(-2px); /* Levanta levemente o campo */
+  border-color: #2c7da0 !important;
+  box-shadow: 0 4px 12px rgba(44, 125, 160, 0.15) !important;
+}
+
+/* Melhora a visibilidade dos labels */
+ion-label {
+  font-weight: 600 !important;
+  color: #2c3e50 !important;
+  margin-bottom: 10px !important;
+}
+
+/* Garante contraste para boa leitura */
+.input-field {
+  --color: #2c3e50 !important; /* Cor escura do texto */
+  font-weight: 500 !important;
+}

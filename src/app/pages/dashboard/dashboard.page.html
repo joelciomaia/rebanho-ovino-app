@@ -1,0 +1,212 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Dashboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="dashboard-content">
+  <div class="container">
+    <!-- HEADER DO DASHBOARD -->
+    <header class="dashboard-header">
+      <div class="header-content">
+        <div class="header-title">
+          <h1>Dashboard de Gestão Pecuária</h1>
+          <p>Monitoramento completo do seu rebanho</p>
+        </div>
+        <div class="user-info">
+          <div>
+            <p>Fazenda São Bento</p>
+            <p>Relatório atualizado</p>
+          </div>
+          <div class="user-avatar">
+            <ion-icon name="person"></ion-icon>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- CARDS DE ESTATÍSTICAS -->
+    <div class="dashboard-grid">
+      <!-- TOTAL DE ANIMAIS -->
+      <ion-card class="stats-card">
+        <ion-card-header class="card-header">
+          <ion-card-title>Total de Animais</ion-card-title>
+          <div class="card-icon icon-animals">
+            <ion-icon name="paw"></ion-icon>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="stat-number">63</div>
+          <div class="stat-change">
+            <span class="change-positive">
+              <ion-icon name="arrow-up"></ion-icon>
+              +12 este mês
+            </span>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- FÊMEAS GESTANTES -->
+      <ion-card class="stats-card">
+        <ion-card-header class="card-header">
+          <ion-card-title>Fêmeas Gestantes</ion-card-title>
+          <div class="card-icon icon-pregnant">
+            <ion-icon name="heart"></ion-icon>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="stat-number">42</div>
+          <div class="stat-change">
+            <span class="change-positive">
+              <ion-icon name="arrow-up"></ion-icon>
+              +5 confirmadas
+            </span>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- ANIMAIS PARA DESCARTE -->
+      <ion-card class="stats-card">
+        <ion-card-header class="card-header">
+          <ion-card-title>Animais para Descarte</ion-card-title>
+          <div class="card-icon icon-discard">
+            <ion-icon name="trash"></ion-icon>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="stat-number">11</div>
+          <div class="stat-change">
+            <span class="change-positive">
+              <ion-icon name="arrow-up"></ion-icon>
+              +2 este mês
+            </span>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- SEÇÃO DE ALERTAS -->
+    <h2 class="section-title">Alertas e Lembretes</h2>
+
+    <div class="grid-2">
+      <!-- CARDS DE ALERTAS -->
+      <ion-card class="alerts-card">
+        <ion-card-content>
+          <!-- ALERTA VACINAÇÃO -->
+          <div class="alert-item">
+            <div class="alert-icon alert-vaccine">
+              <ion-icon name="medical"></ion-icon>
+            </div>
+            <div class="alert-content">
+              <h4>Vacinação</h4>
+              <div class="alert-date">Hoje</div>
+              <p class="alert-desc">15 animais precisam da vacina contra clostridiose</p>
+            </div>
+          </div>
+
+          <!-- ALERTA REPRODUÇÃO -->
+          <div class="alert-item">
+            <div class="alert-icon alert-breeding">
+              <ion-icon name="heart"></ion-icon>
+            </div>
+            <div class="alert-content">
+              <h4>Reprodução</h4>
+              <div class="alert-date">Amanhã</div>
+              <p class="alert-desc">3 fêmeas em período de cobertura</p>
+            </div>
+          </div>
+
+          <!-- ALERTA PESAGEM -->
+          <div class="alert-item">
+            <div class="alert-icon alert-weighing">
+              <ion-icon name="speedometer"></ion-icon>
+            </div>
+            <div class="alert-content">
+              <h4>Pesagem</h4>
+              <div class="alert-date">Esta semana</div>
+              <p class="alert-desc">12 cordeiros para pesagem mensal</p>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- CONDIÇÕES CLIMÁTICAS -->
+      <ion-card class="weather-card">
+        <ion-card-header class="card-header">
+          <ion-card-title>Condições Climáticas</ion-card-title>
+          <div class="card-icon icon-weather">
+            <ion-icon name="sunny"></ion-icon>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="weather-content">
+            <div class="weather-temp">22°C</div>
+            <div>Temperatura</div>
+
+            <div class="weather-stats">
+              <div class="weather-stat">
+                <div class="weather-stat-value">65%</div>
+                <div class="weather-stat-label">Umidade</div>
+              </div>
+              <div class="weather-stat">
+                <div class="weather-stat-value">12 km/h</div>
+                <div class="weather-stat-label">Vento</div>
+              </div>
+              <div class="weather-stat">
+                <div class="weather-stat-value">0%</div>
+                <div class="weather-stat-label">Chuva</div>
+              </div>
+            </div>
+
+            <div class="weather-forecast">
+              Previsão: Condições ideais para pastoreio. Sem previsão de chuva para os próximos 3 dias.
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- ATIVIDADES RECENTES -->
+    <h2 class="section-title">Atividades Recentes</h2>
+
+    <ion-card class="activities-card">
+      <ion-card-content>
+        <!-- NASCIMENTO -->
+        <div class="activity-item">
+          <div class="activity-icon">
+            <ion-icon name="heart"></ion-icon>
+          </div>
+          <div class="activity-content">
+            <h4>Nascimento registrado</h4>
+            <p class="activity-desc">Cordeiro #249</p>
+            <div class="activity-time">2 horas atrás</div>
+          </div>
+        </div>
+
+        <!-- VACINAÇÃO -->
+        <div class="activity-item">
+          <div class="activity-icon">
+            <ion-icon name="medical"></ion-icon>
+          </div>
+          <div class="activity-content">
+            <h4>Vacinação aplicada</h4>
+            <p class="activity-desc">Ovelha #087</p>
+            <div class="activity-time">4 horas atrás</div>
+          </div>
+        </div>
+
+        <!-- PESAGEM -->
+        <div class="activity-item">
+          <div class="activity-icon">
+            <ion-icon name="speedometer"></ion-icon>
+          </div>
+          <div class="activity-content">
+            <h4>Pesagem realizada</h4>
+            <p class="activity-desc">Borrego #0132</p>
+            <div class="activity-time">6 horas atrás</div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
