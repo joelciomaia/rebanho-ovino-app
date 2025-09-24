@@ -1,9 +1,9 @@
 <ion-header>
-  <ion-toolbar color="primary">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/dashboard"></ion-back-button>
     </ion-buttons>
-    <ion-title>Cadastro de Animais</ion-title>
+   <ion-title>Cadastro de Animais</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -11,10 +11,10 @@
   <div class="segment-container">
     <ion-segment [formControl]="segmentoControl" (ionChange)="mudarSegmento()">
       <ion-segment-button value="nascidos">
-        <ion-label>Nascidos na Propriedade</ion-label>
+        <ion-label>Nascimento</ion-label>
       </ion-segment-button>
       <ion-segment-button value="comprados">
-        <ion-label>Animais Comprados</ion-label>
+        <ion-label>Compra</ion-label>
       </ion-segment-button>
     </ion-segment>
   </div>
@@ -44,25 +44,19 @@
           <ion-select-option value="femea">Fêmea</ion-select-option>
         </ion-select>
       </ion-item>
-<!--
-      <ion-item>
-        <ion-label position="stacked" class="required-label">Data de Nascimento</ion-label>
-        <ion-datetime formControlName="dataNascimento" display-format="DD/MM/YYYY" 
-                     placeholder="Selecione a data" presentation="date-picker">></ion-datetime>
-      </ion-item>
-    -->
+
       <ion-item>
         <ion-label position="stacked" class="required-label">Data de Nascimento</ion-label>
         <ion-input 
           formControlName="dataNascimento" 
           placeholder="DD/MM/AAAA"
-          (click)="abrirCalendario()">  <!-- ← Abre modal no clique -->
+          (click)="abrirCalendario()">
         </ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label position="stacked">Peso ao Nascer (kg)</ion-label>
-        <ion-input formControlName="peso" type="number" placeholder="Ex: 4.5"></ion-input>
+        <ion-input formControlName="peso" type="number" placeholder="Ex: 2.5"></ion-input>
       </ion-item>
 
       <ion-item>
@@ -96,29 +90,6 @@
       </ion-list-header>
 
       <ion-item>
-        <ion-label position="stacked">Origem da Mãe</ion-label>
-        <ion-select formControlName="origemMae" (ionChange)="alternarIdentificacaoMae()" 
-                   placeholder="Selecione a origem" interface="action-sheet">
-          <ion-select-option value="proprio">Animal Próprio</ion-select-option>
-          <ion-select-option value="terceiros">Animal de Terceiros</ion-select-option>
-        </ion-select>
-      </ion-item>
-
-      <ion-item *ngIf="formNascidos.get('origemMae')?.value === 'proprio'">
-        <ion-label position="stacked" class="required-label">Identificação da Mãe</ion-label>
-        <ion-select formControlName="identificacaoMae" placeholder="Selecione a mãe" interface="action-sheet">
-          <ion-select-option *ngFor="let animal of animaisFemeas" [value]="animal.id">
-            {{ animal.brinco }} - {{ animal.nome || 'Sem nome' }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-
-      <ion-item *ngIf="formNascidos.get('origemMae')?.value === 'terceiros'">
-        <ion-label position="stacked" class="required-label">Identificação da Mãe (Terceiros)</ion-label>
-        <ion-input formControlName="identificacaoMaeTerceiros" placeholder="Identificação e proprietário"></ion-input>
-      </ion-item>
-
-      <ion-item>
         <ion-label position="stacked">Origem do Pai</ion-label>
         <ion-select formControlName="origemPai" (ionChange)="alternarIdentificacaoPai()" 
                    placeholder="Selecione a origem" interface="action-sheet">
@@ -146,6 +117,25 @@
         <ion-label position="stacked">Identificação do Doador de Sêmen</ion-label>
         <ion-input formControlName="identificacaoSemen" placeholder="Doador e proprietário"></ion-input>
       </ion-item>
+
+      <!--<ion-item *ngIf="formNascidos.get('origemPai')?.value === 'proprio'">
+        <ion-label position="stacked">Identificação da Mãe</ion-label>
+        <ion-select formControlName="identificacaoPai" placeholder="Selecione a mãe" interface="action-sheet">
+          <ion-select-option *ngFor="let animal of animaisFemeas" [value]="animal.id">
+            {{ animal.brinco }} - {{ animal.nome || 'Sem nome' }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>-->
+      
+       <!-- MÃE - SEMPRE PRÓPRIA  -->
+      <ion-item>
+        <ion-label position="stacked" class="required-label">Identificação da Mãe</ion-label>
+        <ion-select formControlName="identificacaoMae" placeholder="Selecione a mãe" interface="action-sheet">
+          <ion-select-option *ngFor="let animal of animaisFemeas" [value]="animal.id">
+            {{ animal.brinco }} - {{ animal.nome || 'Sem nome' }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
     </ion-list>
 
     <ion-list>
@@ -153,7 +143,6 @@
         <ion-label class="section-header">Avaliação da Mãe</ion-label>
       </ion-list-header>
 
-      <!-- ESCORE CORPORAL - TROCADO PARA SELECT -->
       <ion-item>
         <ion-label position="stacked" class="required-label">Escore Corporal</ion-label>
         <ion-select formControlName="escoreCorporalMae" interface="action-sheet" placeholder="Selecione o escore">
@@ -165,7 +154,6 @@
         </ion-select>
       </ion-item>
 
-      <!-- AVALIAÇÃO DO ÚBERE - TROCADO PARA SELECT -->
       <ion-item>
         <ion-label position="stacked" class="required-label">Avaliação do Úbere</ion-label>
         <ion-select formControlName="avaliacaoUbere" interface="action-sheet" placeholder="Selecione a avaliação">
@@ -177,7 +165,6 @@
         </ion-select>
       </ion-item>
 
-      <!-- VIABILIDADE DA MÃE - TROCADO PARA SELECT -->
       <ion-item>
         <ion-label position="stacked" class="required-label">Viabilidade da Mãe</ion-label>
         <ion-select formControlName="viabilidadeMae" interface="action-sheet" placeholder="Selecione a viabilidade">
@@ -190,7 +177,6 @@
         </ion-select>
       </ion-item>
 
-      <!-- HABILIDADE MATERNA - TROCADO PARA SELECT -->
       <ion-item>
         <ion-label position="stacked" class="required-label">Habilidade Materna</ion-label>
         <ion-select formControlName="habilidadeMaterna" interface="action-sheet" placeholder="Selecione a habilidade">
@@ -218,6 +204,7 @@
         <div class="add-photo-btn" (click)="adicionarFoto()">
           <ion-icon name="camera"></ion-icon>
         </div>
+        <ion-note color="medium" class="helper-text">Clique para adicionar fotos do animal</ion-note>
       </div>
     </ion-list>
 
@@ -244,6 +231,163 @@
 
   <!-- Formulário para animais comprados -->
   <form *ngIf="segmento === 'comprados'" [formGroup]="formComprados" (ngSubmit)="cadastrarComprado()" class="form-container">
-    <!-- ... (código do formulário comprados mantido igual) ... -->
+    
+    <ion-list>
+      <ion-list-header>
+        <ion-label class="section-header">Dados da Compra</ion-label>
+      </ion-list-header>
+
+      <ion-item>
+        <ion-label position="stacked" class="required-label">Número do Brinco</ion-label>
+        <ion-input formControlName="numeroBrinco" type="text" placeholder="Ex: OV2023-001"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked" class="required-label">Data da Compra</ion-label>
+        <ion-input formControlName="dataCompra" placeholder="DD/MM/AAAA" (click)="abrirCalendario()"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Valor da Compra (R$)</ion-label>
+        <ion-input formControlName="valorCompra" type="number" placeholder="0,00"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Nome do Vendedor</ion-label>
+        <ion-input formControlName="vendedor" type="text" placeholder="Nome do proprietário"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked" class="required-label">Raça</ion-label>
+        <ion-select formControlName="raca" placeholder="Selecione a raça" interface="action-sheet">
+          <ion-select-option *ngFor="let raca of racasOvinas" [value]="raca">{{raca}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked" class="required-label">Sexo</ion-label>
+        <ion-select formControlName="sexo" placeholder="Selecione o sexo" interface="action-sheet">
+          <ion-select-option value="macho">Macho</ion-select-option>
+          <ion-select-option value="femea">Fêmea</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+
+    <ion-list>
+      <ion-list-header>
+        <ion-label class="section-header">Características do Animal</ion-label>
+      </ion-list-header>
+
+      <!-- Status Reprodutivo apenas para Fêmeas -->
+      <ion-item *ngIf="formComprados.get('sexo')?.value === 'femea'">
+        <ion-label position="stacked">Status Reprodutivo</ion-label>
+        <ion-select formControlName="statusReprodutivo" placeholder="Selecione o status" interface="action-sheet">
+          <ion-select-option value="vazia">Vazia</ion-select-option>
+          <ion-select-option value="prenha">Prenha</ion-select-option>
+          <ion-select-option value="lactante">Lactante</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Peso Atual (kg)</ion-label>
+        <ion-input formControlName="peso" type="number" placeholder="Ex: 45.5"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Idade Aproximada</ion-label>
+        <ion-input formControlName="idadeAproximada" placeholder="Ex: 2 anos"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Número de Dentes</ion-label>
+        <ion-select formControlName="numeroDentes" placeholder="Selecione" interface="action-sheet">
+          <ion-select-option value="0">0 (Desmamado)</ion-select-option>
+          <ion-select-option value="2">2 Dentes</ion-select-option>
+          <ion-select-option value="4">4 Dentes</ion-select-option>
+          <ion-select-option value="6">6 Dentes</ion-select-option>
+          <ion-select-option value="8">8 Dentes (Boca Cheia)</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Escore Corporal</ion-label>
+        <ion-select formControlName="escoreCorporal" interface="action-sheet" placeholder="Selecione o escore">
+          <ion-select-option value="1">1 - Muito Magro</ion-select-option>
+          <ion-select-option value="2">2 - Magro</ion-select-option>
+          <ion-select-option value="3">3 - Ideal</ion-select-option>
+          <ion-select-option value="4">4 - Gordo</ion-select-option>
+          <ion-select-option value="5">5 - Muito Gordo</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+
+    <ion-list>
+      <ion-list-header>
+        <ion-label class="section-header">Documentação</ion-label>
+      </ion-list-header>
+
+      <ion-item>
+        <ion-label>Possui Registro</ion-label>
+        <ion-checkbox formControlName="possuiRegistro" slot="start" (ionChange)="alternarCamposRegistro()"></ion-checkbox>
+      </ion-item>
+
+      <ion-item *ngIf="formComprados.get('possuiRegistro')?.value">
+        <ion-label position="stacked">Nome do Animal (se registrado)</ion-label>
+        <ion-input formControlName="nomeAnimal" placeholder="Nome de registro"></ion-input>
+      </ion-item>
+
+      <ion-item *ngIf="formComprados.get('possuiRegistro')?.value">
+        <ion-label position="stacked">Número do Registro</ion-label>
+        <ion-input formControlName="numeroRegistro" placeholder="Número do registro"></ion-input>
+      </ion-item>
+
+      <ion-item *ngIf="formComprados.get('possuiRegistro')?.value">
+        <ion-label position="stacked">Entidade de Registro</ion-label>
+        <ion-select formControlName="entidadeRegistro" placeholder="Selecione a entidade" interface="action-sheet">
+          <ion-select-option value="arco">ARCO</ion-select-option>
+          <ion-select-option value="abc">ABC</ion-select-option>
+          <ion-select-option value="outra">Outra</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+
+    <ion-list>
+      <ion-list-header>
+        <ion-label class="section-header">Fotos do Animal</ion-label>
+      </ion-list-header>
+
+      <div class="animal-photos">
+        <div *ngFor="let foto of fotos" class="photo-container">
+          <img [src]="foto" class="photo-preview" alt="Foto do animal">
+          <ion-button fill="clear" color="danger" (click)="removerFoto(foto)" class="remove-photo">
+            <ion-icon name="close-circle"></ion-icon>
+          </ion-button>
+        </div>
+        <div class="add-photo-btn" (click)="adicionarFoto()">
+          <ion-icon name="camera"></ion-icon>
+        </div>
+        <ion-note color="medium" class="helper-text">Clique para adicionar fotos do animal</ion-note>
+      </div>
+    </ion-list>
+
+    <ion-list>
+      <ion-list-header>
+        <ion-label class="section-header">Observações</ion-label>
+      </ion-list-header>
+
+      <ion-item>
+        <ion-textarea formControlName="observacoes" rows="4" placeholder="Outras observações relevantes..."></ion-textarea>
+      </ion-item>
+    </ion-list>
+
+    <div class="action-buttons">
+      <ion-button expand="block" color="medium" fill="outline" routerLink="/dashboard">
+        Cancelar
+      </ion-button>
+      <ion-button expand="block" type="submit" [disabled]="!formComprados.valid">
+        <ion-icon slot="start" name="save-outline"></ion-icon>
+        Cadastrar Animal Comprado
+      </ion-button>
+    </div>
   </form>
 </ion-content>

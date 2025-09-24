@@ -10,6 +10,25 @@ import { CommonModule } from '@angular/common';
   imports: [IonicModule, CommonModule]
 })
 export class DashboardPage implements OnInit {
+openMenu() {
+  const menuDrawer = document.getElementById('menuDrawer');
+  const menuOverlay = document.getElementById('menuOverlay');
+  if (menuDrawer && menuOverlay) {
+    menuDrawer.classList.add('open');
+    menuOverlay.style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Previne scroll do body
+  }
+}
+
+closeMenu() {
+  const menuDrawer = document.getElementById('menuDrawer');
+  const menuOverlay = document.getElementById('menuOverlay');
+  if (menuDrawer && menuOverlay) {
+    menuDrawer.classList.remove('open');
+    menuOverlay.style.display = 'none';
+    document.body.style.overflow = ''; // Restaura scroll
+  }
+}
 
   // Dados fictícios para o dashboard - depois vêm do banco
   dadosDashboard: any = {
@@ -114,6 +133,7 @@ export class DashboardPage implements OnInit {
     }, 1500);
   }
 
+  
   // Método para lidar com cliques nos alertas
   handleAlertaClick(alerta: any) {
     console.log('Alerta clicado:', alerta.titulo);
@@ -156,4 +176,5 @@ export class DashboardPage implements OnInit {
     // Aqui implementaremos websockets ou polling para dados em tempo real
     console.log('Buscando dados em tempo real...');
   }
+  
 }

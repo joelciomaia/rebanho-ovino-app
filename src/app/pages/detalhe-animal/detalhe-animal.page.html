@@ -1,0 +1,200 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/cadastro-animais" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalhes do Animal</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  
+  <!-- Card Recolhível com Informações do Animal -->
+  <div class="collapsible-card">
+    <div class="card-header" (click)="toggleCard()">
+      <div class="header-content">
+        <div class="animal-image-container">
+          <img src="src\assets\images\image.png" alt="Foto do animal" class="animal-profile-image">
+        </div>
+        <div class="animal-main-info">
+          <h1 class="animal-id">0145</h1>
+          <div class="animal-status status-ativo">
+            Ativo
+          </div>
+        </div>
+      </div>
+      <ion-icon 
+        [name]="isCardExpanded ? 'chevron-up-outline' : 'chevron-down-outline'" 
+        class="collapse-icon">
+      </ion-icon>
+    </div>
+
+    <div class="card-content" [class.collapsed]="!isCardExpanded">
+      <div class="animal-details-grid">
+        <div class="detail-item">
+          <span class="detail-label">Sexo</span>
+          <span class="detail-value">Fêmea</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Categoria</span>
+          <span class="detail-value">Matriz</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Idade</span>
+          <span class="detail-value">3,2 anos</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Peso atual</span>
+          <span class="detail-value">47 kg</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Raça</span>
+          <span class="detail-value">Dorper</span>
+        </div>
+      </div>
+
+      <!-- BOTÕES DE AÇÃO - CLASSE CORRIGIDA -->
+      <div class="action-buttons">
+        <ion-button expand="block" color="primary">
+          <ion-icon name="create-outline" slot="start"></ion-icon>
+          EDITAR DADOS
+        </ion-button>
+        <ion-button expand="block" color="secondary">
+          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          ADICIONAR MANEJO
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Histórico de Manejos -->
+  <div class="history-section">
+    <h2>Histórico de Manejos</h2>
+    
+    <!-- Container das tabs com scroll horizontal -->
+    <div class="segment-container">
+      <ion-segment [value]="abaAtiva" (ionChange)="onSegmentChange($event)">
+        <ion-segment-button value="vacinas">
+          <ion-label>Vacinações</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="partos">
+          <ion-label>Partos</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="sanitarios">
+          <ion-label>Sanitários</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="tecnicos">
+          <ion-label>Técnicos</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="fotos">
+          <ion-label>Fotos</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <!-- Conteúdo das abas -->
+    <div class="history-content">
+      
+      <!-- Vacinações -->
+      <div *ngIf="abaAtiva === 'vacinas'">
+        <div class="history-item" *ngFor="let manejo of manejosFiltrados">
+          <div class="history-date">{{ formatarData(manejo.data) }}</div>
+          <div class="history-type">Vacinação</div>
+          <div class="history-details">
+            <p><strong>Vacina:</strong> {{ manejo.sanitario?.vacinas[0]?.produto }}</p>
+            <p><strong>Dose:</strong> {{ manejo.sanitario?.vacinas[0]?.dose }}</p>
+            <p><strong>Via:</strong> {{ manejo.sanitario?.vacinas[0]?.via }}</p>
+            <p><strong>Lote:</strong> {{ manejo.sanitario?.vacinas[0]?.lote }}</p>
+            <p><strong>Fabricante:</strong> {{ manejo.sanitario?.vacinas[0]?.fabricante }}</p>
+            <p><strong>Observação:</strong> {{ manejo.observacao }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Partos -->
+      <div *ngIf="abaAtiva === 'partos'">
+        <div class="history-item" *ngFor="let manejo of manejosFiltrados">
+          <div class="history-date">{{ formatarData(manejo.data) }}</div>
+          <div class="history-type">Parto</div>
+          <div class="history-details">
+            <p><strong>Tipo de Parto:</strong> {{ manejo.reprodutivo?.tipoParto }}</p>
+            <p><strong>Habilidade Materna:</strong> {{ manejo.reprodutivo?.habilidadeMaterna }}</p>
+            <p><strong>Quantidade de Filhotes:</strong> {{ manejo.reprodutivo?.quantidadeFilhotes }}</p>
+            <p><strong>Observação:</strong> {{ manejo.observacao }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sanitários -->
+      <div *ngIf="abaAtiva === 'sanitarios'">
+        <div class="history-item" *ngFor="let manejo of manejosFiltrados">
+          <div class="history-date">{{ formatarData(manejo.data) }}</div>
+          <div class="history-type">{{ manejo.sanitario?.medicacoes[0]?.tipo || 'Tratamento' }}</div>
+          <div class="history-details">
+            <p><strong>Produto:</strong> {{ manejo.sanitario?.medicacoes[0]?.produto }}</p>
+            <p><strong>Dose:</strong> {{ manejo.sanitario?.medicacoes[0]?.dose }}</p>
+            <p><strong>Via:</strong> {{ manejo.sanitario?.medicacoes[0]?.via }}</p>
+            <p><strong>Observação:</strong> {{ manejo.observacao }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Técnicos -->
+      <div *ngIf="abaAtiva === 'tecnicos'">
+        <div class="history-item" *ngFor="let manejo of manejosFiltrados">
+          <div class="history-date">{{ formatarData(manejo.data) }}</div>
+          <div class="history-type">Controle Técnico</div>
+          <div class="history-details">
+            <p><strong>Peso:</strong> {{ manejo.tecnico?.peso }} kg</p>
+            <p><strong>Temperatura:</strong> {{ manejo.tecnico?.temperatura }}°C</p>
+            <p><strong>Escore Corporal:</strong> {{ manejo.tecnico?.escoreCorporal }}</p>
+            <p><strong>Observação:</strong> {{ manejo.observacao }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fotos -->
+      <div *ngIf="abaAtiva === 'fotos'">
+        <!-- Botão de adicionar nova foto -->
+        <div class="action-buttons">
+          <ion-button color="primary" (click)="addNewPhoto()">
+            <ion-icon name="add" slot="start"></ion-icon>
+            Adicionar Nova Foto
+          </ion-button>
+        </div>
+
+        <!-- Grid de fotos -->
+        <div class="photos-grid">
+          <div *ngFor="let foto of animalFotos" class="photo-card">
+            <img [src]="foto.url" [alt]="foto.descricao || 'Foto do animal'" class="photo-image">
+            
+            <div class="photo-actions">
+              <ion-button size="small" color="primary" (click)="setAsProfilePhoto(foto)">
+                <ion-icon name="person"></ion-icon>
+              </ion-button>
+              <ion-button size="small" color="secondary" (click)="viewPhoto(foto)">
+                <ion-icon name="expand"></ion-icon>
+              </ion-button>
+            </div>
+            
+            <div class="photo-description" *ngIf="foto.descricao">
+              {{ foto.descricao }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Mensagem se não houver fotos -->
+        <div class="empty-gallery" *ngIf="animalFotos.length === 0">
+          <ion-icon name="images-outline"></ion-icon>
+          <p>Nenhuma foto cadastrada</p>
+        </div>
+      </div>
+
+      <!-- Mensagem quando não há registros -->
+      <div class="empty-history" *ngIf="manejosFiltrados.length === 0 && abaAtiva !== 'fotos'">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <p>Nenhum registro encontrado</p>
+      </div>
+    </div>
+  </div>
+</ion-content>

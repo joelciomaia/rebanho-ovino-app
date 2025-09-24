@@ -19,6 +19,14 @@ const routes: Routes = [
     path: 'cadastro-animais',
     loadChildren: () => import('./pages/cadastro-animais/cadastro-animais.module').then(m => m.CadastroAnimaisPageModule)
   },
+  {
+  path: 'manejos',
+  loadChildren: () => import('./pages/manejos/manejos.module').then(m => m.ManejospageModule)
+  },
+  {
+    path: 'detalhe-animal/:id',
+    loadChildren: () => import('./pages/detalhe-animal/detalhe-animal.module').then(m => m.DetalheAnimalPageModule)
+  },
   // Rota curinga para páginas não encontradas - DEVE SER SEMPRE A ÚLTIMA MEU CHAPA
   {
     path: '**',

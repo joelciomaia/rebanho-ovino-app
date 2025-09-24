@@ -1,36 +1,32 @@
-/* Container principal do componente */
 :host {
   display: block;
   height: 100%;
 }
 
-/* Área de conteúdo de autenticação */
 .auth-content {
   --background: #f5f5f5 !important;
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Alinha ao topo */
+  align-items: flex-start;
   padding: 20px;
-  min-height: 93%; /* Mínimo da altura da tela */
+  min-height: 100vh;
   height: auto;
+  //overflow-y: auto;
   
-  /* Container do formulário */
   .container {
     width: 95%;
     max-width: 700px;
     background: white !important;
     border-radius: 16px !important;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
-    overflow: auto; /* Permite scroll interno se necessário */
+    overflow: auto;
+    //overflow-y: auto;
     margin: 10px;
-    display: flex;
-    flex-direction: column; /* Organiza em coluna */
-    min-height: 0; /* Permite encolher */
   }
 }
 
 /* ================================================== */
-/* HEADER DA PÁGINA (ion-header) */
+/* CORREÇÃO DO HEADER - TÍTULO DA PÁGINA */
 /* ================================================== */
 ion-header ion-toolbar {
   --background: linear-gradient(135deg, #2d4551 0%, #3a5766 100%) !important;
@@ -43,7 +39,7 @@ ion-header ion-title {
 }
 
 /* ================================================== */
-/* CABEÇALHO PERSONALIZADO DO FORMULÁRIO */
+/* CABEÇALHO PERSONALIZADO */
 /* ================================================== */
 .header {
   text-align: center;
@@ -81,14 +77,8 @@ ion-header ion-title {
   }
 }
 
-/* ================================================== */
-/* SEÇÃO DO FORMULÁRIO */
-/* ================================================== */
 .form-section {
   padding: 24px;
-  flex: 1; /* Ocupa espaço disponível */
-  overflow-y: auto; /* Scroll interno apenas do formulário */
-  min-height: 0; /* Permite encolher */
   
   h2 {
     text-align: center;
@@ -99,11 +89,7 @@ ion-header ion-title {
   }
 }
 
-/* ================================================== */
-/* CONTAINER DO FORMULÁRIO */
-/* ================================================== */
 .form-container {
-  /* Headers das seções */
   ion-list-header {
     --background: transparent !important;
     padding-left: 0 !important;
@@ -115,7 +101,6 @@ ion-header ion-title {
     }
   }
 
-  /* Títulos das seções */
   .section-header {
     color: #2d4551 !important;
     font-size: 18px !important;
@@ -128,7 +113,6 @@ ion-header ion-title {
     width: 100%;
   }
 
-  /* Linha decorativa sob os títulos */
   .section-header::after {
     content: '';
     position: absolute;
@@ -140,7 +124,6 @@ ion-header ion-title {
     border-radius: 2px;
   }
 
-  /* Itens do formulário */
   .form-item {
     --background: #f8f9fa !important;
     --border-radius: 12px !important;
@@ -152,7 +135,6 @@ ion-header ion-title {
     border: 2px solid #e9ecef !important;
     transition: all 0.3s ease;
     
-    /* Efeito quando em foco */
     &:focus-within {
       border-color: #5cad82 !important;
       --background: #ffffff !important;
@@ -160,7 +142,6 @@ ion-header ion-title {
       transform: translateY(-1px);
     }
     
-    /* Labels dos campos */
     ion-label {
       font-weight: 600 !important;
       color: #2d4551 !important;
@@ -168,7 +149,6 @@ ion-header ion-title {
       font-size: 14px;
     }
     
-    /* Campos de entrada */
     .input-field {
       --padding-start: 0;
       --padding-end: 0;
@@ -182,27 +162,24 @@ ion-header ion-title {
       }
     }
     
-    /* Botão olho (mostrar/ocultar senha) */
     .eye-button {
       --padding-start: 8px;
       --padding-end: 8px;
-      margin: 5px;
+      margin: 0;
       
       ion-icon {
         color: #6c757d;
-        font-size: 20px;
+        font-size: 18px;
       }
     }
   }
 
-  /* Indicador de campo obrigatório */
   .required-label::after {
     content: " *";
     color: #eb445a;
     font-weight: bold;
   }
 
-  /* Texto dos termos */
   .termos-label {
     font-size: 14px !important;
     color: #2d4551 !important;
@@ -220,10 +197,10 @@ ion-header ion-title {
 }
 
 /* ================================================== */
-/* BOTÕES - PALETA AGRO */
+/* CORREÇÃO DOS BOTÕES - PALETA AGRO */
 /* ================================================== */
 
-/* Botão principal (submit) */
+/* BOTÃO SUBMIT PRINCIPAL */
 ion-button[color="primary"] {
   --background: #5cad82 !important;
   --background-activated: #4a9c71 !important;
@@ -235,7 +212,7 @@ ion-button[color="primary"] {
   --border-radius: 12px !important;
 }
 
-/* Botão de alternância (login/cadastro) */
+/* BOTÃO SECUNDÁRIO (switch button) */
 ion-button[color="primary"].switch-button {
   --color: #5cad82 !important;
   --background: transparent !important;
@@ -243,18 +220,18 @@ ion-button[color="primary"].switch-button {
   --background-hover: rgba(92, 173, 130, 0.05) !important;
 }
 
-/* Botão esqueci senha */
+/* BOTÃO FORGOT PASSWORD */
 ion-button[color="medium"] {
   --color: #5cad82 !important;
   --background: transparent !important;
 }
 
-/* Botão olho */
+/* BOTÃO EYE */
 .eye-button {
   --color: #6c757d !important;
 }
 
-/* Estilos específicos do botão submit */
+/* ESTADOS DOS BOTÕES */
 .submit-button {
   --border-radius: 12px !important;
   --padding-top: 18px;
@@ -264,12 +241,10 @@ ion-button[color="medium"] {
   margin: 24px 0 16px !important;
   height: 52px;
   
-  /* Estado ativo */
   &:not([disabled]) {
     --box-shadow: 0 4px 12px rgba(92, 173, 130, 0.3) !important;
   }
 
-  /* Estado desabilitado */
   &[disabled] {
     --background: #c8c8c8 !important;
     --color: #8c8c8c !important;
@@ -281,11 +256,10 @@ ion-button[color="medium"] {
   }
 }
 
-/* Seção de alternância entre login/cadastro */
 .auth-switch {
   text-align: center;
-  margin-top: 10px;
-  padding-top: 10px;
+  margin-top: 24px;
+  padding-top: 20px;
   border-top: 1px solid #e9ecef;
   
   p {
@@ -295,30 +269,24 @@ ion-button[color="medium"] {
   }
 }
 
-/* ================================================== */
-/* RODAPÉ - CORREÇÃO PARA APARECER SEMPRE */
-/* ================================================== */
 .footer {
   text-align: center;
   padding: 16px 24px;
   background: #f8f9fa;
   border-top: 1px solid #e9ecef;
-  //border-right: 10px solid #e9ecef;
-  flex-shrink: 0; /* Impede que o rodapé encolha */
-  margin-top: auto; /* Empurra para o final */
   
   p {
-    margin: 0px;
+    margin: 0;
     font-size: 12px;
     color: #6c757d;
   }
 }
 
 /* ================================================== */
-/* CONFIGURAÇÕES DO TEMA IONIC */
+/* APLICAÇÃO DIRETA NOS ELEMENTOS IONIC */
 /* ================================================== */
 
-/* Define cores primary do tema Ionic */
+/* Garante que todos os botões primary usem a cor agro */
 ion-button {
   &[color="primary"] {
     --ion-color-primary: #5cad82 !important;
@@ -342,12 +310,6 @@ h2, .section-header, ion-label {
 @media (max-width: 768px) {
   .auth-content {
     padding: 10px !important;
-    
-    .container {
-      width: 95%;
-      margin: 10px;
-      //height: 90%;
-    }
   }
   
   .form-section {
@@ -371,3 +333,13 @@ ion-button:not([disabled]):hover {
 ion-button:not([disabled]):active {
   transform: translateY(0) !important;
 }
+
+.form-section {
+  padding: 24px;
+  min-height: auto; /* Remove altura mínima fixa */
+}
+
+.form-container {
+  max-height: none; /* Remove limite de altura */
+}
+

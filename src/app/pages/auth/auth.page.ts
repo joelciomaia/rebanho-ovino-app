@@ -24,14 +24,61 @@ export class AuthPage {
   hidePassword: boolean = true;
   hideConfirmPassword: boolean = true;
 
-  // Dados para cadastro
-  registerEmail: string = '';
-  registerPassword: string = '';
+  // Dados para cadastro - NOVA ESTRUTURA
+  registerData = {
+    nomeCompleto: '',
+    email: '',
+    telefoneWhatsapp: '',
+    preferenciaRecuperacao: 'whatsapp',
+    senha: '',
+    cabanha: {
+      nome: '',
+      municipio: '',
+      estado: '',
+      localizacaoLivre: '',
+      coordenadas: {
+        latitude: null,
+        longitude: null
+      }
+    }
+  };
+
   registerConfirmPassword: string = '';
-  registerName: string = '';
+  aceitouTermos: boolean = false;
   
   // Estados de loading
   isLoading: boolean = false;
+
+  // Lista de estados brasileiros
+  estadosBrasileiros = [
+    { sigla: 'AC', nome: 'Acre' },
+    { sigla: 'AL', nome: 'Alagoas' },
+    { sigla: 'AP', nome: 'Amapá' },
+    { sigla: 'AM', nome: 'Amazonas' },
+    { sigla: 'BA', nome: 'Bahia' },
+    { sigla: 'CE', nome: 'Ceará' },
+    { sigla: 'DF', nome: 'Distrito Federal' },
+    { sigla: 'ES', nome: 'Espírito Santo' },
+    { sigla: 'GO', nome: 'Goiás' },
+    { sigla: 'MA', nome: 'Maranhão' },
+    { sigla: 'MT', nome: 'Mato Grosso' },
+    { sigla: 'MS', nome: 'Mato Grosso do Sul' },
+    { sigla: 'MG', nome: 'Minas Gerais' },
+    { sigla: 'PA', nome: 'Pará' },
+    { sigla: 'PB', nome: 'Paraíba' },
+    { sigla: 'PR', nome: 'Paraná' },
+    { sigla: 'PE', nome: 'Pernambuco' },
+    { sigla: 'PI', nome: 'Piauí' },
+    { sigla: 'RJ', nome: 'Rio de Janeiro' },
+    { sigla: 'RN', nome: 'Rio Grande do Norte' },
+    { sigla: 'RS', nome: 'Rio Grande do Sul' },
+    { sigla: 'RO', nome: 'Rondônia' },
+    { sigla: 'RR', nome: 'Roraima' },
+    { sigla: 'SC', nome: 'Santa Catarina' },
+    { sigla: 'SP', nome: 'São Paulo' },
+    { sigla: 'SE', nome: 'Sergipe' },
+    { sigla: 'TO', nome: 'Tocantins' }
+  ];
 
   constructor(
     private router: Router,
@@ -48,14 +95,64 @@ export class AuthPage {
   // Limpar campos do formulário
   private clearFormFields() {
     if (this.isLogin) {
-      this.registerEmail = '';
-      this.registerPassword = '';
+      // Limpa dados do cadastro
+      this.registerData = {
+        nomeCompleto: '',
+        email: '',
+        telefoneWhatsapp: '',
+        preferenciaRecuperacao: 'whatsapp',
+        senha: '',
+        cabanha: {
+          nome: '',
+          municipio: '',
+          estado: '',
+          localizacaoLivre: '',
+          coordenadas: {
+            latitude: null,
+            longitude: null
+          }
+        }
+      };
       this.registerConfirmPassword = '';
-      this.registerName = '';
+      this.aceitouTermos = false;
     } else {
+      // Limpa dados do login
       this.loginEmail = '';
       this.loginPassword = '';
     }
+  }
+
+  // Validar formulário de cadastro
+  formularioValido(): boolean {
+    if (!this.registerData.nomeCompleto || 
+        !this.registerData.email || 
+        !this.registerData.telefoneWhatsapp || 
+        !this.registerData.senha || 
+        !this.registerData.cabanha.nome || 
+        !this.registerData.cabanha.municipio || 
+        !this.registerData.cabanha.estado) {
+      return false;
+    }
+
+    if (this.registerData.senha !== this.registerConfirmPassword) {
+      return false;
+    }
+
+    if (this.registerData.senha.length < 6) {
+      return false;
+    }
+
+    if (!this.aceitouTermos) {
+      return false;
+    }
+
+    // Validação básica de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.registerData.email)) {
+      return false;
+    }
+
+    return true;
   }
 
   // Processar login
@@ -88,19 +185,8 @@ export class AuthPage {
 
   // Processar cadastro
   async register() {
-    // Validações
-    if (!this.registerEmail || !this.registerPassword || !this.registerConfirmPassword || !this.registerName) {
-      this.showAlert('Erro', 'Por favor, preencha todos os campos');
-      return;
-    }
-
-    if (this.registerPassword !== this.registerConfirmPassword) {
-      this.showAlert('Erro', 'As senhas não coincidem');
-      return;
-    }
-
-    if (this.registerPassword.length < 6) {
-      this.showAlert('Erro', 'A senha deve ter pelo menos 6 caracteres');
+    if (!this.formularioValido()) {
+      this.showAlert('Erro', 'Por favor, preencha todos os campos obrigatórios e aceite os termos');
       return;
     }
 
@@ -118,7 +204,16 @@ export class AuthPage {
       this.isLoading = false;
       loading.dismiss();
       
+      // Adiciona data de cadastro
+      const dadosCompletos = {
+        ...this.registerData,
+        dataCadastro: new Date().toISOString()
+      };
+
+      console.log('Dados do cadastro:', dadosCompletos);
+      
       this.showSuccessAlert('Conta criada com sucesso!');
+      
       // Volta para o login após cadastro
       this.isLogin = true;
       this.clearFormFields();
@@ -154,6 +249,36 @@ export class AuthPage {
     });
     
     await alert.present();
+  }
+
+  // Abrir termos de uso
+  async abrirTermos(event: Event) {
+    event.preventDefault();
+    this.showAlert('Termos de Uso', 'Aqui serão exibidos os termos de uso da aplicação.');
+  }
+
+  // Abrir política de privacidade
+  async abrirPolitica(event: Event) {
+    event.preventDefault();
+    this.showAlert('Política de Privacidade', 'Aqui será exibida a política de privacidade da aplicação.');
+  }
+
+  // Formatar telefone (opcional)
+  formatarTelefone(event: any) {
+    let value = event.target.value.replace(/\D/g, '');
+    
+    if (value.length > 11) {
+      value = value.substring(0, 11);
+    }
+    
+    if (value.length > 0) {
+      value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+    }
+    if (value.length > 10) {
+      value = value.replace(/(\d)(\d{4})$/, '$1-$2');
+    }
+    
+    this.registerData.telefoneWhatsapp = value;
   }
 
   // Alertas genéricos

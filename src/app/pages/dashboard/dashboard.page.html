@@ -1,23 +1,77 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Dashboard</ion-title>
+    <ion-buttons slot="start">
+      <ion-button class="menu-button" (click)="openMenu()">
+        <div class="menu-icon">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </ion-button>
+    </ion-buttons>
+    <ion-title></ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="dashboard-content">
+  <!-- Menu lateral DENTRO do ion-content -->
+  <div class="menu-overlay" id="menuOverlay" (click)="closeMenu()"></div>
+
+  <div class="menu-drawer" id="menuDrawer">
+    <button class="menu-close" (click)="closeMenu()">×</button>
+    
+    <div (click)="closeMenu()" class="menu-header">
+      <div class="menu-company">NOME??</div>
+      <h2 class="menu-title">Home</h2>
+    </div>
+    
+    <div class="menu-items">
+      <a class="menu-item" href="#">
+        <ion-icon name="home-outline"></ion-icon>
+        <span class="menu-item-text">Home</span>
+      </a>
+      
+      <a class="menu-item" href="#">
+        <ion-icon name="cash-outline"></ion-icon>
+        <span class="menu-item-text">Fust</span>
+      </a>
+      
+      <a class="menu-item" href="#">
+        <ion-icon name="git-branch-outline"></ion-icon>
+        <span class="menu-item-text">Processos</span>
+      </a>
+      
+      <a class="menu-item" href="#">
+        <ion-icon name="location-outline"></ion-icon>
+        <span class="menu-item-text">Estações</span>
+      </a>
+      
+      <a class="menu-item" href="#">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <span class="menu-item-text">Boletos</span>
+      </a>
+      
+      <a class="menu-item" href="#">
+        <ion-icon name="call-outline"></ion-icon>
+        <span class="menu-item-text">Chamado</span>
+      </a>
+      
+      <a class="menu-item" href="#">
+        <ion-icon name="folder-open-outline"></ion-icon>
+        <span class="menu-item-text">Pasta pública</span>
+      </a>
+    </div>
+  </div>
+
+  <ion-content [fullscreen]="true" class="dashboard-content">
   <div class="container">
     <!-- HEADER DO DASHBOARD -->
     <header class="dashboard-header">
       <div class="header-content">
         <div class="header-title">
-          <h1>Dashboard de Gestão Pecuária</h1>
+          <h1>Ovinocultura de Precisão</h1>
           <p>Monitoramento completo do seu rebanho</p>
         </div>
         <div class="user-info">
-          <div>
-            <p>Fazenda São Bento</p>
-            <p>Relatório atualizado</p>
-          </div>
           <div class="user-avatar">
             <ion-icon name="person"></ion-icon>
           </div>
@@ -154,7 +208,7 @@
               </div>
               <div class="weather-stat">
                 <div class="weather-stat-value">0%</div>
-                <div class="weather-stat-label">Chuva</div>
+                <div class="weather-stat-label">Chuza</div>
               </div>
             </div>
 

@@ -1,0 +1,516 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Registro de Manejos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- SEGMENTO DENTRO DO CONTEÚDO -->
+  <div class="segment-container">
+    <ion-segment [(ngModel)]="segmento" (ionChange)="alternarSegmento($event)">
+      <ion-segment-button value="lote">
+        <ion-label>Manejo em Lote</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="individual">
+        <ion-label>Individual</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- MANEJO EM LOTE -->
+  @if (segmento === 'lote') {
+  <div class="tab-content">
+    <div class="manejo-cards">
+
+      <!-- MANEJO SANITÁRIO (CORRIGIDO) -->
+      <ion-card [class.expanded]="manejosExpandidos.sanitario">
+        <ion-card-header (click)="toggleManejo('sanitario')" class="card-header-expansivel">
+  <ion-card-title>
+    <ion-icon [name]="manejosExpandidos.sanitario ? 'chevron-down-outline' : 'chevron-forward-outline'" slot="start">
+    </ion-icon>
+    Manejo Sanitário
+    <!-- Badge movido para aqui -->
+    @if (manejosSelecionados.sanitario.length > 0) {
+      <ion-badge class="badge-selecionado">
+        {{ manejosSelecionados.sanitario.length }} selecionados
+      </ion-badge>
+    }
+  </ion-card-title>
+</ion-card-header>
+
+        @if (manejosExpandidos.sanitario) {
+        <ion-card-content>
+          <div class="opcoes-manejo">
+
+            <!-- VACINAÇÃO -->
+            <ion-item>
+              <ion-checkbox slot="start" [checked]="isManejoSelecionado('sanitario', 'vacina')"
+                (ionChange)="toggleOpcaoManejo('sanitario', 'vacina')">
+              </ion-checkbox>
+              <ion-label>
+                <h3>Vacinação</h3>
+                <p>Aplicação de vacinas</p>
+              </ion-label>
+            </ion-item>
+
+            @if (isManejoSelecionado('sanitario', 'vacina')) {
+            <div class="detalhes-manejo">
+
+              <!-- Lista de vacinas já adicionadas -->
+              @if (dadosManejoLote.vacinas.length > 0) {
+              <div class="lista-itens">
+                <h4>Vacinas Adicionadas:</h4>
+                @for (vacina of dadosManejoLote.vacinas; track $index; let i = $index) {
+                <ion-item class="item-adicionado">
+                  <ion-label>
+                    <strong>{{ vacina.produto }}</strong>
+                    <small>Dose: {{ vacina.dose }} • Via: {{ vacina.via }}</small>
+                    @if (vacina.lote) { <small>Lote: {{ vacina.lote }}</small> }
+                  </ion-label>
+                  <ion-button fill="clear" color="danger" (click)="removerVacina(i)">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </ion-button>
+                </ion-item>
+                }
+              </div>
+              }
+
+              <!-- Formulário para nova vacina -->
+              <div class="formulario-novo-item">
+                <h4>Adicionar Nova Vacina:</h4>
+                <ion-item>
+                  <ion-input label="Produto/Vacina" placeholder="Ex: Policlost"
+                    [(ngModel)]="novaVacina.produto"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-input label="Dose" placeholder="Ex: 2.5 ml" [(ngModel)]="novaVacina.dose"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-input label="Via" placeholder="Ex: Subcutânea" [(ngModel)]="novaVacina.via"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-input label="Lote (opcional)" placeholder="Número do lote"
+                    [(ngModel)]="novaVacina.lote"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-input label="Fabricante (opcional)" placeholder="Fabricante"
+                    [(ngModel)]="novaVacina.fabricante"></ion-input>
+                </ion-item>
+                <ion-button expand="block" fill="outline" (click)="adicionarVacina()"
+                  [disabled]="!novaVacina.produto || !novaVacina.dose">
+                  <ion-icon name="add-outline" slot="start"></ion-icon>
+                  Adicionar Vacina
+                </ion-button>
+              </div>
+            </div>
+            }
+
+            <!-- VERMIFUGAÇÃO -->
+            <ion-item>
+              <ion-checkbox slot="start" [checked]="isManejoSelecionado('sanitario', 'vermifugo')"
+                (ionChange)="toggleOpcaoManejo('sanitario', 'vermifugo')">
+              </ion-checkbox>
+              <ion-label>
+                <h3>Vermifugação</h3>
+                <p>Aplicação de vermífugos</p>
+              </ion-label>
+            </ion-item>
+
+            @if (isManejoSelecionado('sanitario', 'vermifugo')) {
+            <div class="detalhes-manejo">
+
+              <!-- Lista de vermífugos já adicionados -->
+              @if (dadosManejoLote.vermifugos.length > 0) {
+              <div class="lista-itens">
+                <h4>Vermífugos Adicionados:</h4>
+                @for (vermifugo of dadosManejoLote.vermifugos; track $index; let i = $index) {
+                <ion-item class="item-adicionado">
+                  <ion-label>
+                    <strong>{{ vermifugo.produto }}</strong>
+                    <small>Tipo: {{ vermifugo.tipo }} • Dose: {{ vermifugo.dose }} • Via: {{ vermifugo.via }}</small>
+                  </ion-label>
+                  <ion-button fill="clear" color="danger" (click)="removerVermifugo(i)">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </ion-button>
+                </ion-item>
+                }
+              </div>
+              }
+
+              <!-- Formulário para novo vermífugo -->
+              <div class="formulario-novo-item">
+                <h4>Adicionar Novo Vermífugo:</h4>
+                <ion-item>
+                  <ion-select label="Tipo de Vermífugo" [(ngModel)]="novoVermifugo.tipo">
+                    <ion-select-option value="endectocida">Endectocida</ion-select-option>
+                    <ion-select-option value="anti-helmintico">Anti-helmíntico</ion-select-option>
+                    <ion-select-option value="outro">Outro</ion-select-option>
+                  </ion-select>
+                </ion-item>
+                <ion-item>
+                  <ion-input label="Produto" placeholder="Ex: Ivomec" [(ngModel)]="novoVermifugo.produto"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-input label="Dose" placeholder="Ex: 5 ml" [(ngModel)]="novoVermifugo.dose"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-input label="Via" placeholder="Ex: Oral" [(ngModel)]="novoVermifugo.via"></ion-input>
+                </ion-item>
+                <ion-button expand="block" fill="outline" (click)="adicionarVermifugo()"
+                  [disabled]="!novoVermifugo.produto || !novoVermifugo.dose">
+                  <ion-icon name="add-outline" slot="start"></ion-icon>
+                  Adicionar Vermífugo
+                </ion-button>
+              </div>
+            </div>
+            }
+
+            <!-- MEDICAÇÃO -->
+            <ion-item>
+              <ion-checkbox slot="start" [checked]="isManejoSelecionado('sanitario', 'medicacao')"
+                (ionChange)="toggleOpcaoManejo('sanitario', 'medicacao')">
+              </ion-checkbox>
+              <ion-label>
+                <h3>Medicação</h3>
+                <p>Tratamentos específicos</p>
+              </ion-label>
+            </ion-item>
+
+            @if (isManejoSelecionado('sanitario', 'medicacao')) {
+            <div class="detalhes-manejo">
+
+              <!-- Lista de medicações já adicionadas -->
+              @if (dadosManejoLote.medicacoes.length > 0) {
+              <div class="lista-itens">
+                <h4>Medicações Adicionadas:</h4>
+                @for (medicacao of dadosManejoLote.medicacoes; track $index; let i = $index) {
+                <ion-item class="item-adicionado">
+                  <ion-label>
+                    <strong>{{ medicacao.produto }}</strong>
+                    <small>Dose: {{ medicacao.dose }} • Via: {{ medicacao.via }}</small>
+                    @if (medicacao.observacoes) { <small>Obs: {{ medicacao.observacoes }}</small> }
+                  </ion-label>
+                  <ion-button fill="clear" color="danger" (click)="removerMedicacao(i)">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </ion-button>
+                </ion-item>
+                }
+              </div>
+              }
+
+              <!-- Formulário para nova medicação -->
+              <div class="formulario-novo-item">
+                <h4>Adicionar Nova Medicação:</h4>
+                <ion-item>
+                  <ion-input label="Medicamento" placeholder="Ex: Antibiótico"
+                    [(ngModel)]="novaMedicacao.produto"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-input label="Dose" placeholder="Ex: 10 ml" [(ngModel)]="novaMedicacao.dose"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-input label="Via" placeholder="Ex: Intramuscular" [(ngModel)]="novaMedicacao.via"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-textarea label="Observações" rows="2" placeholder="Observações sobre a medicação..."
+                    [(ngModel)]="novaMedicacao.observacoes"></ion-textarea>
+                </ion-item>
+                <ion-button expand="block" fill="outline" (click)="adicionarMedicacao()"
+                  [disabled]="!novaMedicacao.produto || !novaMedicacao.dose">
+                  <ion-icon name="add-outline" slot="start"></ion-icon>
+                  Adicionar Medicação
+                </ion-button>
+              </div>
+            </div>
+            }
+
+          </div>
+        </ion-card-content>
+        }
+      </ion-card>
+
+      <!-- MANEJO FÍSICO -->
+      <ion-card [class.expanded]="manejosExpandidos.fisico">
+        <ion-card-header (click)="toggleManejo('fisico')" class="card-header-expansivel">
+          <ion-card-title>
+            <ion-icon [name]="manejosExpandidos.fisico ? 'chevron-down-outline' : 'chevron-forward-outline'"
+              slot="start">
+            </ion-icon>
+            Manejo Físico
+          </ion-card-title>
+          <ion-badge [color]="manejosSelecionados.fisico.length > 0 ? 'primary' : 'medium'">
+            {{ manejosSelecionados.fisico.length }} selecionados
+          </ion-badge>
+        </ion-card-header>
+
+        @if (manejosExpandidos.fisico) {
+        <ion-card-content>
+          <div class="opcoes-manejo">
+            <ion-item>
+              <ion-checkbox slot="start" [checked]="isManejoSelecionado('fisico', 'tosquia')"
+                (ionChange)="toggleOpcaoManejo('fisico', 'tosquia')"></ion-checkbox>
+              <ion-label>
+                <h3>Tosquia</h3>
+                <p>Corte da lã</p>
+              </ion-label>
+            </ion-item>
+
+            <ion-item>
+              <ion-checkbox slot="start" [checked]="isManejoSelecionado('fisico', 'casqueamento')"
+                (ionChange)="toggleOpcaoManejo('fisico', 'casqueamento')"></ion-checkbox>
+              <ion-label>
+                <h3>Casqueamento</h3>
+                <p>Manutenção dos cascos</p>
+              </ion-label>
+            </ion-item>
+
+            <ion-item>
+              <ion-checkbox slot="start" [checked]="isManejoSelecionado('fisico', 'caudectomia')"
+                (ionChange)="toggleOpcaoManejo('fisico', 'caudectomia')"></ion-checkbox>
+              <ion-label>
+                <h3>Caudectomia</h3>
+                <p>Corte da cauda</p>
+              </ion-label>
+            </ion-item>
+          </div>
+        </ion-card-content>
+        }
+      </ion-card>
+
+      <!-- MANEJO TÉCNICO -->
+      <ion-card [class.expanded]="manejosExpandidos.tecnico">
+        <ion-card-header (click)="toggleManejo('tecnico')" class="card-header-expansivel">
+          <ion-card-title>
+            <ion-icon [name]="manejosExpandidos.tecnico ? 'chevron-down-outline' : 'chevron-forward-outline'"
+              slot="start">
+            </ion-icon>
+            Manejo Técnico
+          </ion-card-title>
+          <ion-badge [color]="manejosSelecionados.tecnico.length > 0 ? 'primary' : 'medium'">
+            {{ manejosSelecionados.tecnico.length }} selecionados
+          </ion-badge>
+        </ion-card-header>
+
+        @if (manejosExpandidos.tecnico) {
+        <ion-card-content>
+          <div class="opcoes-manejo">
+            <ion-item>
+              <ion-checkbox slot="start" [checked]="isManejoSelecionado('tecnico', 'pesagem')"
+                (ionChange)="toggleOpcaoManejo('tecnico', 'pesagem')"></ion-checkbox>
+              <ion-label>
+                <h3>Pesagem</h3>
+                <p>Controle de peso individual</p>
+              </ion-label>
+            </ion-item>
+
+            <ion-item>
+              <ion-checkbox slot="start" [checked]="isManejoSelecionado('tecnico', 'escore')"
+                (ionChange)="toggleOpcaoManejo('tecnico', 'escore')"></ion-checkbox>
+              <ion-label>
+                <h3>Avaliação de Escore</h3>
+                <p>Condição corporal individual</p>
+              </ion-label>
+            </ion-item>
+
+            @if (isManejoSelecionado('tecnico', 'pesagem') || isManejoSelecionado('tecnico', 'escore')) {
+            <div class="detalhes-manejo">
+              <span class="ion-color ion-color-medium">
+                <small>Os dados de peso e escore devem ser informados individualmente para cada animal na seção
+                  abaixo.</small>
+              </span>
+
+              <div class="acoes-em-lote" *ngIf="animaisSelecionadosCount > 0">
+                <ion-button expand="block" fill="outline" size="small" (click)="aplicarDadosTecnicosEmLote()"
+                  [disabled]="!temDadosTecnicosPreenchidos">
+                  <ion-icon name="copy-outline" slot="start"></ion-icon>
+                  Copiar dados para todos selecionados
+                </ion-button>
+
+                <ion-button expand="block" fill="outline" size="small" color="medium"
+                  (click)="limparDadosTecnicosSelecionados()">
+                  <ion-icon name="trash-outline" slot="start"></ion-icon>
+                  Limpar dados dos selecionados
+                </ion-button>
+              </div>
+            </div>
+            }
+          </div>
+        </ion-card-content>
+        }
+      </ion-card>
+
+      <!-- DETALHES INDIVIDUAIS POR ANIMAL -->
+      <ion-card [class.expanded]="manejosExpandidos.detalhesAnimais"
+        [class.required]="isManejoSelecionado('tecnico', 'pesagem') || isManejoSelecionado('tecnico', 'escore')">
+        <ion-card-header (click)="toggleManejo('detalhesAnimais')" class="card-header-expansivel">
+          <ion-card-title>
+            <ion-icon [name]="manejosExpandidos.detalhesAnimais ? 'chevron-down-outline' : 'chevron-forward-outline'"
+              slot="start">
+            </ion-icon>
+            Dados Individuais por Animal
+          </ion-card-title>
+          <ion-badge [color]="animaisComDadosTecnicosCount > 0 ? 'primary' : 'medium'">
+            {{ animaisComDadosTecnicosCount }}/{{ animaisSelecionadosCount }} com dados
+          </ion-badge>
+        </ion-card-header>
+
+        @if (manejosExpandidos.detalhesAnimais && animaisSelecionadosCount > 0) {
+        <ion-card-content>
+          <div class="dados-individuais">
+            <span class="ion-color ion-color-medium">
+              <p>Preencha os dados técnicos para cada animal selecionado:</p>
+            </span>
+
+            @for (animal of animaisSelecionados; track animal.id) {
+            <ion-card class="animal-detalhes-card">
+              <ion-card-header>
+                <ion-card-title>{{ animal.brinco }}</ion-card-title>
+                <ion-card-subtitle>{{ animal.categoria }} • {{ animal.pesoAtual }}kg • {{ animal.idade }}
+                  anos</ion-card-subtitle>
+              </ion-card-header>
+
+              <ion-card-content>
+                <ion-grid>
+                  <ion-row>
+                    @if (isManejoSelecionado('tecnico', 'pesagem')) {
+                    <ion-col size="12" size-md="6">
+                      <ion-item>
+                        <ion-input type="number" label="Peso (kg)" placeholder="Ex: 65.5"
+                          [(ngModel)]="animal.manejoTecnico.peso" (ionInput)="calcularVariacaoPeso(animal)">
+                        </ion-input>
+                      </ion-item>
+                      @if (animal.manejoTecnico.peso) {
+                      <span [class]="'ion-color ion-color-' + getCorVariacaoPeso(animal)" class="variacao-peso">
+                        <small>
+                          {{ calcularVariacaoPeso(animal) }} vs. peso atual ({{ animal.pesoAtual }}kg)
+                        </small>
+                      </span>
+                      }
+                    </ion-col>
+                    }
+
+                    @if (isManejoSelecionado('tecnico', 'escore')) {
+                    <ion-col size="12" size-md="6">
+                      <ion-item>
+                        <ion-select label="Escore Corporal" [(ngModel)]="animal.manejoTecnico.escore"
+                          interface="popover">
+                          <ion-select-option value="1">1 - Muito Magro</ion-select-option>
+                          <ion-select-option value="2">2 - Magro</ion-select-option>
+                          <ion-select-option value="3">3 - Ideal</ion-select-option>
+                          <ion-select-option value="4">4 - Gordo</ion-select-option>
+                          <ion-select-option value="5">5 - Muito Gordo</ion-select-option>
+                        </ion-select>
+                      </ion-item>
+                      @if (animal.manejoTecnico.escore) {
+                      <span class="ion-color ion-color-medium descricao-escore">
+                        <small>{{ getDescricaoEscore(animal.manejoTecnico.escore) }}</small>
+                      </span>
+                      }
+                    </ion-col>
+                    }
+                  </ion-row>
+
+                  <ion-row>
+                    <ion-col size="12">
+                      <ion-item>
+                        <ion-textarea label="Observações" rows="2" placeholder="Observações específicas deste animal..."
+                          [(ngModel)]="animal.manejoTecnico.observacoes">
+                        </ion-textarea>
+                      </ion-item>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-card-content>
+            </ion-card>
+            }
+          </div>
+        </ion-card-content>
+        }
+      </ion-card>
+
+    </div>
+
+    <!-- CARD DE SELEÇÃO DE ANIMAIS -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Seleção de Animais</ion-card-title>
+        <ion-card-subtitle>
+          {{ animaisSelecionadosCount }} de {{ animais.length }} animais selecionados
+        </ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-item>
+          <ion-checkbox slot="start" [checked]="todosSelecionados" (ionChange)="selecionarTodos()"></ion-checkbox>
+          <ion-label>Selecionar todos</ion-label>
+        </ion-item>
+
+        <ion-list>
+          @for (animal of animais; track animal.id) {
+          <ion-item class="animal-item">
+            <ion-checkbox slot="start" [checked]="animal.selecionado"
+              (ionChange)="selecionarAnimal(animal)"></ion-checkbox>
+            <ion-label>
+              <h3>Brinco: {{ animal.brinco }}</h3>
+              <p>{{ animal.categoria }} • {{ animal.pesoAtual }}kg • {{ animal.idade }} anos</p>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button fill="clear" (click)="verHistorico(animal)">
+                <ion-icon name="time-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" (click)="irParaIndividual(animal)">
+                <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+          }
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- OBSERVAÇÕES GERAIS -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Observações</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-textarea label="Observações do manejo" rows="4"
+          placeholder="Anote qualquer observação relevante sobre os manejos realizados..."
+          [(ngModel)]="dadosManejoLote.observacoes">
+        </ion-textarea>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- BOTÃO APLICAR MANEJO -->
+    <div class="action-button">
+      <ion-button expand="block" size="large" [disabled]="!podeAplicarManejo()" (click)="aplicarManejoLote()">
+        <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
+        Aplicar Manojos Selecionados
+      </ion-button>
+    </div>
+
+  </div>
+  }
+
+  <!-- MANEJO INDIVIDUAL -->
+  @if (segmento === 'individual') {
+  <div class="tab-content">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Manejo Individual</ion-card-title>
+        <ion-card-subtitle>Em desenvolvimento</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Funcionalidade de manejo individual em desenvolvimento...</p>
+        <ion-button expand="block" fill="outline" (click)="segmento = 'lote'">
+          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+          Voltar para Manejo em Lote
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+  }
+</ion-content>

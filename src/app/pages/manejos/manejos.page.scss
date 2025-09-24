@@ -1,0 +1,938 @@
+/* ================================================== */
+/* RESET E CONFIGURAÇÕES GERAIS DO HEADER */
+/* ================================================== */
+
+/* Configurações principais do toolbar do header */
+ion-header ion-toolbar {
+  --background: linear-gradient(135deg, #2d4551 0%, #3a5766 100%) !important;
+  --color: white !important;
+}
+
+/* Garante que todos os textos dentro do header fiquem brancos */
+ion-header ion-toolbar ion-title,
+ion-header ion-toolbar ion-buttons,
+ion-header ion-toolbar ion-button {
+  --color: white !important;
+  color: white !important;
+}
+
+/* ================================================== */
+/* BOTÃO VOLTAR - ESTILOS ESPECÍFICOS */
+/* ================================================== */
+
+/* Estilos base do botão voltar */
+ion-header ion-toolbar ion-back-button {
+  --color: white !important;
+}
+
+/* ================================================== */
+/* CORES DOS BOTÕES IONIC - PALETA AGRO */
+/* ================================================== */
+
+/* Define as cores do botão primary (azul escuro) */
+ion-button[color="primary"] {
+  --ion-color-primary: #2d4551 !important;
+  --ion-color-primary-rgb: 45, 69, 81 !important;
+  --ion-color-primary-contrast: #ffffff !important;
+  --ion-color-primary-contrast-rgb: 255, 255, 255 !important;
+  --ion-color-primary-shade: #283d48 !important;
+  --ion-color-primary-tint: #425862 !important;
+}
+
+/* Define as cores do botão secondary (verde) */
+ion-button[color="secondary"] {
+  --ion-color-secondary: #5cad82 !important;
+  --ion-color-secondary-rgb: 92, 173, 130 !important;
+  --ion-color-secondary-contrast: #ffffff !important;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255 !important;
+  --ion-color-secondary-shade: #519873 !important;
+  --ion-color-secondary-tint: #6cb591 !important;
+}
+
+/* ================================================== */
+/* LAYOUT E CONTAINERS PRINCIPAIS */
+/* ================================================== */
+
+/* Configurações de espaçamento do conteúdo principal */
+ion-content {
+  --padding-start: 14px !important;
+  --padding-end: 14px !important;
+  --padding-top: 15px !important;
+  --padding-bottom: 15px !important;
+  --background: #f5f5f5 !important;
+}
+
+/* Container do conteúdo das abas */
+.tab-content {
+  padding: 16px;
+  padding-bottom: 80px; /* Espaço para o botão flutuante */
+}
+
+/* ================================================== */
+/* CARDS EXPANSÍVEIS - ATUALIZADO COM PALETA AGRO */
+/* ================================================== */
+
+/* Header dos cards que podem ser expandidos */
+.card-header-expansivel {
+  cursor: pointer;
+  --background: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+  
+  ion-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d4551 !important; /* Cor primária agro */
+    
+    ion-icon {
+      color: #5cad82 !important; /* Cor secundária agro */
+      transition: transform 0.3s ease;
+    }
+  }
+}
+
+/* Container principal dos cards de manejo */
+.manejo-cards {
+  ion-card {
+    margin: 12px 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #e9ecef;
+    
+    /* Estado expandido do card */
+    &.expanded {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      border-color: #5cad82 !important; /* Cor secundária agro */
+    }
+  }
+}
+
+/* ================================================== */
+/* OPÇÕES DE MANEJO - ATUALIZADO */
+/* ================================================== */
+
+/* Lista de opções de manejo (vacinação, vermifugação, etc) */
+.opcoes-manejo {
+  ion-item {
+    --padding-start: 8px;
+    --min-height: 60px;
+    border-bottom: 1px solid #f1f3f4;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    /* Estilização dos checkboxes */
+    ion-checkbox {
+      --size: 20px;
+      --checkbox-background-checked: #5cad82 !important; /* Cor secundária agro */
+      --border-color-checked: #5cad82 !important; /* Cor secundária agro */
+    }
+    
+    ion-label {
+      h3 {
+        font-weight: 600;
+        color: #2d4551 !important; /* Cor primária agro */
+        margin-bottom: 4px;
+      }
+      
+      p {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin: 0;
+      }
+    }
+  }
+}
+
+/* ================================================== */
+/* DETALHES DO MANEJO - ATUALIZADO */
+/* ================================================== */
+
+/* Área de detalhes que aparece quando uma opção é selecionada */
+.detalhes-manejo {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+  border-left: 4px solid #5cad82 !important; /* Cor secundária agro */
+  
+  ion-item {
+    --background: transparent;
+    --padding-start: 0;
+    --min-height: 50px;
+    
+    /* Campos de entrada dentro dos detalhes */
+    ion-input, ion-select, ion-textarea {
+      --background: white;
+      border-radius: 6px;
+      --padding-start: 12px;
+    }
+  }
+}
+
+/* ================================================== */
+/* LISTA DE ITENS ADICIONADOS - ATUALIZADO */
+/* ================================================== */
+
+/* Container da lista de itens já adicionados */
+.lista-itens {
+  margin-bottom: 16px;
+  
+  h4 {
+    font-size: 0.9rem;
+    color: #5cad82 !important; /* Cor secundária agro */
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+/* Item individual na lista de adicionados */
+.item-adicionado {
+  --background: #ffffff;
+  border-radius: 8px;
+  margin: 6px 0;
+  border: 1px solid #e9ecef;
+  
+  ion-label {
+    strong {
+      color: #2d4551 !important; /* Cor primária agro */
+      font-weight: 600;
+    }
+    
+    small {
+      color: #6c757d;
+      font-size: 0.8rem;
+    }
+  }
+  
+  ion-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
+  }
+}
+
+/* Formulário para adicionar novos itens */
+.formulario-novo-item {
+  border-top: 2px dashed #e9ecef;
+  padding-top: 16px;
+  
+  h4 {
+    font-size: 0.9rem;
+    color: #2d4551 !important; /* Cor primária agro */
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  
+  ion-button {
+    --border-color: #5cad82 !important; /* Cor secundária agro */
+    --color: #5cad82 !important; /* Cor secundária agro */
+    margin-top: 8px;
+  }
+}
+
+/* ================================================== */
+/* SELEÇÃO DE ANIMAIS - ATUALIZADO */
+/* ================================================== */
+
+/* Item individual na lista de animais */
+.animal-item {
+  --min-height: 70px;
+  border-bottom: 1px solid #f1f3f4;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  /* Checkbox de seleção de animal */
+  ion-checkbox {
+    --size: 22px;
+    --checkbox-background-checked: #5cad82 !important; /* Cor secundária agro */
+    --border-color-checked: #5cad82 !important; /* Cor secundária agro */
+  }
+  
+  ion-label {
+    h3 {
+      font-weight: 600;
+      color: #2d4551 !important; /* Cor primária agro */
+      margin-bottom: 4px;
+    }
+    
+    p {
+      color: #6c757d;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+  }
+  
+  /* Botões de ação do animal (histórico, editar) */
+  ion-buttons {
+    ion-button {
+      --color: #6c757d;
+      
+      &:hover {
+        --color: #5cad82 !important; /* Cor secundária agro */
+      }
+    }
+  }
+}
+
+/* ================================================== */
+/* DADOS INDIVIDUAIS POR ANIMAL - ATUALIZADO */
+/* ================================================== */
+
+/* Container dos dados individuais */
+.dados-individuais {
+  .animal-detalhes-card {
+    margin: 12px 0;
+    border-left: 4px solid #5cad82 !important; /* Cor secundária agro */
+    
+    ion-card-header {
+      --background: #f8f9fa;
+      
+      ion-card-title {
+        color: #2d4551 !important; /* Cor primária agro */
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+      
+      ion-card-subtitle {
+        color: #6c757d;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+/* Texto de variação de peso */
+.variacao-peso {
+  display: block;
+  margin-top: 4px;
+  margin-left: 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Descrição do escore corporal */
+.descricao-escore {
+  display: block;
+  margin-top: 4px;
+  margin-left: 16px;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* ================================================== */
+/* AÇÕES EM LOTE - ATUALIZADO */
+/* ================================================== */
+
+/* Container dos botões de ação em lote */
+.acoes-em-lote {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0;
+  
+  ion-button {
+    flex: 1;
+    --border-radius: 6px;
+    font-size: 0.8rem;
+    
+    /* Primeiro botão (copiar dados) */
+    &:first-child {
+      --border-color: #5cad82 !important; /* Cor secundária agro */
+      --color: #5cad82 !important; /* Cor secundária agro */
+    }
+    
+    /* Segundo botão (limpar dados) */
+    &:last-child {
+      --border-color: #6c757d;
+      --color: #6c757d;
+    }
+  }
+}
+
+/* ================================================== */
+/* OBSERVAÇÕES - ATUALIZADO */
+/* ================================================== */
+
+/* Área de texto para observações */
+ion-textarea {
+  --background: #f8f9fa;
+  border-radius: 8px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --color: #2d4551 !important; /* Cor primária agro */
+}
+
+/* ================================================== */
+/* BOTÃO DE AÇÃO - ATUALIZADO */
+/* ================================================== */
+
+/* Botão fixo na parte inferior */
+.action-button {
+  position: fixed;
+  bottom: 20px;
+  left: 16px;
+  right: 16px;
+  z-index: 1000;
+  
+  ion-button {
+    --border-radius: 12px;
+    --background: #5cad82 !important; /* Cor secundária agro */
+    --background-activated: #4a9c72 !important;
+    --background-hover: #52a479 !important;
+    --color: white;
+    font-weight: 600;
+    height: 56px;
+    
+    /* Estado desabilitado */
+    &:disabled {
+      --background: #adb5bd;
+      --background-activated: #adb5bd;
+      --background-hover: #adb5bd;
+      --color: #6c757d;
+    }
+    
+    ion-icon {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+/* ================================================== */
+/* BADGES PERSONALIZADOS - ATUALIZADO */
+/* ================================================== */
+
+/* Estilização dos badges de contador */
+ion-badge {
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  
+  &[color="primary"] {
+    --background: #5cad82 !important; /* Cor secundária agro */
+  }
+  
+  &[color="medium"] {
+    --background: #6c757d;
+    --color: #ffffff;
+  }
+}
+
+/* ================================================== */
+/* ESTADOS ESPECIAIS - ATUALIZADO */
+/* ================================================== */
+
+/* Card que requer atenção (com borda pulsante) */
+ion-card[class].required {
+  border: 2px solid #e74c3c;
+  animation: pulse 2s infinite;
+}
+
+/* Animação de pulsação para cards obrigatórios */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(231, 76, 60, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+  }
+}
+
+/* ================================================== */
+/* RESPONSIVIDADE */
+/* ================================================== */
+
+/* Ajustes para tablets e telas menores */
+@media (max-width: 768px) {
+  .tab-content {
+    padding: 12px;
+    padding-bottom: 80px;
+  }
+  
+  .manejo-cards {
+    ion-card {
+      margin: 8px 0;
+    }
+  }
+  
+  .acoes-em-lote {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .action-button {
+    left: 12px;
+    right: 12px;
+    bottom: 16px;
+  }
+}
+
+/* ================================================== */
+/* UTILITÁRIOS DE CORES DO IONIC - ATUALIZADO */
+/* ================================================== */
+
+/* Classes utilitárias para cores */
+.ion-color-primary { color: #2d4551 !important; }
+.ion-color-secondary { color: #5cad82 !important; }
+.ion-color-success { color: #28a745 !important; }
+.ion-color-warning { color: #ffc107 !important; }
+.ion-color-danger { color: #dc3545 !important; }
+.ion-color-medium { color: #6c757d !important; }
+
+.ion-color-primary-shade { color: #253a47 !important; }
+.ion-color-secondary-shade { color: #4a9c72 !important; }
+.ion-color-success-shade { color: #218838 !important; }
+.ion-color-warning-shade { color: #e0a800 !important; }
+.ion-color-danger-shade { color: #c82333 !important; }
+
+/* ================================================== */
+/* ESTILOS ADICIONAIS PARA FORMULÁRIOS */
+/* ================================================== */
+
+/* Container para formulários */
+.form-container {
+  background: white !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+  margin-bottom: 20px !important;
+  padding: 16px !important;
+  color: #2d4551 !important;
+}
+
+/* ================================================== */
+/* SECTION HEADERS - ATUALIZADO */
+/* ================================================== */
+
+/* Cabeçalho de seção com linha decorativa */
+.section-header {
+  color: #2d4551 !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  position: relative;
+  padding-bottom: 8px !important;
+  width: 100%;
+}
+
+/* Linha decorativa abaixo do cabeçalho */
+.section-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(135deg, #2d4551 0%, #5cad82 100%) !important;
+  border-radius: 2px;
+}
+
+/* ================================================== */
+/* ESTILOS PARA CAMPOS DE FORMULÁRIO */
+/* ================================================== */
+
+/* Labels dos formulários */
+ion-label {
+  color: #2d4551 !important;
+  font-weight: 600 !important;
+  margin-bottom: 8px !important;
+}
+
+/* Indicador de campo obrigatório */
+.required-label::after {
+  content: " *";
+  color: #eb445a;
+}
+
+/* Campos de entrada padrão */
+ion-input, ion-select, ion-textarea {
+  --background: #f8f9fa !important;
+  --padding-start: 12px !important;
+  --padding-end: 12px !important;
+  --padding-top: 10px !important;
+  --padding-bottom: 10px !important;
+  border-radius: 10px !important;
+  margin-top: 6px !important;
+  --placeholder-color: #6c757d !important;
+  --placeholder-opacity: 1 !important;
+  min-height: 48px !important;
+}
+
+/* ================================================== */
+/* ANIMAÇÕES E TRANSITIONS */
+/* ================================================== */
+
+/* Animação do ícone nos cards expansíveis */
+.card-header-expansivel ion-icon {
+  transition: transform 0.3s ease;
+}
+
+/* Transição suave dos cards */
+.manejo-cards ion-card {
+  transition: all 0.3s ease;
+}
+
+/* Efeito hover no botão de ação */
+.action-button ion-button:not([disabled]):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(92, 173, 130, 0.3) !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Efeito active no botão de ação */
+.action-button ion-button:not([disabled]):active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 6px rgba(92, 173, 130, 0.2) !important;
+}
+
+/* ================================================== */
+/* ESTILO PARA OS BOTÕES DO SEGMENTO - ATUALIZADO */
+/* ================================================== */
+
+/* Container do segmento de navegação */
+.segment-container {
+  margin-bottom: 20px !important;
+  background: rgb(255, 255, 255) !important;
+  border-radius: 12px !important;
+  padding: 8px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Segmento principal */
+ion-segment {
+  --background: transparent !important;
+}
+
+/* Botões individuais do segmento (comentado - código inativo) */
+ion-segment-button {
+  //--color-checked: white !important;
+  //--background-checked: #5cad82 !important; /* Verde agro quando selecionado */
+  //--border-radius: 10px !important;
+  //--indicator-box-shadow: none !important;
+  //min-height: 40px !important;
+  //--color: #2d4551 !important; /* Cor do texto não selecionado */
+  //--background: transparent !important;
+  //font-weight: 600 !important;
+  //position: relative;
+  //overflow: hidden;
+  //transition: all 0.3s ease !important;
+}
+
+/* Remove o indicador padrão do Ionic */
+ion-segment-button::part(indicator) {
+  display: none !important;
+}
+
+/* Indicador personalizado (linha inferior) */
+ion-segment-button::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  //height: 3px;
+  background-color: #5cad82 !important;
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+/* Linha do indicador quando selecionado */
+ion-segment-button.segment-button-checked::after {
+  width: 80%; /* Linha aparece quando selecionado */
+}
+
+/* Container do segmento para alinhamento */
+.segment-container {
+  border-bottom: 1px solid #e9ecef !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin-bottom: 20px !important;
+  background: white !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+/* Remove o fundo colorido do container */
+.segment-container ion-segment {
+  --background: transparent !important;
+  padding: 4px !important;
+}
+
+/* Ajustes para labels dos botões */
+ion-segment-button ion-label {
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  text-transform: none !important;
+  margin: 0 !important;
+  transition: color 0.3s ease !important;
+}
+
+/* Estados de foco e ativo */
+ion-segment-button:focus {
+  outline: none !important;
+}
+
+ion-segment-button:active {
+  transform: translateY(0) !important;
+  transition: transform 0.1s ease !important;
+}
+
+/* ================================================== */
+/* RESPONSIVIDADE PARA O SEGMENTO */
+/* ================================================== */
+
+/* Ajustes do segmento para tablets */
+@media (max-width: 768px) {
+  .segment-container {
+    margin-bottom: 16px !important;
+    border-radius: 10px !important;
+  }
+  
+  ion-segment-button {
+    min-height: 36px !important;
+    --padding-start: 12px !important;
+    --padding-end: 12px !important;
+  }
+  
+  ion-segment-button ion-label {
+    font-size: 13px !important;
+  }
+  
+  ion-segment-button::after {
+    height: 2px !important;
+  }
+}
+
+/* Ajustes do segmento para mobile pequeno */
+@media (max-width: 480px) {
+  .segment-container {
+    margin-bottom: 12px !important;
+  }
+  
+  ion-segment-button {
+    min-height: 32px !important;
+    --padding-start: 8px !important;
+    --padding-end: 8px !important;
+  }
+  
+  ion-segment-button ion-label {
+    font-size: 12px !important;
+  }
+}
+
+/* ================================================== */
+/* ESTILOS ADICIONAIS PARA O HEADER DO SEGMENTO */
+/* ================================================== */
+
+/* Toolbar que contém o segmento */
+ion-header ion-toolbar:last-child {
+  --background: #2d4551 !important;
+  //--border-color: #e9ecef !important;
+  //--border-width: 0 0 1px 0 !important;
+  //--min-height: 60px !important;
+}
+
+/* Título acima do segmento */
+ion-header ion-toolbar ion-title {
+  color: white !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+}
+
+/* ================================================== */
+/* SEGMENTO DENTRO DO CONTEÚDO */
+/* ================================================== */
+
+/* Ajusta o padding do conteúdo normalmente */
+.tab-content {
+  padding: 16px 16px 80px 16px;
+}
+
+/* ================================================== */
+/* ESTILO DOS BOTÕES DO SEGMENTO - MANTIDO */
+/* ================================================== */
+
+/* Remove o indicador padrão do Ionic */
+ion-segment-button::part(indicator) {
+  display: none !important;
+}
+
+/* Linha do indicador quando selecionado */
+ion-segment-button.segment-button-checked::after {
+  width: 80%;
+}
+
+/* Efeito hover nos botões do segmento */
+ion-segment-button:hover:not(.segment-button-checked) {
+  --background: rgba(92, 173, 130, 0.1) !important;
+  --color: #5cad82 !important;
+}
+
+/* Ajustes para labels dos botões */
+ion-segment-button ion-label {
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  text-transform: none !important;
+  margin: 0 !important;
+  transition: color 0.3s ease !important;
+}
+
+/* ================================================== */
+/* RESPONSIVIDADE */
+/* ================================================== */
+
+/* Ajustes gerais para tablets */
+@media (max-width: 768px) {
+  .segment-container {
+    margin: 12px !important;
+    border-radius: 10px !important;
+  }
+  
+  ion-segment-button {
+    min-height: 36px !important;
+  }
+  
+  .tab-content {
+    padding: 0 12px 80px 12px;
+  }
+}
+
+/* Ajustes gerais para mobile pequeno */
+@media (max-width: 480px) {
+  .segment-container {
+    margin: 8px !important;
+    padding: 6px !important;
+  }
+  
+  ion-segment-button {
+    min-height: 32px !important;
+  }
+  
+  .tab-content {
+    padding: 0 8px 80px 8px;
+  }
+}
+
+/* ================================================== */
+/* ESTILIZAÇÃO DO HEADER E TÍTULO - RECUPERADA */
+/* ================================================== */
+
+/* Configurações principais do toolbar do header */
+ion-header ion-toolbar {
+  --background: linear-gradient(135deg, #2d4551 0%, #3a5766 100%) !important;
+  --color: white !important;
+  --border-width: 0 !important;
+  --min-height: 60px !important;
+}
+
+/* Estilização específica do título */
+ion-header ion-toolbar ion-title {
+  color: white !important;
+  font-size: 28px !important;
+  //font-weight: 700 !important;
+  //text-align: center !important;
+  letter-spacing: 0.5px !important;
+  padding: 0 16px !important;
+}
+
+/* Botão voltar estilizado */
+ion-header ion-toolbar ion-back-button {
+  --color: white !important;
+  --icon-font-size: 20px !important;
+  --margin-start: 8px !important;
+  --margin-end: 8px !important;
+}
+
+/* Botões do header */
+ion-header ion-toolbar ion-buttons {
+  margin: 0 !important;
+}
+
+ion-header ion-toolbar ion-button {
+  --color: white !important;
+  --padding-start: 8px !important;
+  --padding-end: 8px !important;
+  margin: 0 4px !important;
+}
+
+/* ================================================== */
+/* RESPONSIVIDADE DO HEADER E SEGMENTO */
+/* ================================================== */
+
+/* Ajustes do header para tablets */
+@media (max-width: 768px) {
+  /* Header mobile */
+  ion-header ion-toolbar {
+    --min-height: 56px !important;
+  }
+  
+  ion-header ion-toolbar ion-title {
+    font-size: 16px !important;
+    padding: 0 12px !important;
+  }
+  
+  /* Segmento mobile */
+  .segment-container {
+    margin: 12px !important;
+    border-radius: 10px !important;
+  }
+  
+  ion-segment-button {
+    min-height: 36px !important;
+  }
+  
+  .tab-content {
+    padding: 0 12px 80px 12px;
+  }
+}
+
+/* Ajustes do header para mobile pequeno */
+@media (max-width: 480px) {
+  /* Header mobile pequeno */
+  ion-header ion-toolbar {
+    --min-height: 52px !important;
+  }
+  
+  ion-header ion-toolbar ion-title {
+    font-size: 15px !important;
+    padding: 0 8px !important;
+  }
+  
+  /* Segmento mobile pequeno */
+  .segment-container {
+    margin: 8px !important;
+    padding: 6px !important;
+  }
+  
+  ion-segment-button {
+    min-height: 32px !important;
+  }
+  
+  .tab-content {
+    padding: 0 8px 80px 8px;
+  }
+}
+
+/* ================================================== */
+/* ESTADOS ESPECIAIS DO HEADER */
+/* ================================================== */
+
+/* Header quando a página está carregando */
+ion-header.loading {
+  opacity: 0.7;
+}
+
+/* Header quando há erro */
+ion-header.error {
+  --background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%) !important;
+}

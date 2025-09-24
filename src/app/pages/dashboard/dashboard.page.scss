@@ -1,16 +1,16 @@
 // ==================================================
-// VARIÁVEIS DE CORES DO SISTEMA
-// Define as cores principais que serão usadas em todo o dashboard
+// VARIÁVEIS DE CORES DO SISTEMA - NOVA PALETA AGRO
+// Define as cores principais baseadas na paleta #2d4551, #5cad82, #ffffff
 // ==================================================
+
 :root {
-  --primary: #2c7da0;           // Azul principal para elementos primários
-  --secondary: #468faf;         // Azul secundário para complementar
-  --success: #27ae60;           // Verde para indicar sucesso/positivo
-  --warning: #e67e22;           // Laranja para alertas/aviso
-  --danger: #c0392b;            // Vermelho para perigo/erro
+  --primary: #2d4551;           // Azul-esverdeado escuro (principal)
+  --secondary: #5cad82;         // Verde médio (secundário/destaque)
+  --success: #27ae60;           // Verde para sucesso (mantido para consistência)
+  --warning: #e67e22;           // Laranja para alertas (mantido)
+  --danger: #c0392b;            // Vermelho para perigo (mantido)
   --light: #ecf0f1;             // Cinza muito claro para fundos
-  --dark: #2c3e50;              // Azul escuro para textos principais
-  --text: #2c3e50;              // Cor padrão para textos
+  --text: #2d4551;              // Cor padrão para textos (usando o primário)
   --text-light: #7f8c8d;        // Cor mais clara para textos secundários
   --card-bg: #ffffff;           // Cor de fundo dos cards (branco)
   --background: #f8f9fa;        // Cor de fundo da página
@@ -18,6 +18,182 @@
   --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); // Sombra padrão dos cards
 }
 
+/* Configurações principais do toolbar do header - ATUALIZADO */
+ion-header ion-toolbar {
+  --background: linear-gradient(135deg, #2d4551 0%, #3a5766 100%) !important;
+  --color: white !important;
+}
+
+/* Garante que todos os textos dentro do header fiquem brancos */
+ion-header ion-toolbar ion-title,
+ion-header ion-toolbar ion-buttons,
+ion-header ion-toolbar ion-button {
+  --color: white !important;
+  color: white !important;
+}
+
+/* ================================================== */
+/* BOTÃO MENU HAMBURGUER */
+/* ================================================== */
+
+ion-header ion-toolbar ion-buttons ion-button.menu-button {
+  --color: white !important;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  margin-right: 10px;
+}
+
+/* Ícone do menu hamburguer (três risquinhos) */
+.menu-icon {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 18px;
+  position: relative;
+  cursor: pointer;
+}
+
+.menu-icon span {
+  display: block;
+  width: 24px;
+  height: 3px;
+  background-color: white;
+  margin: 2px 0;
+  transition: all 0.3s ease;
+  border-radius: 3px;
+}
+
+/* Efeito hover no botão menu */
+ion-header ion-toolbar ion-buttons ion-button.menu-button:hover .menu-icon span {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* ================================================== */
+/* MENU LATERAL (DRAWER) */
+/* ================================================== */
+
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
+}
+
+.menu-drawer {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 280px;
+  height: 100%;
+  background: linear-gradient(135deg, #2d4551 0%, #3a5766 100%) !important;
+  z-index: 1000;
+  transition: left 0.3s ease;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+}
+
+.menu-drawer.open {
+  left: 0;
+}
+
+/* Cabeçalho do menu */
+.menu-header {
+  background: linear-gradient(135deg, #2d4551 0%, #5cad82 100%) !important;
+  padding: 25px 20px;
+  color: white;
+  text-align: center;
+}
+
+.menu-company {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 50px;
+  opacity: 0.9;
+}
+
+.menu-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Itens do menu */
+.menu-items {
+  padding: 20px 0;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-left-color: #5cad82 !important;
+}
+
+.menu-item.active {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-left-color: #5cad82 !important;
+}
+
+.menu-item ion-icon {
+  margin-right: 15px;
+  font-size: 20px;
+  min-width: 24px;
+}
+
+.menu-item-text {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Botão fechar menu */
+.menu-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  color: white;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.menu-close:hover {
+  opacity: 1;
+}
+
+/* ================================================== */
+/* RESPONSIVIDADE */
+/* ================================================== */
+
+@media (max-width: 768px) {
+  .menu-drawer {
+    width: 250px;
+  }
+  
+  .menu-header {
+    padding: 20px 15px;
+  }
+  
+  .menu-item {
+    padding: 12px 15px;
+  }
+}
 // ==================================================
 // ESTILO DO CONTEÚDO PRINCIPAL
 // Define o fundo e cores básicas da página
@@ -32,27 +208,27 @@
 // ==================================================
 // CONTAINER PRINCIPAL
 // Centraliza e organiza o conteúdo da página
+// CAGA COM A PPAGINA - ESTA FUNCIONANDO COMO SE TIVESSE UM CARD DENTRO DE OUTRO CARD DIMINUIDO
 // ==================================================
 .container {
   max-width: 1200px;            // Largura máxima do conteúdo
   margin: 0 auto;               // Centraliza o container na página
-  padding: 20px;                // Espaçamento interno
+  padding: 10px;                // Espaçamento interno
   background: var(--background); // Usa a cor de fundo definida
   min-height: 100vh;            // Garante que ocupe toda a altura da tela
 }
 
 // ==================================================
-// CABEÇALHO DO DASHBOARD
+// CABEÇALHO DO DASHBOARD - ATUALIZADO
 // Área superior com título e informações da fazenda
 // ==================================================
 .dashboard-header {
-  background: linear-gradient(135deg, #2c7da0 0%, #468faf 100%); // Gradiente azul
+  background: linear-gradient(135deg, #2d4551 0%, #5cad82 100%) !important;
   color: white;                   // Texto branco para contraste
   padding: 25px;                  // Espaçamento interno generoso
   border-radius: 12px;            // Bordas arredondadas
-  margin-bottom: 25px;            // Espaço abaixo do header
+  margin-bottom: 10px;            // Espaço abaixo do header
   box-shadow: var(--card-shadow); // Sombra para profundidade
-  border: 1px solid #2c7da0;      // Borda sutil para definição
 }
 
 // ==================================================
@@ -60,8 +236,7 @@
 // Define a aparência de todos os cards do dashboard
 // ==================================================
 .stats-card, .alerts-card, .weather-card, .activities-card {
-  
-  background: #f9f8f8 !important; 
+  background: white !important; 
   border-radius: 12px;            // Bordas arredondadas
   box-shadow: var(--card-shadow); // Sombra para elevar visualmente
   margin: 0 0 10px 0;             // Remove margem padrão
@@ -70,13 +245,13 @@
 }
 
 // ==================================================
-// TÍTULOS DOS CARDS
+// TÍTULOS DOS CARDS - ATUALIZADO
 // Estiliza os títulos dentro dos cards
 // ==================================================
 ion-card-title {
   font-size: 18px;               // Tamanho de fonte médio
   font-weight: 700;              // Negrito para destaque
-  color: #ffffff ;             // Cor escura para contraste
+  color: #ffffff !important;     // Cor branca para contraste
   margin: 0;                     // Remove margem padrão
 }
 
@@ -88,7 +263,7 @@ ion-card-title {
   font-size: 36px;               // Tamanho grande para destaque
   font-weight: 800;              // Negrito pesado
   margin-bottom: 8px;            // Espaço abaixo do número
-  color: #292727 ;            // Cor escura para contraste
+  color: #2d4551 !important;     // Cor primária para contraste
   text-shadow: 0 2px 4px rgba(0,0,0,0.1); // Sombra sutil no texto
 }
 
@@ -101,7 +276,7 @@ ion-card-title {
   align-items: center;           // Centraliza verticalmente
   font-size: 14px;               // Tamanho menor que o número
   font-weight: 600;              // Semi-negrito
-  color: #029e3e ;      // Cor mais clara para não competir com o número
+  color: #5cad82 !important;     // Cor secundária para destaque
 }
 
 // ==================================================
@@ -120,7 +295,7 @@ ion-card-title {
 }
 
 // ==================================================
-// TÍTULOS DE SEÇÃO
+// TÍTULOS DE SEÇÃO - ATUALIZADO
 // Estiliza os títulos que separam as seções do dashboard
 // ==================================================
 .section-title {
@@ -128,8 +303,9 @@ ion-card-title {
   font-weight: 700;              // Negrito
   margin: 30px 0 20px 0;         // Espaçamento acima e abaixo
   padding-bottom: 12px;          // Espaço abaixo do texto
-  border-bottom: 3px solid var(--primary); // Linha decorativa abaixo
-  color: #2c7da0;            // Cor escura para contraste
+  //border-bottom: 3px linear-gradient(135deg, #2d4551 0%, #5cad82 100%) !important;
+  border-bottom: 1px solid #5cad82 !important; // Linha decorativa com cor secundária
+  color: #2d4551 !important;     // Cor primária para textos
 }
 
 // ==================================================
@@ -159,39 +335,40 @@ ion-card-title {
     font-size: 17px;             // Tamanho de fonte para título do alerta
     font-weight: 700;            // Negrito para destaque
     margin: 0 0 8px 0;           // Espaço abaixo do título
-    color: var(--dark);          // Cor escura para contraste
+    color: #2d4551 !important;   // Cor primária para contraste
   }
 }
 
 // ==================================================
-// DATA DOS ALERTAS
+// DATA DOS ALERTAS - ATUALIZADO
 // Estiliza a informação de data/hora dos alertas
 // ==================================================
 .alert-date {
   font-size: 14px;               // Tamanho menor
   font-weight: 600;              // Semi-negrito
-  color: var(--primary);         // Cor azul para destaque
+  color: #5cad82 !important;     // Cor secundária para destaque
   margin-bottom: 8px;            // Espaço abaixo
-  background: rgba(44, 125, 160, 0.1); // Fundo azul muito claro
+  background: rgba(92, 173, 130, 0.1); // Fundo verde muito claro
   padding: 4px 10px;             // Espaçamento interno
   border-radius: 20px;           // Bordas arredondadas (cápsula)
   display: inline-block;         // Permite background e padding
 }
 
 // ==================================================
-// DESCRIÇÃO DOS ALERTAS
+// DESCRIÇÃO DOS ALERTAS - ATUALIZADO
 // Estiliza o texto descritivo dos alertas
 // ==================================================
+
 .alert-desc {
   font-size: 15px;               // Tamanho confortável para leitura
   font-weight: 500;              // Peso normal
-  color: #090707 ;            // Cor padrão de texto
+  color: #2d4551 !important;     // Cor primária para texto
   margin: 0;                     // Remove margem
   line-height: 1.5;              // Espaçamento entre linhas
-  background: rgba(3, 8, 9, 0);  // Fundo transparente (corrigido)
+  background: rgba(45, 69, 81, 0.05);  // Fundo muito claro da cor primária
   padding: 10px;                 // Espaçamento interno
   border-radius: 8px;            // Bordas levemente arredondadas
-  border-left: 4px solid var(--primary); // Borda lateral colorida
+  //border-left: 4px solid #5cad82 !important; // Borda lateral com cor secundária
 }
 
 // ==================================================
@@ -246,7 +423,7 @@ ion-card-title {
   font-size: 48px;               // Tamanho muito grande para destaque
   font-weight: 800;              // Negrito pesado
   margin: 15px 0;                // Espaço acima e abaixo
-  color: #343030 ;            // Cor escura
+  color: #2d4551 !important;     // Cor primária
   text-shadow: 0 2px 4px rgba(0,0,0,0.1); // Sombra sutil
 }
 
@@ -258,7 +435,7 @@ ion-card-title {
   font-size: 22px;               // Tamanho grande
   font-weight: 700;              // Negrito
   margin-bottom: 8px;            // Espaço abaixo
-  color: var(--dark);            // Cor escura
+  color: #2d4551 !important;     // Cor primária
 }
 
 // ==================================================
@@ -272,20 +449,20 @@ ion-card-title {
 }
 
 // ==================================================
-// PREVISÃO DO TEMPO
+// PREVISÃO DO TEMPO - ATUALIZADO
 // Estiliza a área de texto da previsão
 // ==================================================
 .weather-forecast {
-  background: linear-gradient(135deg, #2c7da0 0%, #468faf 100%); // Gradiente azul
+  background: linear-gradient(135deg, #2d4551 0%, #5cad82 100%) !important;
   padding: 20px;                 // Espaçamento interno
   border-radius: 12px;           // Bordas arredondadas
   margin-top: 20px;              // Espaço acima
   font-size: 15px;               // Tamanho de fonte
   font-weight: 500;              // Peso normal
   text-align: center;            // Texto centralizado
-  color: #f6f8f8;            // Cor do texto (precisa ser clara para contraste)
+  color: #ffffff !important;     // Cor do texto branco para contraste
   line-height: 1.5;              // Espaçamento entre linhas
-  border: 1px solid #cce7f5;     // Borda sutil
+  border: 1px solid rgba(92, 173, 130, 0.3); // Borda sutil com cor secundária
 }
 
 // ==================================================
@@ -332,71 +509,71 @@ ion-card-title {
     font-size: 17px;             // Tamanho para título da atividade
     font-weight: 700;            // Negrito para destaque
     margin: 0 0 8px 0;           // Espaço abaixo do título
-    color: var(--dark);          // Cor escura
+    color: #2d4551 !important;   // Cor primária
   }
 }
 
 // ==================================================
-// DESCRIÇÃO DAS ATIVIDADES
+// DESCRIÇÃO DAS ATIVIDADES - ATUALIZADO
 // Estiliza o texto descritivo das atividades
 // ==================================================
 .activity-desc {
   font-size: 15px;               // Tamanho confortável
   font-weight: 500;              // Peso normal
-  color: var(--text);            // Cor padrão
+  color: #2d4551 !important;     // Cor primária
   margin: 0 0 8px 0;             // Espaço abaixo
-  background: rgba(236, 240, 241, 0.5); // Fundo cinza muito claro
+  background: rgba(45, 69, 81, 0.05); // Fundo muito claro da cor primária
   padding: 8px 12px;             // Espaçamento interno
   border-radius: 8px;            // Bordas arredondadas
 }
 
 // ==================================================
-// TEMPO DAS ATIVIDADES
+// TEMPO DAS ATIVIDADES - ATUALIZADO
 // Estiliza a informação de tempo (há x horas)
 // ==================================================
 .activity-time {
   font-size: 13px;               // Tamanho pequeno
   font-weight: 600;              // Semi-negrito
-  color: var(--primary);         // Cor azul para destaque
-  background: rgba(44, 125, 160, 0.1); // Fundo azul muito claro
+  color: #5cad82 !important;     // Cor secundária para destaque
+  background: rgba(92, 173, 130, 0.1); // Fundo verde muito claro
   padding: 3px 10px;             // Espaçamento interno
   border-radius: 15px;           // Bordas arredondadas (cápsula)
   display: inline-block;         // Permite background e padding
 }
 
 // ==================================================
-// CORES ESPECÍFICAS DOS ÍCONES
+// CORES ESPECÍFICAS DOS ÍCONES - ATUALIZADO
 // Define as cores de fundo para cada tipo de ícone
 // ==================================================
 .icon-animals {
-  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); // Gradiente verde
+  background: linear-gradient(135deg, #5cad82 0%, #6bbd93 100%) !important;
 }
 
 .icon-pregnant {
-  background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%); // Gradiente laranja
+  background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%);
 }
 
 .icon-discard {
-  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%); // Gradiente vermelho
+  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
 }
 
 .icon-weather {
-  background: linear-gradient(135deg, #2c7da0 0%, #468faf 100%); // Gradiente azul
+  background: linear-gradient(135deg, #2d4551 0%, #3a5766 100%) !important;
 }
 
 .alert-vaccine {
-  background: linear-gradient(135deg, rgba(39, 174, 96, 0.15) 0%, rgba(46, 204, 113, 0.15) 100%); // Verde claro
-  color: #27ae60;                // Cor do ícone verde
+  background: linear-gradient(135deg, rgba(92, 173, 130, 0.15) 0%, rgba(107, 189, 147, 0.15) 100%) !important;
+  color: #5cad82 !important;
 }
 
 .alert-breeding {
-  background: linear-gradient(135deg, rgba(230, 126, 34, 0.15) 0%, rgba(243, 156, 18, 0.15) 100%); // Laranja claro
-  color: #e67e22;                // Cor do ícone laranja
+  background: linear-gradient(135deg, rgba(230, 126, 34, 0.15) 0%, rgba(243, 156, 18, 0.15) 100%);
+  color: #e67e22;
 }
 
 .alert-weighing {
-  background: linear-gradient(135deg, rgba(52, 125, 160, 0.15) 0%, rgba(70, 143, 175, 0.15) 100%); // Azul claro
-  color: #2c7da0;                // Cor do ícone azul
+  background: linear-gradient(135deg, rgba(45, 69, 81, 0.15) 0%, rgba(58, 87, 102, 0.15) 100%) !important;
+  color: #2d4551 !important;
 }
 
 // ==================================================
@@ -408,13 +585,13 @@ ion-card-content {
 }
 
 // ==================================================
-// CABEÇALHO DOS CARDS
+// CABEÇALHO DOS CARDS - ATUALIZADO
 // Estiliza a área superior dentro dos cards
 // ==================================================
 .card-header {
   padding: 20px 20px 15px 20px;  // Espaçamento interno
   border-bottom: 2px solid var(--border); // Linha separadora
-  background: linear-gradient(135deg, #2c7da0 0%, #468faf 100%); // Gradiente azul
+  background: linear-gradient(135deg, #2d4551 0%, #5cad82 100%) !important;
   border-radius: 12px 12px 0 0;  // Bordas arredondadas apenas no topo
 }
 
@@ -437,4 +614,75 @@ ion-card-content {
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700 !important;   // Títulos sempre em negrito
+}
+
+/* ================================================== */
+/* CORREÇÃO DO POSICIONAMENTO DO MENU */
+/* ================================================== */
+
+.menu-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 9999 !important;
+}
+
+.menu-drawer {
+  position: fixed !important;
+  top: 0 !important;
+  left: -300px !important;
+  z-index: 10000 !important;
+}
+
+/* Garante que o container do conteúdo não seja afetado */
+.container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Remove qualquer margem ou padding que possa estar sendo causada */
+ion-content {
+  --padding-top: 0px !important;
+  --padding-bottom: 0 !important;
+  --padding-start: 0 !important;
+  --padding-end: 0 !important;
+}
+
+/* Garante que o header do Ionic não seja afetado */
+ion-header {
+  position: relative;
+  z-index: 1000;
+}
+
+/* ================================================== */
+/* CORREÇÃO FINAL DO MENU */
+/* ================================================== */
+
+.menu-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  z-index: 9999 !important;
+  display: none;
+}
+
+.menu-drawer {
+  position: fixed !important;
+  top: 0 !important;
+  left: -300px !important;
+  width: 280px !important;
+  height: 100% !important;
+  background: linear-gradient(135deg, #2d4551 0%, #3a5766 100%) !important;
+  z-index: 10000 !important;
+  transition: left 0.3s ease !important;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+.menu-drawer.open {
+  left: 0 !important;
 }

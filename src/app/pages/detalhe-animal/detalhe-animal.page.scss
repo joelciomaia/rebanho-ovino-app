@@ -1,0 +1,651 @@
+/* ================================================== */
+/* RESET E CONFIGURAÇÕES GERAIS DO HEADER - ATUALIZADO */
+/* ================================================== */
+
+/* Configurações principais do toolbar do header */
+ion-header ion-toolbar {
+  --background: linear-gradient(135deg, #2d4551 0%, #3a5766 100%) !important;
+  --color: white !important;
+}
+
+/* Garante que todos os textos dentro do header fiquem brancos */
+ion-header ion-toolbar ion-title,
+ion-header ion-toolbar ion-buttons,
+ion-header ion-toolbar ion-button {
+  --color: white !important;
+  color: white !important;
+}
+
+/* ================================================== */
+/* BOTÃO VOLTAR - ESTILOS ESPECÍFICOS */
+/* ================================================== */
+
+/* Estilos base do botão voltar */
+ion-header ion-toolbar ion-back-button {
+  --color: white !important;
+}
+
+
+  /* ===== CARD RECOLHÍVEL - COM A IMAGEM ===== */
+.collapsible-card {
+  background: white;
+  border-radius: 30px;
+  margin: 10px; //Margens laterais e superior do cabeçalho
+  margin-bottom: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Cabeçalho do card com gradiente - ATUALIZADO */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #2d4551 0%, #5cad82 100%) !important;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, #253a47 0%, #4a9c72 100%) !important;
+  }
+}
+
+/* Conteúdo do header alinhado */
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 16px;
+}
+
+.animal-main-info {
+  flex: 1;
+  text-align: left;
+}
+
+/* Container da imagem do animal */
+.animal-image-container {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  order: 2; /* Imagem à direita */
+}
+
+.animal-profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.animal-id {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+/* Badge de status do animal */
+.animal-status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.collapse-icon {
+  font-size: 1.5rem;
+  transition: transform 0.3s ease;
+  order: 3; /* Ícone à direita da imagem */
+  margin-left: 8px;
+}
+
+/* Conteúdo recolhível do card */
+.card-content {
+  padding: 0px;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  max-height: 500px;
+  opacity: 1;
+  
+  &.collapsed {
+    max-height: 0;
+    padding: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+}
+
+/* ===== DETALHES DO ANIMAL ===== */
+.animal-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.detail-item {
+  background: #f8f9fa;
+  padding: 12px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.detail-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #6c757d;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.detail-value {
+  display: block;
+  font-size: 1rem;
+  color: #2d4551 !important; /* Cor primária atualizada */
+  font-weight: 600;
+}
+
+/* ===== BOTÕES DE AÇÃO ===== */
+.buttons-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.action-btn-simple {
+  margin: 0;
+  --border-radius: 8px;
+  font-size: 0.9rem;
+  height: 44px;
+}
+
+/* ===== CORES DOS STATUS - ATUALIZADO ===== */
+.status-ativo {
+  background: rgba(12, 225, 112, 0.9) !important; /* Verde secundário */
+  color: white;
+}
+
+.status-vendido {
+  background: rgba(241, 196, 15, 0.9);
+  color: white;
+}
+
+.status-descartado {
+  background: rgba(230, 126, 34, 0.9);
+  color: white;
+}
+
+.status-morto {
+  background: rgba(231, 76, 60, 0.9);
+  color: white;
+}
+
+/* ===== CONTAINER DAS TABS COM SCROLL HORIZONTAL - ATUALIZADO ===== */
+/* Container principal com scroll suave e horizontal */
+.segment-container {
+  overflow-x: auto; /* Habilita scroll horizontal */
+  white-space: nowrap; /* Impede quebra de linha */
+  margin-bottom: 16px;
+  -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
+  scrollbar-width: none; /* Esconde scrollbar no Firefox */
+  -ms-overflow-style: none; /* Esconde scrollbar no IE/Edge */
+  padding: 4px 0;
+  scroll-behavior: smooth; /* Animação suave do scroll */
+  
+  /* Esconde scrollbar no Chrome/Safari */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Segmento principal - layout inline para scroll */
+ion-segment {
+  width: auto; /* Largura automática baseada no conteúdo */
+  min-width: 100%; /* Mínimo de 100% da largura */
+  display: inline-flex; /* Permite scroll horizontal */
+  justify-content: flex-start; /* Alinha à esquerda */
+  background: #f8f9fa; /* Mantém cor original */
+  border-radius: 8px; /* Mantém bordas arredondadas */
+  padding: 4px; /* Mantém padding original */
+}
+
+/* Botões individuais das tabs - ATUALIZADO */
+ion-segment-button {
+  min-width: 90px; /* Largura mínima para caber texto */
+  max-width: 110px; /* Largura máxima para não ficar muito largo */
+  --padding-start: 12px; /* Espaçamento interno */
+  --padding-end: 12px; /* Espaçamento interno */
+  --color: #6c757d; /* Cor do texto inativo */
+  --color-checked: #2d4551 !important; /* Cor do texto ativo - primária */
+  --indicator-color: #5cad82 !important; /* Cor do indicador - secundária */
+  --border-radius: 6px; /* Bordas arredondadas */
+  --margin-start: 2px; /* Margem entre botões */
+  --margin-end: 2px; /* Margem entre botões */
+  flex: 0 0 auto; /* Impede que os botões estiquem */
+  height: 36px; /* Altura consistente */
+  scroll-margin: 0 20px; /* Margem para centralização no scroll */
+  
+  ion-label {
+    white-space: nowrap; /* Texto em linha única */
+    overflow: hidden; /* Esconde overflow */
+    text-overflow: ellipsis; /* Adiciona "..." se texto for longo */
+    font-size: 0.8rem; /* Tamanho de fonte */
+    font-weight: 500; /* Peso da fonte */
+  }
+}
+
+/* ===== RESPONSIVIDADE DAS TABS ===== */
+/* Tablets e telas maiores - centraliza sem scroll */
+@media (min-width: 768px) {
+  .segment-container {
+    overflow-x: hidden; /* Esconde scroll em telas grandes */
+  }
+  
+  ion-segment {
+    width: 100%; /* Ocupa 100% da largura */
+    justify-content: center; /* Centraliza as tabs */
+  }
+  
+  ion-segment-button {
+    min-width: 100px; /* Largura um pouco maior */
+    max-width: 130px; /* Largura máxima maior */
+  }
+}
+
+/* Telas muito pequenas - ajusta ainda mais */
+@media (max-width: 360px) {
+  ion-segment-button {
+    min-width: 80px; /* Largura mínima reduzida */
+    max-width: 95px; /* Largura máxima reduzida */
+    --padding-start: 8px; /* Padding reduzido */
+    --padding-end: 8px; /* Padding reduzido */
+    
+    ion-label {
+      font-size: 0.75rem; /* Fonte um pouco menor */
+    }
+  }
+}
+
+/* ===== SEÇÃO DE HISTÓRICO - ATUALIZADO ===== */
+.history-section {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.history-section h2 {
+  font-size: 18px;
+  color: #2d4551 !important; /* Cor primária */
+  margin-bottom: 16px;
+}
+
+.history-item {
+  border-left: 3px solid #5cad82 !important; /* Cor secundária */
+  padding: 12px 0 12px 16px;
+  margin-bottom: 16px;
+  background: #f8f9fa;
+  border-radius: 0 8px 8px 0;
+}
+
+.history-date {
+  font-weight: bold;
+  color: #2d4551 !important; /* Cor primária */
+  margin-bottom: 4px;
+}
+
+.history-type {
+  color: #5cad82 !important; /* Cor secundária */
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.history-details p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #495057;
+}
+
+.empty-history {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+}
+
+.empty-history ion-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+/* ===== GALERIA DE FOTOS ===== */
+.gallery-actions {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.photos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.photo-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  aspect-ratio: 1/1;
+  transition: transform 0.2s ease;
+}
+
+.photo-card:hover {
+  transform: translateY(-2px);
+}
+
+.photo-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-actions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  padding: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.photo-card:hover .photo-actions {
+  opacity: 1;
+}
+
+.photo-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #5cad82 !important; /* Cor secundária */
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.empty-gallery {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+}
+
+.empty-gallery ion-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+/* ===== RESPONSIVIDADE GERAL ===== */
+@media (max-width: 576px) {
+  .animal-details-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .buttons-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .action-btn-simple {
+    height: 40px;
+  }
+  
+  .header-content {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+    gap: 8px;
+  }
+  
+  .animal-image-container {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .animal-id {
+    font-size: 1.3rem;
+  }
+  
+  .photos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+  }
+  
+  .history-item {
+    padding: 10px 0 10px 12px;
+  }
+  
+  .history-date,
+  .history-type {
+    font-size: 0.9rem;
+  }
+}
+
+/* ===== ANIMAÇÕES ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.history-item {
+  animation: fadeIn 0.3s ease;
+}
+
+.photo-card {
+  animation: fadeIn 0.4s ease;
+}
+
+/* ===== ESTILOS ADICIONAIS PARA FOTOS ===== */
+.photos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.photo-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  
+  .photo-image {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+  }
+}
+
+.photo-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  
+  ion-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    --padding-top: 4px;
+    --padding-bottom: 4px;
+    height: 28px;
+  }
+}
+
+.photo-description {
+  padding: 8px;
+  font-size: 0.8rem;
+  color: #6c757d;
+  background: rgba(45, 69, 81, 0.9) !important; /* Cor primária com transparência */
+  color: white;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.empty-gallery, .empty-history {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+  
+  ion-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+  }
+}
+
+/* ================================================== */
+/* BOTÕES PRINCIPAIS - ESTILOS QUE FALTAM */
+/* ================================================== */
+
+/* Botões dentro da seção action-buttons */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  //padding: 0 20px 20px 20px;
+}
+
+/* Botão EDITAR DADOS (ion-button color="primary") */
+.action-buttons ion-button[color="primary"] {
+  --background: #2d513a !important;
+  --background-activated: #3a5766 !important;
+  --background-hover: #253a47 !important;
+  --color: white !important;
+  --border-radius: 8px !important;
+  --padding-top: 12px !important;
+  --padding-bottom: 12px !important;
+  margin: 0 !important;
+}
+
+/* Botão ADICIONAR MANEJO (ion-button color="secondary") */
+.action-buttons ion-button[color="secondary"] {
+  --background: #5cad82 !important;
+  --background-activated: #6bbd93 !important;
+  --background-hover: #4a9c72 !important;
+  --color: white !important;
+  --border-radius: 8px !important;
+  --padding-top: 12px !important;
+  --padding-bottom: 12px !important;
+  margin: 0 !important;
+}
+
+/* Botão ADICIONAR NOVA FOTO na aba de fotos */
+.history-content .action-buttons ion-button[color="primary"] {
+  --background: #5cad82 !important;
+  --background-activated: #6bbd93 !important;
+  --background-hover: #4a9c72 !important;
+  --color: white !important;
+  --border-radius: 8px !important;
+  margin: 16px 0 !important;
+}
+
+/* Botões de ação nas fotos (setAsProfilePhoto e viewPhoto) */
+.photo-actions ion-button[color="primary"] {
+  --background: #2d4551 !important;
+  --background-activated: #3a5766 !important;
+  --border-radius: 6px !important;
+  --padding-start: 8px !important;
+  --padding-end: 8px !important;
+  height: 28px !important;
+}
+
+.photo-actions ion-button[color="secondary"] {
+  --background: #5cad82 !important;
+  --background-activated: #6bbd93 !important;
+  --border-radius: 6px !important;
+  --padding-start: 8px !important;
+  --padding-end: 8px !important;
+  height: 28px !important;
+}
+/* ================================================== */
+/* CORREÇÃO DAS CORES DOS BOTÕES - APENAS CORES */
+/* ================================================== */
+
+/* Botão EDITAR DADOS (ion-button color="primary") */
+.action-buttons ion-button[color="primary"] {
+  --background: #2d4551 !important;
+  --background-activated: #3a5766 !important;
+  --background-hover: #253a47 !important;
+}
+
+/* Botão ADICIONAR MANEJO (ion-button color="secondary") */
+.action-buttons ion-button[color="secondary"] {
+  --background: #5cad82 !important;
+  --background-activated: #6bbd93 !important;
+  --background-hover: #4a9c72 !important;
+}
+
+/* Botão ADICIONAR NOVA FOTO na aba de fotos */
+.history-content .action-buttons ion-button[color="primary"] {
+  --background: #5cad82 !important;
+  --background-activated: #6bbd93 !important;
+  --background-hover: #4a9c72 !important;
+}
+
+/* Botões de ação nas fotos */
+.photo-actions ion-button[color="primary"] {
+  --background: #2d4551 !important;
+  --background-activated: #3a5766 !important;
+}
+
+.photo-actions ion-button[color="secondary"] {
+  --background: #5cad82 !important;
+  --background-activated: #6bbd93 !important;
+}
+/* ================================================== */
+/* CORREÇÃO DAS CORES DOS BOTÕES IONIC - APENAS CORES */
+/* ================================================== */
+
+/* SOBRESCREVER VARIÁVEIS DE CORES DO IONIC */
+ion-button[color="primary"] {
+  --ion-color-primary: #2d4551 !important;
+  --ion-color-primary-rgb: 45, 69, 81 !important;
+  --ion-color-primary-contrast: #ffffff !important;
+  --ion-color-primary-contrast-rgb: 255, 255, 255 !important;
+  --ion-color-primary-shade: #283d48 !important;
+  --ion-color-primary-tint: #425862 !important;
+}
+
+ion-button[color="secondary"] {
+  --ion-color-secondary: #5cad82 !important;
+  --ion-color-secondary-rgb: 92, 173, 130 !important;
+  --ion-color-secondary-contrast: #ffffff !important;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255 !important;
+  --ion-color-secondary-shade: #519873 !important;
+  --ion-color-secondary-tint: #6cb591 !important;
+}

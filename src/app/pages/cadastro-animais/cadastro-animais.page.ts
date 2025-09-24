@@ -5,10 +5,10 @@ import { CommonModule } from '@angular/common';
 // Componentes Ionic
 import { 
   IonContent, IonHeader, IonTitle, IonToolbar, IonBackButton, IonButtons,
-  IonList, IonItem, IonLabel, IonRadioGroup, IonRadio, IonNote,
+  IonList, IonItem, IonLabel, IonNote,
   IonInput, IonButton, IonTextarea, IonSelect, IonSelectOption, IonCheckbox,
-  IonDatetime, IonRange, IonIcon, IonSegment, IonSegmentButton, IonListHeader,
-  ModalController // ← ADICIONADO
+  IonDatetime, IonIcon, IonSegment, IonSegmentButton, IonListHeader,
+  ModalController
 } from '@ionic/angular/standalone';
 
 @Component({
@@ -16,14 +16,14 @@ import {
   templateUrl: './cadastro-animais.page.html',
   styleUrls: ['./cadastro-animais.page.scss'],
   standalone: true,
-  imports: [IonListHeader, 
+  imports: [
     CommonModule,
     ReactiveFormsModule,
     // Components Ionic
+    IonListHeader,
     IonContent, IonHeader, IonTitle, IonToolbar, IonBackButton, IonButtons,
-    IonList, IonItem, IonLabel, IonNote, // ← REMOVIDO IonRadioGroup, IonRadio
-    IonInput, IonButton, IonTextarea, IonSelect, IonSelectOption, IonCheckbox,
-    IonDatetime, IonRange, IonIcon, IonSegment, IonSegmentButton
+    IonList, IonItem, IonLabel, IonNote,
+    IonInput, IonButton, IonTextarea, IonSelect, IonSelectOption, IonCheckbox, IonIcon, IonSegment, IonSegmentButton, //IonDatetime
   ],
   providers: [ModalController]
 })
@@ -54,7 +54,7 @@ export class CadastroAnimaisPage implements OnInit {
   arquivoAnexo: any = null;
 
   private fb = inject(FormBuilder);
-  private modalController = inject(ModalController); // ← ADICIONADO
+  private modalController = inject(ModalController);
 
   ngOnInit() {
     this.initForms();
@@ -70,7 +70,7 @@ export class CadastroAnimaisPage implements OnInit {
       tipoParto: ['', [Validators.required]],
       viabilidade: ['vivo'],
       mamouColostro: [true],
-      origemMae: ['proprio'],
+      //origemMae: ['proprio'],
       identificacaoMae: [''],
       identificacaoMaeTerceiros: [''],
       origemPai: ['proprio'],
@@ -105,18 +105,18 @@ export class CadastroAnimaisPage implements OnInit {
     });
   }
 
-  // MÉTODO PARA ABRIR CALENDÁRIO
+  // MÉTODO PARA ABRIR CALENDÁRIO - NASCIMENTO
   async abrirCalendario() {
     const modal = await this.modalController.create({
       component: IonDatetime,
       componentProps: {
         presentation: 'date',
         value: this.formNascidos.get('dataNascimento')?.value,
-        showDefaultButtons: true, // ← MOSTRA BOTÕES PADRÃO
-        doneText: 'Selecionar',   // ← TEXTO DO BOTÃO CONFIRMAR
-        cancelText: 'Cancelar'    // ← TEXTO DO BOTÃO CANCELAR
+        showDefaultButtons: true,
+        doneText: 'Selecionar',
+        cancelText: 'Cancelar'
       },
-      cssClass: 'calendario-modal' // ← CLASSE PARA ESTILIZAR
+      cssClass: 'calendario-modal'
     });
     
     modal.onDidDismiss().then((result) => {
@@ -127,6 +127,7 @@ export class CadastroAnimaisPage implements OnInit {
     
     await modal.present();
   }
+
 
   alternarIdentificacaoMae() {
     const origemMae = this.formNascidos.get('origemMae')?.value;
