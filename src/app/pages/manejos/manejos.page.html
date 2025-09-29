@@ -8,9 +8,10 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+
   <!-- SEGMENTO DENTRO DO CONTEÚDO -->
   <div class="segment-container">
-    <ion-segment [(ngModel)]="segmento" (ionChange)="alternarSegmento($event)">
+    <ion-segment [value]="segmento" (ionChange)="alternarSegmento($event)">
       <ion-segment-button value="lote">
         <ion-label>Manejo em Lote</ion-label>
       </ion-segment-button>
@@ -25,21 +26,23 @@
   <div class="tab-content">
     <div class="manejo-cards">
 
-      <!-- MANEJO SANITÁRIO (CORRIGIDO) -->
+      <!-- MANEJO SANITÁRIO -->
       <ion-card [class.expanded]="manejosExpandidos.sanitario">
         <ion-card-header (click)="toggleManejo('sanitario')" class="card-header-expansivel">
-  <ion-card-title>
-    <ion-icon [name]="manejosExpandidos.sanitario ? 'chevron-down-outline' : 'chevron-forward-outline'" slot="start">
-    </ion-icon>
-    Manejo Sanitário
-    <!-- Badge movido para aqui -->
-    @if (manejosSelecionados.sanitario.length > 0) {
-      <ion-badge class="badge-selecionado">
-        {{ manejosSelecionados.sanitario.length }} selecionados
-      </ion-badge>
-    }
-  </ion-card-title>
-</ion-card-header>
+          <ion-card-title>
+            <ion-icon [name]="manejosExpandidos.sanitario ? 'chevron-down-outline' : 'chevron-forward-outline'"
+              slot="start">
+            </ion-icon>
+            <ion-icon
+              [name]="secoesIndividuais.sanitario ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
+            Manejo Sanitário
+            @if (manejosSelecionados.sanitario.length > 0) {
+            <ion-badge class="badge-selecionado">
+              {{ manejosSelecionados.sanitario.length }} selecionados
+            </ion-badge>
+            }
+          </ion-card-title>
+        </ion-card-header>
 
         @if (manejosExpandidos.sanitario) {
         <ion-card-content>
@@ -82,22 +85,24 @@
               <div class="formulario-novo-item">
                 <h4>Adicionar Nova Vacina:</h4>
                 <ion-item>
-                  <ion-input label="Produto/Vacina" placeholder="Ex: Policlost"
-                    [(ngModel)]="novaVacina.produto"></ion-input>
+                  <ion-input label="Produto/Vacina" placeholder="Ex: Policlost" [ngModel]="novaVacina.produto"
+                    (ngModelChange)="novaVacina.produto = $event"></ion-input>
                 </ion-item>
                 <ion-item>
-                  <ion-input label="Dose" placeholder="Ex: 2.5 ml" [(ngModel)]="novaVacina.dose"></ion-input>
+                  <ion-input label="Dose" placeholder="Ex: 2.5 ml" [ngModel]="novaVacina.dose"
+                    (ngModelChange)="novaVacina.dose = $event"></ion-input>
                 </ion-item>
                 <ion-item>
-                  <ion-input label="Via" placeholder="Ex: Subcutânea" [(ngModel)]="novaVacina.via"></ion-input>
+                  <ion-input label="Via" placeholder="Ex: Subcutânea" [ngModel]="novaVacina.via"
+                    (ngModelChange)="novaVacina.via = $event"></ion-input>
                 </ion-item>
                 <ion-item>
-                  <ion-input label="Lote (opcional)" placeholder="Número do lote"
-                    [(ngModel)]="novaVacina.lote"></ion-input>
+                  <ion-input label="Lote (opcional)" placeholder="Número do lote" [ngModel]="novaVacina.lote"
+                    (ngModelChange)="novaVacina.lote = $event"></ion-input>
                 </ion-item>
                 <ion-item>
-                  <ion-input label="Fabricante (opcional)" placeholder="Fabricante"
-                    [(ngModel)]="novaVacina.fabricante"></ion-input>
+                  <ion-input label="Fabricante (opcional)" placeholder="Fabricante" [ngModel]="novaVacina.fabricante"
+                    (ngModelChange)="novaVacina.fabricante = $event"></ion-input>
                 </ion-item>
                 <ion-button expand="block" fill="outline" (click)="adicionarVacina()"
                   [disabled]="!novaVacina.produto || !novaVacina.dose">
@@ -144,20 +149,24 @@
               <div class="formulario-novo-item">
                 <h4>Adicionar Novo Vermífugo:</h4>
                 <ion-item>
-                  <ion-select label="Tipo de Vermífugo" [(ngModel)]="novoVermifugo.tipo">
+                  <ion-select label="Tipo de Vermífugo" [ngModel]="novoVermifugo.tipo"
+                    (ngModelChange)="novoVermifugo.tipo = $event">
                     <ion-select-option value="endectocida">Endectocida</ion-select-option>
                     <ion-select-option value="anti-helmintico">Anti-helmíntico</ion-select-option>
                     <ion-select-option value="outro">Outro</ion-select-option>
                   </ion-select>
                 </ion-item>
                 <ion-item>
-                  <ion-input label="Produto" placeholder="Ex: Ivomec" [(ngModel)]="novoVermifugo.produto"></ion-input>
+                  <ion-input label="Produto" placeholder="Ex: Ivomec" [ngModel]="novoVermifugo.produto"
+                    (ngModelChange)="novoVermifugo.produto = $event"></ion-input>
                 </ion-item>
                 <ion-item>
-                  <ion-input label="Dose" placeholder="Ex: 5 ml" [(ngModel)]="novoVermifugo.dose"></ion-input>
+                  <ion-input label="Dose" placeholder="Ex: 5 ml" [ngModel]="novoVermifugo.dose"
+                    (ngModelChange)="novoVermifugo.dose = $event"></ion-input>
                 </ion-item>
                 <ion-item>
-                  <ion-input label="Via" placeholder="Ex: Oral" [(ngModel)]="novoVermifugo.via"></ion-input>
+                  <ion-input label="Via" placeholder="Ex: Oral" [ngModel]="novoVermifugo.via"
+                    (ngModelChange)="novoVermifugo.via = $event"></ion-input>
                 </ion-item>
                 <ion-button expand="block" fill="outline" (click)="adicionarVermifugo()"
                   [disabled]="!novoVermifugo.produto || !novoVermifugo.dose">
@@ -205,18 +214,21 @@
               <div class="formulario-novo-item">
                 <h4>Adicionar Nova Medicação:</h4>
                 <ion-item>
-                  <ion-input label="Medicamento" placeholder="Ex: Antibiótico"
-                    [(ngModel)]="novaMedicacao.produto"></ion-input>
+                  <ion-input label="Medicamento" placeholder="Ex: Antibiótico" [ngModel]="novaMedicacao.produto"
+                    (ngModelChange)="novaMedicacao.produto = $event"></ion-input>
                 </ion-item>
                 <ion-item>
-                  <ion-input label="Dose" placeholder="Ex: 10 ml" [(ngModel)]="novaMedicacao.dose"></ion-input>
+                  <ion-input label="Dose" placeholder="Ex: 10 ml" [ngModel]="novaMedicacao.dose"
+                    (ngModelChange)="novaMedicacao.dose = $event"></ion-input>
                 </ion-item>
                 <ion-item>
-                  <ion-input label="Via" placeholder="Ex: Intramuscular" [(ngModel)]="novaMedicacao.via"></ion-input>
+                  <ion-input label="Via" placeholder="Ex: Intramuscular" [ngModel]="novaMedicacao.via"
+                    (ngModelChange)="novaMedicacao.via = $event"></ion-input>
                 </ion-item>
                 <ion-item>
                   <ion-textarea label="Observações" rows="2" placeholder="Observações sobre a medicação..."
-                    [(ngModel)]="novaMedicacao.observacoes"></ion-textarea>
+                    [ngModel]="novaMedicacao.observacoes"
+                    (ngModelChange)="novaMedicacao.observacoes = $event"></ion-textarea>
                 </ion-item>
                 <ion-button expand="block" fill="outline" (click)="adicionarMedicacao()"
                   [disabled]="!novaMedicacao.produto || !novaMedicacao.dose">
@@ -238,12 +250,17 @@
           <ion-card-title>
             <ion-icon [name]="manejosExpandidos.fisico ? 'chevron-down-outline' : 'chevron-forward-outline'"
               slot="start">
+
             </ion-icon>
+            <ion-icon
+              [name]="secoesIndividuais.sanitario ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
             Manejo Físico
+            @if (manejosSelecionados.fisico.length > 0) {
+            <ion-badge class="badge-selecionado">
+              {{ manejosSelecionados.fisico.length }} selecionados
+            </ion-badge>
+            }
           </ion-card-title>
-          <ion-badge [color]="manejosSelecionados.fisico.length > 0 ? 'primary' : 'medium'">
-            {{ manejosSelecionados.fisico.length }} selecionados
-          </ion-badge>
         </ion-card-header>
 
         @if (manejosExpandidos.fisico) {
@@ -287,11 +304,15 @@
             <ion-icon [name]="manejosExpandidos.tecnico ? 'chevron-down-outline' : 'chevron-forward-outline'"
               slot="start">
             </ion-icon>
+            <ion-icon
+              [name]="secoesIndividuais.sanitario ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
             Manejo Técnico
+            @if (manejosSelecionados.tecnico.length > 0) {
+            <ion-badge class="badge-selecionado">
+              {{ manejosSelecionados.tecnico.length }} selecionados
+            </ion-badge>
+            }
           </ion-card-title>
-          <ion-badge [color]="manejosSelecionados.tecnico.length > 0 ? 'primary' : 'medium'">
-            {{ manejosSelecionados.tecnico.length }} selecionados
-          </ion-badge>
         </ion-card-header>
 
         @if (manejosExpandidos.tecnico) {
@@ -343,18 +364,19 @@
       </ion-card>
 
       <!-- DETALHES INDIVIDUAIS POR ANIMAL -->
-      <ion-card [class.expanded]="manejosExpandidos.detalhesAnimais"
-        [class.required]="isManejoSelecionado('tecnico', 'pesagem') || isManejoSelecionado('tecnico', 'escore')">
+      <ion-card [class.expanded]="manejosExpandidos.detalhesAnimais">
         <ion-card-header (click)="toggleManejo('detalhesAnimais')" class="card-header-expansivel">
           <ion-card-title>
             <ion-icon [name]="manejosExpandidos.detalhesAnimais ? 'chevron-down-outline' : 'chevron-forward-outline'"
               slot="start">
             </ion-icon>
             Dados Individuais por Animal
+            @if (animaisComDadosTecnicosCount > 0) {
+            <ion-badge class="badge-selecionado">
+              {{ animaisComDadosTecnicosCount }}/{{ animaisSelecionadosCount }} com dados
+            </ion-badge>
+            }
           </ion-card-title>
-          <ion-badge [color]="animaisComDadosTecnicosCount > 0 ? 'primary' : 'medium'">
-            {{ animaisComDadosTecnicosCount }}/{{ animaisSelecionadosCount }} com dados
-          </ion-badge>
         </ion-card-header>
 
         @if (manejosExpandidos.detalhesAnimais && animaisSelecionadosCount > 0) {
@@ -378,14 +400,19 @@
                     @if (isManejoSelecionado('tecnico', 'pesagem')) {
                     <ion-col size="12" size-md="6">
                       <ion-item>
+                        <!-- <ion-input type="number" label="Peso (kg)" placeholder="Ex: 65,5"
+                          [ngModel]="animalSelecionado.manejoAtual?.tecnico?.peso"
+                          (ngModelChange)="onPesoChange($event)"></ion-input>-->
+
                         <ion-input type="number" label="Peso (kg)" placeholder="Ex: 65.5"
-                          [(ngModel)]="animal.manejoTecnico.peso" (ionInput)="calcularVariacaoPeso(animal)">
+                          [ngModel]="animal.manejoTecnico.peso" (ngModelChange)="atualizarPesoAnimal(animal, $event)">
                         </ion-input>
                       </ion-item>
+                      
                       @if (animal.manejoTecnico.peso) {
                       <span [class]="'ion-color ion-color-' + getCorVariacaoPeso(animal)" class="variacao-peso">
                         <small>
-                          {{ calcularVariacaoPeso(animal) }} vs. peso atual ({{ animal.pesoAtual }}kg)
+                          {{ calcularVariacaoPeso(animal) }} vs. última pesagem ({{ animal.pesoAtual }}kg)
                         </small>
                       </span>
                       }
@@ -395,8 +422,8 @@
                     @if (isManejoSelecionado('tecnico', 'escore')) {
                     <ion-col size="12" size-md="6">
                       <ion-item>
-                        <ion-select label="Escore Corporal" [(ngModel)]="animal.manejoTecnico.escore"
-                          interface="popover">
+                        <ion-select label="Escore Corporal" [ngModel]="animal.manejoTecnico.escore"
+                          (ngModelChange)="animal.manejoTecnico.escore = $event" interface="popover">
                           <ion-select-option value="1">1 - Muito Magro</ion-select-option>
                           <ion-select-option value="2">2 - Magro</ion-select-option>
                           <ion-select-option value="3">3 - Ideal</ion-select-option>
@@ -417,7 +444,8 @@
                     <ion-col size="12">
                       <ion-item>
                         <ion-textarea label="Observações" rows="2" placeholder="Observações específicas deste animal..."
-                          [(ngModel)]="animal.manejoTecnico.observacoes">
+                          [ngModel]="animal.manejoTecnico.observacoes"
+                          (ngModelChange)="animal.manejoTecnico.observacoes = $event">
                         </ion-textarea>
                       </ion-item>
                     </ion-col>
@@ -479,7 +507,7 @@
       <ion-card-content>
         <ion-textarea label="Observações do manejo" rows="4"
           placeholder="Anote qualquer observação relevante sobre os manejos realizados..."
-          [(ngModel)]="dadosManejoLote.observacoes">
+          [ngModel]="dadosManejoLote.observacoes" (ngModelChange)="dadosManejoLote.observacoes = $event">
         </ion-textarea>
       </ion-card-content>
     </ion-card>
@@ -498,19 +526,489 @@
   <!-- MANEJO INDIVIDUAL -->
   @if (segmento === 'individual') {
   <div class="tab-content">
-    <ion-card>
+
+    <!-- CABEÇALHO DO ANIMAL -->
+    <ion-card class="animal-header-card">
       <ion-card-header>
-        <ion-card-title>Manejo Individual</ion-card-title>
-        <ion-card-subtitle>Em desenvolvimento</ion-card-subtitle>
+        <ion-card-title>{{ animalSelecionado.brinco }}</ion-card-title>
+        <ion-card-subtitle>
+          Sexo: {{ animalSelecionado.sexo }} •
+          Categoria: {{ animalSelecionado.categoria }} •
+          Idade: {{ animalSelecionado.idade }} anos •
+          Peso atual: {{ animalSelecionado.pesoAtual }} Kg
+        </ion-card-subtitle>
       </ion-card-header>
+
       <ion-card-content>
-        <p>Funcionalidade de manejo individual em desenvolvimento...</p>
-        <ion-button expand="block" fill="outline" (click)="segmento = 'lote'">
-          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
-          Voltar para Manejo em Lote
+        <ion-button fill="outline" color="danger" size="small">
+          <ion-icon name="trash-outline" slot="start"></ion-icon>
+          ALTERAR STATUS DO ANIMAL
         </ion-button>
       </ion-card-content>
     </ion-card>
+
+    <!-- MANEJOS SANITÁRIOS -->
+    <ion-card class="manejo-section">
+      <ion-card-header (click)="toggleSecaoIndividual('sanitario')" class="secao-expansivel">
+        <ion-card-title>
+          <ion-icon
+            [name]="secoesIndividuais.sanitario ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
+          Sanitários
+        </ion-card-title>
+      </ion-card-header>
+
+      @if (secoesIndividuais.sanitario) {
+      <ion-card-content>
+
+        <!-- Lista de Medicamentos -->
+        @for (medicacao of animalSelecionado.manejoAtual?.sanitario?.medicacoes; track $index; let i = $index) {
+        <div class="item-manejo">
+          <ion-item>
+            <ion-checkbox slot="start" [checked]="true"></ion-checkbox>
+            <ion-label>
+              <h3>{{ medicacao.produto }}</h3>
+              <p>{{ medicacao.tipo }} • Dose: {{ medicacao.dose }} • Via: {{ medicacao.via }}</p>
+              @if (medicacao.observacao) {
+              <p><small>{{ medicacao.observacao }}</small></p>
+              }
+            </ion-label>
+            <ion-button fill="clear" color="danger" size="small" (click)="removerMedicacaoIndividual(i)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </div>
+        }
+
+        <!-- Formulário para Nova Medicação -->
+        <div class="formulario-novo-item">
+          <h4>Adicionar Medicamento:</h4>
+          <ion-item>
+            <ion-input label="Nome do produto" placeholder="Nome do medicamento" [ngModel]="medicacaoEditando.produto"
+              (ngModelChange)="medicacaoEditando.produto = $event"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-select label="Tipo" [ngModel]="medicacaoEditando.tipo"
+              (ngModelChange)="medicacaoEditando.tipo = $event">
+              <ion-select-option value="vermifugo">Vermífugo</ion-select-option>
+              <ion-select-option value="antibiotico">Antibiótico</ion-select-option>
+              <ion-select-option value="anti-inflamatorio">Anti-inflamatório</ion-select-option>
+              <ion-select-option value="vitamina">Vitamina</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-input label="Dose" placeholder="Ex: 1,2 ml" [ngModel]="medicacaoEditando.dose"
+              (ngModelChange)="medicacaoEditando.dose = $event"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-input label="Via" placeholder="Ex: Intramuscular" [ngModel]="medicacaoEditando.via"
+              (ngModelChange)="medicacaoEditando.via = $event"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-textarea label="Observação" placeholder="Observações sobre a medicação..."
+              [ngModel]="medicacaoEditando.observacao" (ngModelChange)="medicacaoEditando.observacao = $event"
+              rows="2"></ion-textarea>
+          </ion-item>
+          <ion-button expand="block" fill="outline" (click)="adicionarMedicacaoIndividual()"
+            [disabled]="!medicacaoEditando.produto || !medicacaoEditando.dose">
+            <ion-icon name="add-outline" slot="start"></ion-icon>
+            Adicionar Medicamento
+          </ion-button>
+        </div>
+
+        <!-- Vacinas -->
+        <div class="subsecao">
+          <h4>Vacinas:</h4>
+          @for (vacina of animalSelecionado.manejoAtual?.sanitario?.vacinas; track $index; let i = $index) {
+          <div class="item-manejo">
+            <ion-item>
+              <ion-checkbox slot="start" [checked]="true"></ion-checkbox>
+              <ion-label>
+                <h3>{{ vacina.produto }}</h3>
+                <p>Dose: {{ vacina.dose }} • Via: {{ vacina.via }}</p>
+              </ion-label>
+              <ion-button fill="clear" color="danger" size="small" (click)="removerVacinaIndividual(i)">
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </ion-item>
+          </div>
+          }
+
+          <!-- Formulário para Nova Vacina -->
+          <div class="formulario-novo-item">
+            <h4>Adicionar Vacina:</h4>
+            <ion-item>
+              <ion-input label="Nome da vacina" placeholder="Nome da vacina" [ngModel]="vacinaEditando.produto"
+                (ngModelChange)="vacinaEditando.produto = $event"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Dose" placeholder="Ex: 2,5 ml" [ngModel]="vacinaEditando.dose"
+                (ngModelChange)="vacinaEditando.dose = $event"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Via" placeholder="Ex: Subcutânea" [ngModel]="vacinaEditando.via"
+                (ngModelChange)="vacinaEditando.via = $event"></ion-input>
+            </ion-item>
+            <ion-button expand="block" fill="outline" (click)="adicionarVacinaIndividual()"
+              [disabled]="!vacinaEditando.produto || !vacinaEditando.dose">
+              <ion-icon name="add-outline" slot="start"></ion-icon>
+              Adicionar Vacina
+            </ion-button>
+          </div>
+        </div>
+
+        <!-- Exames  -->
+        <div class="subsecao">
+          <h4>Exames:</h4>
+
+          <!-- OPG -  -->
+          <!-- <ion-item>
+            <ion-checkbox slot="start" [ngModel]="animalSelecionado.manejoAtual?.sanitario?.opg || false"
+              (ngModelChange)="animalSelecionado.manejoAtual!.sanitario!.opg = $event"></ion-checkbox>
+            <ion-label>
+              <h3>OPG</h3>
+              <p>Exame de OPG (Ovos Por Grama)</p>
+            </ion-label>
+          </ion-item>
+          -->
+
+          <!-- NOVO FAMACHA VISUAL -->
+          <div class="item-manejo">
+            <ion-item button (click)="abrirModalFamacha()">
+              <ion-label>
+                <h3>Famacha</h3>
+                <p>Avaliação de anemia - Clique para avaliar</p>
+                <!-- MOSTRAR RESULTADO SE JÁ AVALIADO -->
+                @if (animalSelecionado.manejoAtual?.sanitario?.famacha; as famacha) {
+                <div class="resultado-famacha">
+                  <span class="circulo-cor" [style.background]="getCorFamacha(famacha)">
+                  </span>
+                  <strong>Avaliação {{ famacha }}</strong> -
+                  {{ getDescricaoFamacha(famacha) }}
+                </div>
+                }
+              </ion-label>
+              <ion-icon name="color-palette-outline" slot="end"></ion-icon>
+            </ion-item>
+          </div>
+        </div>
+
+      </ion-card-content>
+      }
+    </ion-card>
+
+    <!-- MANEJOS FÍSICOS -->
+    <ion-card class="manejo-section">
+      <ion-card-header (click)="toggleSecaoIndividual('fisico')" class="secao-expansivel">
+        <ion-card-title>
+          <ion-icon [name]="secoesIndividuais.fisico ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
+          Físicos
+        </ion-card-title>
+      </ion-card-header>
+
+      @if (secoesIndividuais.fisico) {
+      <ion-card-content>
+
+        <!-- Procedimentos Básicos -->
+        <ion-item>
+          <ion-checkbox slot="start" [ngModel]="animalSelecionado.manejoAtual?.fisico?.tosquia || false"
+            (ngModelChange)="animalSelecionado.manejoAtual!.fisico!.tosquia = $event"></ion-checkbox>
+          <ion-label>
+            <h3>Tosquia</h3>
+            <p>Corte da lã</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-checkbox slot="start" [ngModel]="animalSelecionado.manejoAtual?.fisico?.caudectomia || false"
+            (ngModelChange)="animalSelecionado.manejoAtual!.fisico!.caudectomia = $event"></ion-checkbox>
+          <ion-label>
+            <h3>Caudectomia</h3>
+            <p>Corte da cauda</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-checkbox slot="start" [ngModel]="animalSelecionado.manejoAtual?.fisico?.descorna || false"
+            (ngModelChange)="animalSelecionado.manejoAtual!.fisico!.descorna = $event"></ion-checkbox>
+          <ion-label>
+            <h3>Descorna</h3>
+            <p>Remoção de chifres</p>
+          </ion-label>
+        </ion-item>
+
+        <!-- Casqueamento com Observações -->
+
+        <ion-item>
+          <ion-checkbox slot="start" [ngModel]="animalSelecionado.manejoAtual?.fisico?.casqueamento?.realizado || false"
+            (ngModelChange)="animalSelecionado.manejoAtual!.fisico!.casqueamento.realizado = $event"></ion-checkbox>
+          <ion-label>
+            <h3>Casqueamento</h3>
+            <p>Manutenção dos cascos</p>
+          </ion-label>
+        </ion-item>
+
+        @if (animalSelecionado.manejoAtual?.fisico?.casqueamento?.realizado) {
+        <div class="detalhes-item">
+          <ion-item>
+            <ion-textarea label="Observações" placeholder="Observações sobre o casqueamento..."
+              [ngModel]="animalSelecionado.manejoAtual?.fisico?.casqueamento?.observacao || ''"
+              (ngModelChange)="animalSelecionado.manejoAtual!.fisico!.casqueamento.observacao = $event"
+              rows="2"></ion-textarea>
+          </ion-item>
+        </div>
+        }
+
+
+      </ion-card-content>
+      }
+    </ion-card>
+
+    <!-- MANEJO TÉCNICO -->
+    <ion-card class="manejo-section">
+      <ion-card-header (click)="toggleSecaoIndividual('tecnico')" class="secao-expansivel">
+        <ion-card-title>
+          <ion-icon [name]="secoesIndividuais.tecnico ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
+          Técnico
+        </ion-card-title>
+      </ion-card-header>
+
+      @if (secoesIndividuais.tecnico) {
+      <ion-card-content>
+
+        <ion-item>
+          <ion-input type="number" label="Peso (kg)" placeholder="Ex: 65,5"
+            [ngModel]="animalSelecionado.manejoAtual?.tecnico?.peso" (ngModelChange)="onPesoChange($event)"></ion-input>
+        </ion-item>
+
+        <!--<ion-item>
+          <ion-input type="number" label="Temperatura (°C)" placeholder="Ex: 38,5"
+            [ngModel]="animalSelecionado.manejoAtual?.tecnico?.temperatura"
+            (ngModelChange)="onTemperaturaChange($event)"></ion-input>
+        </ion-item>-->
+
+        <ion-item>
+          <ion-select label="Escore Corporal" [ngModel]="animalSelecionado.manejoAtual?.tecnico?.escoreCorporal"
+            (ngModelChange)="onEscoreChange($event)">
+            <ion-select-option value="1">1 - Muito Magro</ion-select-option>
+            <ion-select-option value="2">2 - Magro</ion-select-option>
+            <ion-select-option value="3">3 - Ideal</ion-select-option>
+            <ion-select-option value="4">4 - Gordo</ion-select-option>
+            <ion-select-option value="5">5 - Muito Gordo</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+      </ion-card-content>
+      }
+    </ion-card>
+
+    <!-- REPRODUTIVO -->
+    <ion-card class="manejo-section">
+      <ion-card-header (click)="toggleSecaoIndividual('reprodutivo')" class="secao-expansivel">
+        <ion-card-title>
+          <ion-icon
+            [name]="secoesIndividuais.reprodutivo ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
+          Reprodutivo
+        </ion-card-title>
+      </ion-card-header>
+
+      @if (secoesIndividuais.reprodutivo) {
+      <ion-card-content>
+
+        <ion-item>
+          <ion-select label="Ação Reprodutiva" [ngModel]="animalSelecionado.manejoAtual?.reprodutivo?.acao"
+            (ngModelChange)="animalSelecionado.manejoAtual!.reprodutivo!.acao = $event">
+            <ion-select-option value="parto">Parto</ion-select-option>
+            <ion-select-option value="cobertura">Cobertura</ion-select-option>
+            <ion-select-option value="aborto">Aborto</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        @if (animalSelecionado.manejoAtual?.reprodutivo?.acao === 'parto') {
+        <div class="subsecao">
+          <ion-item>
+            <ion-select label="Tipo de Parto" [ngModel]="animalSelecionado.manejoAtual?.reprodutivo?.tipoParto"
+              (ngModelChange)="animalSelecionado.manejoAtual!.reprodutivo!.tipoParto = $event">
+              <ion-select-option value="natural">Natural</ion-select-option>
+              <ion-select-option value="induzido">Induzido</ion-select-option>
+              <ion-select-option value="cesarea">Cesárea</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-input type="number" label="Quantidade de Filhotes"
+              [ngModel]="animalSelecionado.manejoAtual?.reprodutivo?.quantidadeFilhotes"
+              (ngModelChange)="onQuantidadeFilhotesChange($event)"></ion-input>
+          </ion-item>
+
+          <!-- Lista de Filhotes -->
+          @for (filhote of animalSelecionado.manejoAtual?.reprodutivo?.filhotes; track $index; let i = $index) {
+          <div class="item-manejo">
+            <ion-item>
+              <ion-label>
+                <h3>Filhote {{ i + 1 }}</h3>
+                <p>Sexo: {{ filhote.sexo }} • Peso: {{ filhote.pesoNascimento }}kg</p>
+              </ion-label>
+              <ion-button fill="clear" color="danger" size="small" (click)="removerFilhote(i)">
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </ion-item>
+          </div>
+          }
+
+          <!-- Formulário para Novo Filhote -->
+          <div class="formulario-novo-item">
+            <h4>Adicionar Filhote:</h4>
+            <ion-item>
+              <ion-select label="Sexo" [ngModel]="filhoteEditando.sexo" (ngModelChange)="filhoteEditando.sexo = $event">
+                <ion-select-option value="macho">Macho</ion-select-option>
+                <ion-select-option value="femea">Fêmea</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-input type="number" label="Peso ao Nascer (kg)" [ngModel]="filhoteEditando.pesoNascimento"
+                (ngModelChange)="onPesoNascimentoChange($event)"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-checkbox [ngModel]="filhoteEditando.mamouColostro"
+                (ngModelChange)="filhoteEditando.mamouColostro = $event">Mamou colostro</ion-checkbox>
+            </ion-item>
+            <ion-button expand="block" fill="outline" (click)="adicionarFilhote()" [disabled]="!filhoteEditando.sexo">
+              <ion-icon name="add-outline" slot="start"></ion-icon>
+              Adicionar Filhote
+            </ion-button>
+          </div>
+        </div>
+        }
+
+      </ion-card-content>
+      }
+    </ion-card>
+
+    <!-- OBSERVAÇÕES GERAIS -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Observações</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-textarea label="Observações gerais" rows="4"
+          placeholder="Anote qualquer observação relevante sobre o manejo..."
+          [ngModel]="animalSelecionado.manejoAtual?.observacao || ''"
+          (ngModelChange)="animalSelecionado.manejoAtual!.observacao = $event"></ion-textarea>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="action-buttons-individual">
+      <ion-button expand="block" size="large" (click)="salvarManejoIndividual()"
+        [disabled]="!podeSalvarManejoIndividual()">
+        <ion-icon name="star-outline" slot="start"></ion-icon>
+        Salvar Manejo
+      </ion-button>
+
+      <ion-button expand="block" fill="outline" (click)="voltarParaLote()">
+        <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+        Voltar
+      </ion-button>
+    </div>
   </div>
   }
+
+  <!-- MODAL DO FAMACHA - ADICIONADO NO FINAL -->
+  <ion-modal [isOpen]="modalFamachaAberto" (ionModalDidDismiss)="fecharModalFamacha()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Avaliação FAMACHA</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="fecharModalFamacha()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="modal-famacha-content">
+        <div class="famacha-guia">
+          <h3>Animal: {{ animalSelecionado.brinco }}</h3>
+          <p class="instrucoes">Compare a cor da mucosa ocular com as cores abaixo:</p>
+
+          <!-- OPÇÕES DE CORES DO FAMACHA -->
+          <div class="opcoes-cores">
+            <!-- NOTA 1 - VERMELHO (SAUDÁVEL) -->
+            <div class="opcao-cor" (click)="selecionarFamacha(1)">
+              <div class="circulo-famacha cor-1"></div>
+              <div class="info-cor">
+                <strong>1 - Vermelho</strong>
+                <small>Animal saudável</small>
+                <span class="status saudavel">Não tratar</span>
+              </div>
+            </div>
+
+            <!-- NOTA 2 - VERMELHO-PÁLIDO -->
+            <div class="opcao-cor" (click)="selecionarFamacha(2)">
+              <div class="circulo-famacha cor-2"></div>
+              <div class="info-cor">
+                <strong>2 - Vermelho-pálido</strong>
+                <small>Saudável</small>
+                <span class="status saudavel">Não tratar</span>
+              </div>
+            </div>
+
+            <!-- NOTA 3 - ROSA -->
+            <div class="opcao-cor" (click)="selecionarFamacha(3)">
+              <div class="circulo-famacha cor-3"></div>
+              <div class="info-cor">
+                <strong>3 - Rosa</strong>
+                <small>Monitorar</small>
+                <span class="status monitorar">Atenção</span>
+              </div>
+            </div>
+
+            <!-- NOTA 4 - ROSA-PÁLIDO -->
+            <div class="opcao-cor" (click)="selecionarFamacha(4)">
+              <div class="circulo-famacha cor-4"></div>
+              <div class="info-cor">
+                <strong>4 - Rosa-pálido</strong>
+                <small>Anemia moderada</small>
+                <span class="status tratar">Tratar</span>
+              </div>
+            </div>
+
+            <!-- NOTA 5 - BRANCO -->
+            <div class="opcao-cor" (click)="selecionarFamacha(5)">
+              <div class="circulo-famacha cor-5"></div>
+              <div class="info-cor">
+                <strong>5 - Branco</strong>
+                <small>Anemia severa</small>
+                <span class="status urgente">Tratar URGENTE</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ENTRADA MANUAL PARA USUÁRIOS EXPERIENTES -->
+          <div class="entrada-manual">
+            <ion-item>
+              <ion-input type="number" label="Ou digite a nota (1-5):" min="1" max="5" [ngModel]="notaFamachaManual"
+                (ngModelChange)="notaFamachaManual = $event" placeholder="Digite 1 a 5">
+              </ion-input>
+              <ion-button slot="end" fill="outline" (click)="aplicarNotaManual()"
+                [disabled]="!notaFamachaManual || notaFamachaManual < 1 || notaFamachaManual > 5">
+                Aplicar
+              </ion-button>
+            </ion-item>
+          </div>
+
+          <!-- DICAS -->
+          <div class="dicas-famacha">
+            <h4>💡 Dicas:</h4>
+            <ul>
+              <li>Examine o animal sob luz natural</li>
+              <li>Observe a parte medial da conjuntiva</li>
+              <li>Na dúvida, opte pela categoria inferior</li>
+            </ul>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
 </ion-content>
