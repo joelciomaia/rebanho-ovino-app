@@ -1,0 +1,157 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Todos os Animais</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Card de Estatísticas -->
+  <ion-card class="stats-card">
+    <div class="stats-header">
+      <div class="stats-main">
+        <div class="stats-title">TOTAL DE ANIMAIS</div>
+        <div class="stats-total">
+          <div class="stats-number">{{ estatisticas.total }}</div>
+          <span class="stats-variation">
+      {{ crescimentoMes >= 0 ? '+' : '' }}{{ crescimentoMes }} este mês
+    </span>
+        </div>
+      </div>
+
+      <div class="stats-image">
+        <div class="rebanho-image">
+          <img src="assets/images/logo-ovino.png" alt="Logo OvinoGest">
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-number">{{ estatisticas.matrizes }}</div>
+        <div class="stat-label">Matrizes</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ estatisticas.carneiros }}</div>
+        <div class="stat-label">Carneiros</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ estatisticas.borregos }}</div>
+        <div class="stat-label">Borregos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ estatisticas.cordeiros }}</div>
+        <div class="stat-label">Cordeiros</div>
+      </div>
+    </div>
+  </ion-card>
+
+  <!-- Barra de Busca -->
+  <div class="search-container">
+    <ion-searchbar placeholder="Buscar por número do brinco ou raça..." [debounce]="500"
+      (ionInput)="onSearchChange($event)">
+    </ion-searchbar>
+  </div>
+
+  <!-- Toggle para mostrar inativos -->
+  <div class="toggle-container">
+    <ion-item lines="none">
+      <ion-toggle [checked]="mostrarInativos" (ionChange)="onToggleInativos($event)" slot="start">
+      </ion-toggle>
+      <ion-label>Mostrar inativos</ion-label>
+    </ion-item>
+  </div>
+
+  <!-- Segmento de Filtros Rápidos -->
+  <div class="segment-container">
+    <ion-segment [value]="segmento" (ionChange)="onSegmentChange($event)">
+      <ion-segment-button value="todos">
+        <ion-label>Todos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="matriz">
+        <ion-label>Matrizes</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="carneiro">
+        <ion-label>Carneiros</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="borrega">
+        <ion-label>Borregos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="cordeiro">
+        <ion-label>Cordeiros</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Lista de Animais -->
+  <div class="animais-list">
+    @for (animal of animaisFiltrados; track animal.brinco) {
+    <ion-card class="animal-card">
+      <!-- Cabeçalho compacto COM ÍCONE DE STATUS -->
+      <!-- Cabeçalho compacto COM ÍCONE DE STATUS -->
+<div class="card-header-compact">
+  <div class="animal-identity">
+    <h3 class="animal-brinco">{{ animal.brinco }}</h3>
+    <div class="animal-badges">
+      <span class="badge-categoria">{{ animal.categoria }}</span>
+      <span class="badge-sexo">{{ animal.sexo }}</span>
+    </div>
+  </div>
+  <!-- ÍCONE DE STATUS DO ANIMAL - AGORA NA DIREITA -->
+  <div class="animal-status" [class]="getClasseStatus(animal.situacao)" [title]="getTooltipStatus(animal.situacao)">
+    <ion-icon [name]="getIconeStatus(animal.situacao)"></ion-icon>
+  </div>
+</div>
+
+      <!-- Detalhes em grid compacto -->
+      <div class="animal-details-compact">
+        <div class="detail-item">
+          <span class="detail-icon">🐑</span>
+          <span class="detail-value">{{ animal?.raca_nome || 'N/A' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-icon">📅</span>
+          <span class="detail-text">{{ animal.data_nascimento | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-icon">🎂</span>
+          <span class="detail-text">{{ calcularIdade(animal.data_nascimento) }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-icon">⚖️</span>
+          <span class="detail-text">{{ animal.peso_atual || '0' }} kg</span>
+        </div>
+        @if (animal.data_atualizacao) {
+        <div class="detail-item">
+          <span class="detail-icon">🕒</span>
+          <span class="detail-text">Atualizado: {{ animal.data_atualizacao | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        }
+      </div>
+
+      <!-- Botões compactos COM EVENTOS DE CLIQUE -->
+      <div class="animal-actions-compact">
+        <button class="btn-action btn-detalhes" (click)="verDetalhes(animal.id)">
+          <ion-icon name="eye-outline"></ion-icon>
+          Detalhes
+        </button>
+        <button class="btn-action btn-editar" (click)="aplicarManejo(animal.id)">
+          <ion-icon name="create-outline"></ion-icon>
+          Manejo
+        </button>
+      </div>
+    </ion-card>
+    }
+
+    <!-- Mensagem quando não há resultados -->
+    @if (animaisFiltrados.length === 0) {
+    <div class="empty-state">
+      <ion-icon name="search-outline" class="empty-icon"></ion-icon>
+      <h3>Nenhum animal encontrado</h3>
+      <p>Tente ajustar os filtros ou termos de busca</p>
+    </div>
+    }
+  </div>
+</ion-content>

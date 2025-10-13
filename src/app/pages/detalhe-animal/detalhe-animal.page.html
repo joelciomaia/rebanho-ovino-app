@@ -1,65 +1,96 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/cadastro-animais" text=""></ion-back-button>
+      <ion-back-button defaultHref="/lista-animais" [text]="''"></ion-back-button>
     </ion-buttons>
     <ion-title>Detalhes do Animal</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  
+
   <!-- Card Recolhível com Informações do Animal -->
   <div class="collapsible-card">
     <div class="card-header" (click)="toggleCard()">
       <div class="header-content">
         <div class="animal-image-container">
-          <img src="src\assets\images\image.png" alt="Foto do animal" class="animal-profile-image">
+          <img src="assets/images/logo-ovino.png" alt="Logo OvinoGest">
         </div>
         <div class="animal-main-info">
-          <h1 class="animal-id">0145</h1>
-          <div class="animal-status status-ativo">
-            Ativo
+          <h1 class="animal-id">{{ animal?.brinco || 'Carregando...' }}</h1>
+          <div class="animal-status" [class]="'status-' + (animal?.situacao || 'ativo')">
+            {{ animal?.situacao || 'Ativo' }}
           </div>
         </div>
       </div>
-      <ion-icon 
-        [name]="isCardExpanded ? 'chevron-up-outline' : 'chevron-down-outline'" 
-        class="collapse-icon">
+      <ion-icon [name]="isCardExpanded ? 'chevron-up-outline' : 'chevron-down-outline'" class="collapse-icon">
       </ion-icon>
     </div>
 
     <div class="card-content" [class.collapsed]="!isCardExpanded">
       <div class="animal-details-grid">
+        <!-- Coluna 1 -->
         <div class="detail-item">
-          <span class="detail-label">Sexo</span>
-          <span class="detail-value">Fêmea</span>
-        </div>
-        <div class="detail-item">
-          <span class="detail-label">Categoria</span>
-          <span class="detail-value">Matriz</span>
+          <span class="detail-label">Raça</span>
+          <span class="detail-value">{{ animal?.raca_nome || 'N/A' }}</span>
         </div>
         <div class="detail-item">
           <span class="detail-label">Idade</span>
-          <span class="detail-value">3,2 anos</span>
+          <span class="detail-value">{{ calcularIdade(animal?.data_nascimento) }}</span>
         </div>
         <div class="detail-item">
-          <span class="detail-label">Peso atual</span>
-          <span class="detail-value">47 kg</span>
+          <span class="detail-label">Sexo</span>
+          <span class="detail-value">{{ animal?.sexo || 'N/A' }}</span>
         </div>
+
+        <!-- Coluna 2 -->
         <div class="detail-item">
-          <span class="detail-label">Raça</span>
-          <span class="detail-value">Dorper</span>
+          <span class="detail-label">Mãe</span>
+          <span class="detail-value">
+            <span *ngIf="carregandoGenitores" class="loading-text">Carregando...</span>
+            <span *ngIf="!carregandoGenitores">
+              {{ maeCompleta?.brinco || animal?.mae_id || 'Não informada' }}
+            </span>
+          </span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Categoria</span>
+          <span class="detail-value">{{ animal?.categoria || 'N/A' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Pai</span>
+          <span class="detail-value">
+            <span *ngIf="carregandoGenitores" class="loading-text">Carregando...</span>
+            <span *ngIf="!carregandoGenitores">
+              {{ paiCompleto?.brinco || animal?.pai_id || 'Não informado' }}
+            </span>
+          </span>
+        </div>
+
+
+        <!-- Linha 2 -->
+
+        <div class="detail-item">
+          <span class="detail-label">Peso Atual</span>
+          <span class="detail-value">{{ animal?.peso_atual || 'N/A' }} kg</span>
         </div>
       </div>
 
-      <!-- BOTÕES DE AÇÃO - CLASSE CORRIGIDA -->
+      <!-- BOTÕES DE AÇÃO -->
       <div class="action-buttons">
-        <ion-button expand="block" color="primary">
-          <ion-icon name="create-outline" slot="start"></ion-icon>
-          EDITAR DADOS
-        </ion-button>
-        <ion-button expand="block" color="secondary">
+        <div class="button-row">
+          <ion-button expand="block" color="primary" class="top-button" (click)="editarAnimal()">
+            <ion-icon name="create-outline" slot="start"></ion-icon>
+            EDITAR DADOS
+          </ion-button>
+          <ion-button expand="block" class="botao-status-custom top-button" (click)="abrirModalStatus()">
+            <ion-icon name="swap-horizontal-outline" slot="start"></ion-icon>
+            ALTERAR STATUS
+          </ion-button>
+        </div>
+        <ion-button expand="block" color="secondary" class="bottom-button">
           <ion-icon name="add-circle-outline" slot="start"></ion-icon>
           ADICIONAR MANEJO
         </ion-button>
@@ -70,7 +101,7 @@
   <!-- Histórico de Manejos -->
   <div class="history-section">
     <h2>Histórico de Manejos</h2>
-    
+
     <!-- Container das tabs com scroll horizontal -->
     <div class="segment-container">
       <ion-segment [value]="abaAtiva" (ionChange)="onSegmentChange($event)">
@@ -94,7 +125,7 @@
 
     <!-- Conteúdo das abas -->
     <div class="history-content">
-      
+
       <!-- Vacinações -->
       <div *ngIf="abaAtiva === 'vacinas'">
         <div class="history-item" *ngFor="let manejo of manejosFiltrados">
@@ -167,7 +198,7 @@
         <div class="photos-grid">
           <div *ngFor="let foto of animalFotos" class="photo-card">
             <img [src]="foto.url" [alt]="foto.descricao || 'Foto do animal'" class="photo-image">
-            
+
             <div class="photo-actions">
               <ion-button size="small" color="primary" (click)="setAsProfilePhoto(foto)">
                 <ion-icon name="person"></ion-icon>
@@ -176,7 +207,7 @@
                 <ion-icon name="expand"></ion-icon>
               </ion-button>
             </div>
-            
+
             <div class="photo-description" *ngIf="foto.descricao">
               {{ foto.descricao }}
             </div>
@@ -197,4 +228,125 @@
       </div>
     </div>
   </div>
+
+  <!-- MODAL DE ALTERAR STATUS -->
+  <ion-modal [isOpen]="modalStatusAberto" (ionModalDidDismiss)="fecharModalStatus()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Alterar Status do Animal</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="fecharModalStatus()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="modal-status-content">
+        <div class="animal-info-modal">
+          <h3>{{ animal?.brinco || 'Carregando...' }}</h3>
+          <p>{{ animal?.categoria || 'N/A' }} • {{ calcularIdade(animal?.data_nascimento) }}</p>
+        </div>
+
+        <div class="status-atual">
+          <strong>Status atual:</strong>
+          <span class="status-badge" [class]="'status-' + (animal?.situacao || 'ativo')">
+            {{ animal?.situacao || 'Ativo' }}
+          </span>
+        </div>
+
+        <div class="novo-status">
+          <h4>Novo Status:</h4>
+
+          <ion-radio-group [value]="novoStatus || 'ativo'" (ionChange)="onStatusChange($event)">
+            <ion-item>
+              <ion-radio value="ativo" labelPlacement="end">
+                <div class="status-option">
+                  <span class="status-indicator ativo"></span>
+                  Ativo
+                </div>
+              </ion-radio>
+            </ion-item>
+
+            <ion-item>
+              <ion-radio value="descarte" labelPlacement="end">
+                <div class="status-option">
+                  <span class="status-indicator descarte"></span>
+                  Marcado para Descarte
+                </div>
+              </ion-radio>
+            </ion-item>
+
+            <ion-item>
+              <ion-radio value="vendida" labelPlacement="end">
+                <div class="status-option">
+                  <span class="status-indicator inativo"></span>
+                  Vendida
+                </div>
+              </ion-radio>
+            </ion-item>
+
+            <ion-item>
+              <ion-radio value="morta" labelPlacement="end">
+                <div class="status-option">
+                  <span class="status-indicator inativo"></span>
+                  Morta
+                </div>
+              </ion-radio>
+            </ion-item>
+
+            <ion-item>
+              <ion-radio value="abatida" labelPlacement="end">
+                <div class="status-option">
+                  <span class="status-indicator inativo"></span>
+                  Abatida
+                </div>
+              </ion-radio>
+            </ion-item>
+
+            <ion-item>
+              <ion-radio value="doacao" labelPlacement="end">
+                <div class="status-option">
+                  <span class="status-indicator inativo"></span>
+                  Doação
+                </div>
+              </ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </div>
+
+        <div class="data-mudanca">
+          <ion-item>
+            <ion-input type="date" label="Data da mudança" [value]="dataMudanca || ''"
+              (ionInput)="dataMudanca = $event.detail.value || ''">
+            </ion-input>
+          </ion-item>
+        </div>
+
+        <div class="observacoes">
+          <ion-item>
+            <ion-textarea label="Observações" rows="3" placeholder="Observações adicionais..."
+              [value]="observacoesStatus || ''" (ionInput)="observacoesStatus = $event.detail.value || ''">
+            </ion-textarea>
+          </ion-item>
+        </div>
+      </ion-content>
+
+      <ion-footer>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button fill="outline" (click)="fecharModalStatus()">
+              Cancelar
+            </ion-button>
+          </ion-buttons>
+          <ion-buttons slot="end">
+            <ion-button (click)="confirmarMudancaStatus()" [disabled]="!novoStatus">
+              Confirmar
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
 </ion-content>

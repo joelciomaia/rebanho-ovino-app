@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { AnimalService } from '../../services/animal.service';
+import { AuthService } from '../../services/auth.service';
+import { WeatherService } from '../../services/weather.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,35 +14,85 @@ import { CommonModule } from '@angular/common';
   imports: [IonicModule, CommonModule]
 })
 export class DashboardPage implements OnInit {
-openMenu() {
-  const menuDrawer = document.getElementById('menuDrawer');
-  const menuOverlay = document.getElementById('menuOverlay');
-  if (menuDrawer && menuOverlay) {
-    menuDrawer.classList.add('open');
-    menuOverlay.style.display = 'block';
-    document.body.style.overflow = 'hidden'; // Previne scroll do body
-  }
-}
 
-closeMenu() {
-  const menuDrawer = document.getElementById('menuDrawer');
-  const menuOverlay = document.getElementById('menuOverlay');
-  if (menuDrawer && menuOverlay) {
-    menuDrawer.classList.remove('open');
-    menuOverlay.style.display = 'none';
-    document.body.style.overflow = ''; // Restaura scroll
-  }
-}
+  constructor(
+    private router: Router,
+    private animalService: AnimalService,
+    private authService: AuthService,
+    private weatherService: WeatherService
+  ) { }
 
-  // Dados fictícios para o dashboard - depois vêm do banco
+  navegarPara(rota: string) {
+    this.router.navigate([rota]);
+  }
+
+  sair() {
+    console.log('Saindo do sistema...');
+    this.authService.logout();
+    this.router.navigate(['/auth']);
+  }
+
+  // MÉTODO ATUALIZADO: Abrir perfil no modo edição
+  abrirPerfil() {
+    const currentUser = this.authService.getCurrentUser();
+    
+    if (currentUser) {
+      console.log('🔍 DEBUG - Usuário atual:', currentUser);
+      console.log('🔍 DEBUG - ID do usuário:', currentUser.id);
+      console.log('🔍 DEBUG - Tipo do ID:', typeof currentUser.id);
+      
+      // Navega para a tela de auth no modo edição
+      this.router.navigate(['/auth'], {
+        queryParams: {
+          modo: 'edicao',
+          userId: currentUser.id
+        }
+      });
+    } else {
+      console.log('🔍 DEBUG - Nenhum usuário logado');
+      // Se não estiver logado, vai para login normal
+      this.navegarPara('/auth');
+    }
+  }
+
+  // NOVO MÉTODO PARA ANIMAIS DESCARTE
+  navegarParaAnimaisDescarte() {
+    this.router.navigate(['/lista-animais'], { 
+      queryParams: { filtro: 'descarte' } 
+    });
+  }
+
+  openMenu() {
+    const menuDrawer = document.getElementById('menuDrawer');
+    const menuOverlay = document.getElementById('menuOverlay');
+    if (menuDrawer && menuOverlay) {
+      menuDrawer.classList.add('open');
+      menuOverlay.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  closeMenu() {
+    const menuDrawer = document.getElementById('menuDrawer');
+    const menuOverlay = document.getElementById('menuOverlay');
+    if (menuDrawer && menuOverlay) {
+      menuDrawer.classList.remove('open');
+      menuOverlay.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  }
+
+  // DADOS DO DASHBOARD - AGORA DINÂMICOS
   dadosDashboard: any = {
-    totalAnimais: 63,
-    variacaoAnimais: 12,
-    femeasGestantes: 42,
-    variacaoGestantes: 5,
-    animaisDescarte: 11,
-    variacaoDescarte: 2,
+    totalAnimais: 0, // ← SERÁ PREENCHIDO DO BANCO
+    variacaoAnimais: 0,
+    femeasGestantes: 0, // ← SERÁ PREENCHIDO DO BANCO
+    variacaoGestantes: 0,
+    animaisDescarte: 0, // ← SERÁ PREENCHIDO DO BANCO
+    variacaoDescarte: 0,
     alertas: [
+      // TODO: IMPLEMENTAR ALERTAS REAIS DO BANCO
+      /* EXEMPLO FUTURO:
       {
         tipo: 'vacinação',
         icone: 'medical',
@@ -46,113 +100,201 @@ closeMenu() {
         data: 'Hoje',
         descricao: '15 animais precisam da vacina contra clostridiose',
         cor: 'alert-vaccine'
-      },
-      {
-        tipo: 'reproducao',
-        icone: 'heart',
-        titulo: 'Reprodução',
-        data: 'Amanhã',
-        descricao: '3 fêmeas em período de cobertura',
-        cor: 'alert-breeding'
-      },
-      {
-        tipo: 'pesagem',
-        icone: 'speedometer',
-        titulo: 'Pesagem',
-        data: 'Esta semana',
-        descricao: '12 cordeiros para pesagem mensal',
-        cor: 'alert-weighing'
       }
+      */
     ],
     atividadesRecentes: [
+      // TODO: IMPLEMENTAR ATIVIDADES REAIS DO BANCO
+      /* EXEMPLO FUTURO:
       {
         tipo: 'nascimento',
         icone: 'heart',
         titulo: 'Nascimento registrado',
         descricao: 'Cordeiro #249',
         tempo: '2 horas atrás'
-      },
-      {
-        tipo: 'vacinacao',
-        icone: 'medical',
-        titulo: 'Vacinação aplicada',
-        descricao: 'Ovelha #087',
-        tempo: '4 horas atrás'
-      },
-      {
-        tipo: 'pesagem',
-        icone: 'speedometer',
-        titulo: 'Pesagem realizada',
-        descricao: 'Borrego #0132',
-        tempo: '6 horas atrás'
       }
+      */
     ],
     clima: {
-      temperatura: 22,
-      umidade: 65,
-      vento: 12,
-      chuva: 0,
-      previsao: 'Condições ideais para pastoreio. Sem previsão de chuva para os próximos 3 dias'
+      temperatura: 0, // ← SERÁ PREENCHIDO DA API
+      umidade: 0,     // ← SERÁ PREENCHIDO DA API
+      vento: 0,       // ← SERÁ PREENCHIDO DA API
+      chuva: 0,       // ← SERÁ PREENCHIDO DA API
+      previsao: 'Carregando dados climáticos...' // ← SERÁ PREENCHIDO DA API
     }
   };
 
-  // Informações do usuário e fazenda
+  // OBTER ÍCONE DO CLIMA BASEADO NA TEMPERATURA
+getWeatherIcon(): string {
+  const temp = this.dadosDashboard.clima.temperatura;
+  if (temp >= 30) return 'sunny';
+  if (temp >= 20) return 'partly-sunny';
+  if (temp >= 10) return 'cloud';
+  return 'snow';
+}
+
   infoFazenda = {
-    nome: 'Fazenda São Bento',
-    status: 'Relatório atualizado',
+    nome: 'Sistema OvinoGest', // Nome genérico do sistema
+    status: 'Conectado',
     ultimaAtualizacao: new Date()
   };
 
-  constructor() { }
-
   ngOnInit() {
     console.log('Dashboard carregado!');
-    this.carregarDadosDashboard();
+    this.carregarDadosReais();
+    this.carregarDadosClima(); // ← CARREGA DADOS DO CLIMA
   }
 
-  // Método para carregar dados do dashboard
-  carregarDadosDashboard() {
-    // Aqui depois vai buscar dados reais da API
-    console.log('Carregando dados do dashboard...');
+  carregarDadosReais() {
+    console.log('Carregando dados reais do dashboard...');
     
-    // Simula um delay de carregamento
-    setTimeout(() => {
-      console.log('Dados carregados com sucesso!');
-    }, 1000);
+    this.animalService.getAnimais().subscribe({
+      next: (ovinos) => {
+        console.log('Ovinos carregados:', ovinos);
+        this.processarDadosOvinos(ovinos);
+        
+        // CARREGAR FÊMEAS GESTANTES
+        this.carregarFemeasGestantes();
+      },
+      error: (error) => {
+        console.error('Erro ao carregar ovinos:', error);
+        // Dados de fallback em caso de erro
+        this.dadosDashboard.totalAnimais = 0;
+        this.dadosDashboard.animaisDescarte = 0;
+      }
+    });
   }
 
-  // Método para atualizar os dados manualmente
+  // BUSCAR DADOS REAIS DO CLIMA
+  carregarDadosClima() {
+    const cidade = this.getCidadeUsuario() || 'Abelardo Luz'; // Cidade padrão
+    
+    this.weatherService.getCurrentWeather(cidade).subscribe({
+      next: (apiData) => {
+        const weatherData = this.weatherService.parseWeatherData(apiData);
+        
+        this.dadosDashboard.clima = {
+          temperatura: weatherData.temperatura,
+          umidade: weatherData.umidade,
+          vento: weatherData.vento,
+          chuva: weatherData.chuva,
+          previsao: weatherData.previsao
+        };
+        
+        console.log('Dados do clima carregados:', weatherData);
+      },
+      error: (error) => {
+        console.error('Erro ao carregar dados do clima:', error);
+        // Dados simulados em caso de erro na API
+        this.dadosDashboard.clima = {
+          temperatura: 22,
+          umidade: 65,
+          vento: 12,
+          chuva: 0,
+          previsao: 'Condições ideais para pastoreio'
+        };
+      }
+    });
+  }
+
+  // OBTER CIDADE DO USUÁRIO
+  getCidadeUsuario(): string {
+    const currentUser = this.authService.getCurrentUser();
+    return currentUser?.cabanha_municipio || '';
+  }
+
+  processarDadosOvinos(ovinos: any[]) {
+    const ovinosAtivos = ovinos.filter(ovino => 
+      ovino.situacao === 'ativo' || ovino.situacao === 'descarte'
+    );
+
+    this.dadosDashboard.totalAnimais = ovinosAtivos.length;
+    
+    this.dadosDashboard.animaisDescarte = ovinos.filter(ovino => 
+      ovino.situacao === 'descarte'
+    ).length;
+
+    console.log('Dados reais processados:', this.dadosDashboard);
+  }
+
   atualizarDashboard(event: any) {
     console.log('Atualizando dashboard...');
     
-    // Simula uma atualização
-    setTimeout(() => {
-      this.dadosDashboard.totalAnimais += 1; // Exemplo de atualização
-      event.target.complete(); // Finaliza o refresh
-      console.log('Dashboard atualizado!');
-    }, 1500);
+    this.animalService.getAnimais().subscribe({
+      next: (ovinos) => {
+        this.processarDadosOvinos(ovinos);
+        this.carregarFemeasGestantes(); // Recarrega gestantes também
+        this.carregarDadosClima(); // Recarrega dados do clima
+        event.target.complete();
+        console.log('Dashboard atualizado com dados reais!');
+      },
+      error: (error) => {
+        console.error('Erro ao atualizar dashboard:', error);
+        event.target.complete();
+      }
+    });
   }
 
-  
-  // Método para lidar com cliques nos alertas
+  // OBTER NOME DA CABANHA EM MAIÚSCULO
+  getNomeCabanha(): string {
+    const currentUser = this.authService.getCurrentUser();
+    let nome: string;
+
+    if (currentUser?.cabanha_nome) {
+      nome = currentUser.cabanha_nome;
+    } else if (currentUser?.nome_completo) {
+      nome = currentUser.nome_completo;
+    } else {
+      nome = 'Fazenda';
+    }
+
+    // Converte PARA MAIÚSCULO
+    return nome.toUpperCase();
+  }
+
+  // OBTER NOME DO USUÁRIO
+  getNomeUsuario(): string {
+    const currentUser = this.authService.getCurrentUser();
+    const nome = currentUser?.nome_completo || 'Usuário';
+    
+    // Primeira letra maiúscula de cada palavra
+    return nome.replace(/\w\S*/g, (txt) => {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  }
+
+  navegarParaGestantes() {
+    this.router.navigate(['/lista-animais'], { 
+      queryParams: { filtro: 'gestante' } 
+    });
+  }
+
+  carregarFemeasGestantes() {
+    this.animalService.getFemeasGestantes().subscribe({
+      next: (gestantes) => {
+        console.log('Fêmeas gestantes:', gestantes);
+        this.dadosDashboard.femeasGestantes = gestantes.length;
+      },
+      error: (error) => {
+        console.error('Erro ao carregar gestantes:', error);
+        this.dadosDashboard.femeasGestantes = 0;
+      }
+    });
+  }
+
   handleAlertaClick(alerta: any) {
     console.log('Alerta clicado:', alerta.titulo);
     
-    // Aqui podemos navegar para a tela específica
     switch(alerta.tipo) {
       case 'vacinação':
-        // this.navCtrl.navigateForward('/vacinas');
         break;
       case 'reproducao':
-        // this.navCtrl.navigateForward('/reproducao');
         break;
       case 'pesagem':
-        // this.navCtrl.navigateForward('/pesagem');
         break;
     }
   }
 
-  // Método para formatar a data de atualização
   formatarData(data: Date): string {
     return data.toLocaleDateString('pt-BR', {
       day: '2-digit',
@@ -163,7 +305,6 @@ closeMenu() {
     });
   }
 
-  // Método para calcular variação percentual (exemplo)
   calcularVariacaoPercentual(valorAtual: number, valorAnterior: number): string {
     if (valorAnterior === 0) return '+100%';
     
@@ -171,10 +312,7 @@ closeMenu() {
     return variacao > 0 ? `+${variacao.toFixed(1)}%` : `${variacao.toFixed(1)}%`;
   }
 
-  // Método para buscar dados em tempo real
   buscarDadosTempoReal() {
-    // Aqui implementaremos websockets ou polling para dados em tempo real
     console.log('Buscando dados em tempo real...');
   }
-  
 }

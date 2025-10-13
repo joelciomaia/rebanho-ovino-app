@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/dashboard"></ion-back-button>
     </ion-buttons>
-   <ion-title>Cadastro de Animais</ion-title>
+    <ion-title>Cadastro de Animais</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -20,7 +20,8 @@
   </div>
 
   <!-- Formulário para animais nascidos na propriedade -->
-  <form *ngIf="segmento === 'nascidos'" [formGroup]="formNascidos" (ngSubmit)="cadastrarNascido()" class="form-container">
+  <form *ngIf="segmento === 'nascidos'" [formGroup]="formNascidos" (ngSubmit)="cadastrarNascido()"
+    class="form-container">
     <ion-list>
       <ion-list-header>
         <ion-label class="section-header">Dados do Nascimento</ion-label>
@@ -28,12 +29,13 @@
 
       <ion-item>
         <ion-label position="stacked" class="required-label">Número do Brinco</ion-label>
-        <ion-input formControlName="numeroBrinco" type="text" placeholder="Ex: OV2023-001" 
-                  [class.invalid-field]="formNascidos.get('numeroBrinco')?.invalid && formNascidos.get('numeroBrinco')?.touched"
-                  [class.valid-field]="formNascidos.get('numeroBrinco')?.valid && formNascidos.get('numeroBrinco')?.touched">
+        <ion-input formControlName="numeroBrinco" type="text" placeholder="Ex: OV2023-001"
+          [class.invalid-field]="formNascidos.get('numeroBrinco')?.invalid && formNascidos.get('numeroBrinco')?.touched"
+          [class.valid-field]="formNascidos.get('numeroBrinco')?.valid && formNascidos.get('numeroBrinco')?.touched">
         </ion-input>
       </ion-item>
-      <ion-note color="danger" *ngIf="formNascidos.get('numeroBrinco')?.hasError('duplicado')" class="duplicate-warning">
+      <ion-note color="danger" *ngIf="formNascidos.get('numeroBrinco')?.hasError('duplicado')"
+        class="duplicate-warning">
         Este brinco já está em uso por um animal ativo
       </ion-note>
 
@@ -47,11 +49,9 @@
 
       <ion-item>
         <ion-label position="stacked" class="required-label">Data de Nascimento</ion-label>
-        <ion-input 
-          formControlName="dataNascimento" 
-          placeholder="DD/MM/AAAA"
-          (click)="abrirCalendario()">
+        <ion-input formControlName="dataNascimento" placeholder="DD/MM/AAAA" (click)="abrirCalendario()">
         </ion-input>
+        <ion-note *ngIf="carregandoGenitores" color="medium" slot="end">Carregando...</ion-note>
       </ion-item>
 
       <ion-item>
@@ -91,8 +91,8 @@
 
       <ion-item>
         <ion-label position="stacked">Origem do Pai</ion-label>
-        <ion-select formControlName="origemPai" (ionChange)="alternarIdentificacaoPai()" 
-                   placeholder="Selecione a origem" interface="action-sheet">
+        <ion-select formControlName="origemPai" (ionChange)="alternarIdentificacaoPai()"
+          placeholder="Selecione a origem" interface="action-sheet">
           <ion-select-option value="proprio">Animal Próprio</ion-select-option>
           <ion-select-option value="terceiros">Animal de Terceiros</ion-select-option>
           <ion-select-option value="semen">Sêmen de Terceiros</ion-select-option>
@@ -103,9 +103,15 @@
         <ion-label position="stacked">Identificação do Pai</ion-label>
         <ion-select formControlName="identificacaoPai" placeholder="Selecione o pai" interface="action-sheet">
           <ion-select-option *ngFor="let animal of animaisMachos" [value]="animal.id">
-            {{ animal.brinco }} - {{ animal.nome || 'Sem nome' }}
+            {{ formatarExibicaoGenitor(animal) }}
           </ion-select-option>
         </ion-select>
+        <ion-note *ngIf="animaisMachos.length === 0 && !carregandoGenitores" color="medium" slot="end">
+          Nenhum macho disponível
+        </ion-note>
+        <ion-note *ngIf="carregandoGenitores" color="medium" slot="end">
+          Carregando...
+        </ion-note>
       </ion-item>
 
       <ion-item *ngIf="formNascidos.get('origemPai')?.value === 'terceiros'">
@@ -118,23 +124,20 @@
         <ion-input formControlName="identificacaoSemen" placeholder="Doador e proprietário"></ion-input>
       </ion-item>
 
-      <!--<ion-item *ngIf="formNascidos.get('origemPai')?.value === 'proprio'">
-        <ion-label position="stacked">Identificação da Mãe</ion-label>
-        <ion-select formControlName="identificacaoPai" placeholder="Selecione a mãe" interface="action-sheet">
-          <ion-select-option *ngFor="let animal of animaisFemeas" [value]="animal.id">
-            {{ animal.brinco }} - {{ animal.nome || 'Sem nome' }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>-->
-      
-       <!-- MÃE - SEMPRE PRÓPRIA  -->
+      <!-- MÃE - SEMPRE PRÓPRIA  -->
       <ion-item>
         <ion-label position="stacked" class="required-label">Identificação da Mãe</ion-label>
         <ion-select formControlName="identificacaoMae" placeholder="Selecione a mãe" interface="action-sheet">
           <ion-select-option *ngFor="let animal of animaisFemeas" [value]="animal.id">
-            {{ animal.brinco }} - {{ animal.nome || 'Sem nome' }}
+            {{ formatarExibicaoGenitor(animal) }}
           </ion-select-option>
         </ion-select>
+        <ion-note *ngIf="animaisFemeas.length === 0 && !carregandoGenitores" color="medium" slot="end">
+          Nenhuma fêmea disponível
+        </ion-note>
+        <ion-note *ngIf="carregandoGenitores" color="medium" slot="end">
+          Carregando...
+        </ion-note>
       </ion-item>
     </ion-list>
 
@@ -214,7 +217,8 @@
       </ion-list-header>
 
       <ion-item>
-        <ion-textarea formControlName="observacoes" rows="4" placeholder="Outras observações relevantes..."></ion-textarea>
+        <ion-textarea formControlName="observacoes" rows="4"
+          placeholder="Outras observações relevantes..."></ion-textarea>
       </ion-item>
     </ion-list>
 
@@ -222,16 +226,17 @@
       <ion-button expand="block" color="medium" fill="outline" routerLink="/dashboard">
         Cancelar
       </ion-button>
-      <ion-button expand="block" type="submit" [disabled]="!formNascidos.valid">
+      <ion-button expand="block" type="submit" [disabled]="!formNascidos.valid || carregandoGenitores">
         <ion-icon slot="start" name="save-outline"></ion-icon>
-        Cadastrar Animal
+        {{ carregandoGenitores ? 'Carregando...' : 'Cadastrar Animal' }}
       </ion-button>
     </div>
   </form>
 
-  <!-- Formulário para animais comprados -->
-  <form *ngIf="segmento === 'comprados'" [formGroup]="formComprados" (ngSubmit)="cadastrarComprado()" class="form-container">
-    
+  <!-- Formulário para animais comprados - COMPLETO E CORRIGIDO -->
+  <form *ngIf="segmento === 'comprados'" [formGroup]="formComprados" (ngSubmit)="cadastrarComprado()"
+    class="form-container">
+
     <ion-list>
       <ion-list-header>
         <ion-label class="section-header">Dados da Compra</ion-label>
@@ -260,7 +265,9 @@
       <ion-item>
         <ion-label position="stacked" class="required-label">Raça</ion-label>
         <ion-select formControlName="raca" placeholder="Selecione a raça" interface="action-sheet">
-          <ion-select-option *ngFor="let raca of racasOvinas" [value]="raca">{{raca}}</ion-select-option>
+          <ion-select-option *ngFor="let raca of racasOvinas" [value]="raca.id.toString()">
+            {{raca.nome}}
+          </ion-select-option>
         </ion-select>
       </ion-item>
 
@@ -328,17 +335,22 @@
 
       <ion-item>
         <ion-label>Possui Registro</ion-label>
-        <ion-checkbox formControlName="possuiRegistro" slot="start" (ionChange)="alternarCamposRegistro()"></ion-checkbox>
+        <ion-checkbox formControlName="possuiRegistro" slot="start"
+          (ionChange)="alternarCamposRegistro()"></ion-checkbox>
       </ion-item>
 
       <ion-item *ngIf="formComprados.get('possuiRegistro')?.value">
-        <ion-label position="stacked">Nome do Animal (se registrado)</ion-label>
-        <ion-input formControlName="nomeAnimal" placeholder="Nome de registro"></ion-input>
+        <ion-label position="stacked" class="required-label">Nome do Animal</ion-label>
+        <ion-input formControlName="nomeAnimal"
+          [class.invalid-field]="formComprados.get('nomeAnimal')?.invalid && formComprados.get('nomeAnimal')?.touched">
+        </ion-input>
       </ion-item>
 
       <ion-item *ngIf="formComprados.get('possuiRegistro')?.value">
-        <ion-label position="stacked">Número do Registro</ion-label>
-        <ion-input formControlName="numeroRegistro" placeholder="Número do registro"></ion-input>
+        <ion-label position="stacked" class="required-label">Número do Registro</ion-label>
+        <ion-input formControlName="numeroRegistro"
+          [class.invalid-field]="formComprados.get('numeroRegistro')?.invalid && formComprados.get('numeroRegistro')?.touched">
+        </ion-input>
       </ion-item>
 
       <ion-item *ngIf="formComprados.get('possuiRegistro')?.value">
@@ -376,7 +388,8 @@
       </ion-list-header>
 
       <ion-item>
-        <ion-textarea formControlName="observacoes" rows="4" placeholder="Outras observações relevantes..."></ion-textarea>
+        <ion-textarea formControlName="observacoes" rows="4"
+          placeholder="Outras observações relevantes..."></ion-textarea>
       </ion-item>
     </ion-list>
 

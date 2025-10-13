@@ -408,7 +408,7 @@
                           [ngModel]="animal.manejoTecnico.peso" (ngModelChange)="atualizarPesoAnimal(animal, $event)">
                         </ion-input>
                       </ion-item>
-                      
+
                       @if (animal.manejoTecnico.peso) {
                       <span [class]="'ion-color ion-color-' + getCorVariacaoPeso(animal)" class="variacao-peso">
                         <small>
@@ -897,6 +897,7 @@
       </ion-card-content>
     </ion-card>
 
+    <!-- NO FINAL DA TELA INDIVIDUAL - CORRIGIR O BOTÃO VOLTAR -->
     <div class="action-buttons-individual">
       <ion-button expand="block" size="large" (click)="salvarManejoIndividual()"
         [disabled]="!podeSalvarManejoIndividual()">
@@ -904,9 +905,10 @@
         Salvar Manejo
       </ion-button>
 
-      <ion-button expand="block" fill="outline" (click)="voltarParaLote()">
+      <!-- BOTÃO VOLTAR CORRIGIDO -->
+      <ion-button expand="block" fill="outline" (click)="voltar()">
         <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
-        Voltar
+        Cancelar e Voltar
       </ion-button>
     </div>
   </div>

@@ -1,0 +1,32 @@
+/* src/global.scss */
+:root {
+  --primary: #2d4551;
+  --secondary: #5cad82;
+  --tertiary: #562800;
+  --success: #27ae60;
+  // ... suas outras variáveis
+}
+
+/* Definir as cores para o Ionic */
+:root {
+  --ion-color-primary: #2d4551;
+  --ion-color-primary-rgb: 45, 69, 81;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #283d48;
+  --ion-color-primary-tint: #425862;
+
+  --ion-color-secondary: #5cad82;
+  --ion-color-secondary-rgb: 92, 173, 130;
+  --ion-color-secondary-contrast: #000000;
+  --ion-color-secondary-contrast-rgb: 0, 0, 0;
+  --ion-color-secondary-shade: #519872;
+  --ion-color-secondary-tint: #6cb58f;
+
+  --ion-color-tertiary: #562800;
+  --ion-color-tertiary-rgb: 86, 40, 0;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #4c2400;
+  --ion-color-tertiary-tint: #673b1a;
+}

@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { Component, OnInit } from '@angular/core';
+import { AlertController, NavController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from "@ionic/angular";
+import { ActivatedRoute, Router } from '@angular/router';
+import { AnimalService } from '../../services/animal.service';
 
 // Interfaces para tipagem - MANEJO EM LOTE
 interface ItemSanitario {
@@ -71,7 +73,7 @@ interface MedicacaoIndividual {
 interface SanitarioIndividual {
   vacinas: VacinaIndividual[];
   medicacoes: MedicacaoIndividual[];
-  famacha?: number;  // MUDANÇA: agora é number em vez de string
+  famacha?: number;
   opg: boolean;
 }
 
@@ -155,13 +157,16 @@ interface AnimalIndividual {
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule]
 })
-export class Manejospage {
+export class Manejospage implements OnInit {
   segmento = 'lote';
-  
-  // NOVO: Variáveis para o modal do FAMACHA
+
+  // Variáveis para navegação
+  origem: string = 'dashboard'; // 'dashboard' ou 'todos-animais'
+
+  // Variáveis para o modal do FAMACHA
   modalFamachaAberto: boolean = false;
   notaFamachaManual: number | null = null;
-  
+
   // Controle de expansão dos cards (LOTE)
   manejosExpandidos = {
     sanitario: false,
@@ -200,37 +205,13 @@ export class Manejospage {
 
   // Dados do animal selecionado para manejo individual
   animalSelecionado: AnimalIndividual = {
-    id: '1',
-    brinco: '0145',
-    sexo: 'Fêmea',
-    categoria: 'Matriz',
-    idade: '3,2',
-    pesoAtual: '60',
-    manejoAtual: {
-      produtorId: 'produtor-123',
-      ovinoId: '1',
-      data: new Date(),
-      tipo: 'sanitario',
-      manejoEmLote: false,
-      observacao: '',
-      sanitario: {
-        vacinas: [],
-        medicacoes: [],
-        opg: false
-      },
-      fisico: {
-        casqueamento: { realizado: false },
-        tosquia: false,
-        caudectomia: false,
-        descorna: false
-      },
-      tecnico: {},
-      nutricional: {},
-      reprodutivo: {
-        filhotes: []
-      },
-      fotos: []
-    }
+    id: '',
+    brinco: '',
+    sexo: '',
+    categoria: '',
+    idade: '',
+    pesoAtual: '',
+    manejoAtual: undefined
   };
 
   // Dados em edição para o manejo individual
@@ -254,75 +235,193 @@ export class Manejospage {
   };
 
   // Objetos para formulários de novos itens (LOTE)
-  novaVacina: ItemSanitario = { 
-    produto: '', 
-    dose: '', 
-    via: '', 
-    lote: '', 
-    fabricante: '' 
+  novaVacina: ItemSanitario = {
+    produto: '',
+    dose: '',
+    via: '',
+    lote: '',
+    fabricante: ''
   };
 
-  novoVermifugo: Vermifugo = { 
-    tipo: '', 
-    produto: '', 
-    dose: '', 
-    via: '' 
+  novoVermifugo: Vermifugo = {
+    tipo: '',
+    produto: '',
+    dose: '',
+    via: ''
   };
 
-  novaMedicacao: Medicacao = { 
-    produto: '', 
-    dose: '', 
-    via: '', 
-    observacoes: '' 
+  novaMedicacao: Medicacao = {
+    produto: '',
+    dose: '',
+    via: '',
+    observacoes: ''
   };
 
-  // Animais (LOTE)
-  animais: Animal[] = [
-    { 
-      id: '1', 
-      brinco: '039', 
-      sexo: 'Fêmea',
-      categoria: 'Matriz', 
-      pesoAtual: 60, 
-      idade: 3.2, 
-      selecionado: false,
-      manejoTecnico: { peso: null, escore: '', observacoes: '' }
+  // Animais (LOTE) - AGORA CARREGADOS DO BANCO
+  animais: Animal[] = [];
+
+  constructor(
+    private alertController: AlertController,
+    private route: ActivatedRoute,
+    private router: Router,
+    private navCtrl: NavController,
+    private animalService: AnimalService
+  ) { }
+
+  ngOnInit(): void {
+    this.carregarDadosExistentes();
+
+    // CARREGA ANIMAIS PRIMEIRO
+    this.carregarAnimaisReais();
+
+    // DEPOIS PROCESSA OS PARÂMETROS DA URL
+    this.route.queryParams.subscribe(params => {
+      const animalId = params['animal'];
+      const tab = params['tab'];
+      const origem = params['origem'];
+
+      console.log('Parâmetros recebidos:', params);
+
+      if (origem === 'lista-animais' || animalId) {
+        this.origem = 'lista-animais';
+        this.segmento = 'individual';
+
+        if (animalId) {
+          // AGUARDA OS ANIMAIS SEREM CARREGADOS ANTES DE BUSCAR
+          setTimeout(() => {
+            this.carregarAnimalIndividual(animalId);
+          }, 500);
+        }
+      } else {
+        this.origem = 'dashboard';
+        this.segmento = 'lote';
+      }
+    });
+  }
+
+  // NOVO MÉTODO: CARREGAR ANIMAIS REAIS DO BANCO
+  carregarAnimaisReais() {
+  this.animalService.getAnimais().subscribe({
+    next: (animais) => {
+      console.log('Animais carregados para manejo:', animais);
+      
+      // FILTRAR ANIMAIS ATIVOS E MARCADOS PARA DESCARTE
+      const animaisAtivos = animais.filter(animal => 
+        animal.situacao === 'ativo' || animal.situacao === 'marcado para descarte'
+      );
+
+      this.animais = animaisAtivos.map(animal => ({
+        id: animal.id,
+        brinco: animal.brinco,
+        sexo: animal.sexo,
+        categoria: animal.categoria,
+        pesoAtual: animal.peso_atual || 0,
+        idade: this.calcularIdadeParaManejo(animal.data_nascimento),
+        selecionado: false,
+        manejoTecnico: { peso: null, escore: '', observacoes: '' }
+      }));
+      console.log('Animais ATIVOS + DESCARTE processados:', this.animais);
     },
-    { 
-      id: '2', 
-      brinco: '0132', 
-      sexo: 'Fêmea',
-      categoria: 'Borrega', 
-      pesoAtual: 45, 
-      idade: 1.1, 
-      selecionado: false,
-      manejoTecnico: { peso: null, escore: '', observacoes: '' }
-    },
-    { 
-      id: '3', 
-      brinco: '0192', 
-      sexo: 'Fêmea',
-      categoria: 'Borrega', 
-      pesoAtual: 48, 
-      idade: 1.3, 
-      selecionado: false,
-      manejoTecnico: { peso: null, escore: '', observacoes: '' }
+    error: (error) => {
+      console.error('Erro ao carregar animais:', error);
     }
-  ];
+  });
+}
 
-  constructor(private alertController: AlertController) { }
+  // MÉTODO AUXILIAR PARA CALCULAR IDADE
+  calcularIdadeParaManejo(dataNascimento: string): number {
+    if (!dataNascimento) return 0;
+
+    try {
+      const nascimento = new Date(dataNascimento);
+      const hoje = new Date();
+      const diffMs = hoje.getTime() - nascimento.getTime();
+      const diffAnos = diffMs / (1000 * 60 * 60 * 24 * 365.25);
+
+      return Number(diffAnos.toFixed(1));
+    } catch (error) {
+      return 0;
+    }
+  }
+
+  // MÉTODO PARA VOLTAR CORRETAMENTE
+  voltar(): void {
+    if (this.origem === 'lista-animais') {
+      this.router.navigate(['/lista-animais']);
+    } else if (this.segmento === 'individual') {
+      this.segmento = 'lote';
+    } else {
+      this.router.navigate(['/dashboard']);
+    }
+  }
+
+  // MÉTODO PARA CARREGAR ANIMAL INDIVIDUAL PELO ID
+  carregarAnimalIndividual(animalId: string): void {
+    console.log('Carregando animal individual pelo ID:', animalId);
+    console.log('Animais disponíveis:', this.animais);
+
+    const animalEncontrado = this.animais.find(animal => animal.id === animalId);
+
+    if (animalEncontrado) {
+      console.log('Animal ENCONTRADO:', animalEncontrado);
+      this.animalSelecionado = {
+        id: animalEncontrado.id,
+        brinco: animalEncontrado.brinco,
+        sexo: animalEncontrado.sexo || 'Fêmea',
+        categoria: animalEncontrado.categoria,
+        idade: animalEncontrado.idade.toString(),
+        pesoAtual: animalEncontrado.pesoAtual.toString(),
+        manejoAtual: {
+          produtorId: 'produtor-123',
+          ovinoId: animalEncontrado.id,
+          data: new Date(),
+          tipo: 'sanitario',
+          manejoEmLote: false,
+          observacao: '',
+          sanitario: {
+            vacinas: [],
+            medicacoes: [],
+            opg: false
+          },
+          fisico: {
+            casqueamento: { realizado: false },
+            tosquia: false,
+            caudectomia: false,
+            descorna: false
+          },
+          tecnico: {},
+          nutricional: {},
+          reprodutivo: {
+            filhotes: []
+          },
+          fotos: []
+        }
+      };
+    } else {
+      console.log('Animal NÃO ENCONTRADO com ID:', animalId);
+      this.animalSelecionado = {
+        id: '',
+        brinco: 'Animal não encontrado',
+        sexo: '',
+        categoria: '',
+        idade: '',
+        pesoAtual: '',
+        manejoAtual: undefined
+      };
+    }
+  }
 
   // PROPRIEDADES CALCULADAS (LOTE)
   get animaisComDadosTecnicosCount(): number {
-    return this.animaisSelecionados.filter(animal => 
-      animal.manejoTecnico.peso !== null || 
+    return this.animaisSelecionados.filter(animal =>
+      animal.manejoTecnico.peso !== null ||
       animal.manejoTecnico.escore !== ''
     ).length;
   }
 
   get temDadosTecnicosPreenchidos(): boolean {
-    return this.animaisSelecionados.some(animal => 
-      animal.manejoTecnico.peso !== null || 
+    return this.animaisSelecionados.some(animal =>
+      animal.manejoTecnico.peso !== null ||
       animal.manejoTecnico.escore !== ''
     );
   }
@@ -365,7 +464,7 @@ export class Manejospage {
   // MÉTODOS PARA MANEJO INDIVIDUAL
   adicionarMedicacaoIndividual(): void {
     if (this.medicacaoEditando.produto && this.medicacaoEditando.dose) {
-      this.animalSelecionado.manejoAtual!.sanitario!.medicacoes.push({...this.medicacaoEditando});
+      this.animalSelecionado.manejoAtual!.sanitario!.medicacoes.push({ ...this.medicacaoEditando });
       this.limparMedicacaoIndividual();
     }
   }
@@ -376,7 +475,7 @@ export class Manejospage {
 
   adicionarVacinaIndividual(): void {
     if (this.vacinaEditando.produto && this.vacinaEditando.dose) {
-      this.animalSelecionado.manejoAtual!.sanitario!.vacinas.push({...this.vacinaEditando});
+      this.animalSelecionado.manejoAtual!.sanitario!.vacinas.push({ ...this.vacinaEditando });
       this.limparVacinaIndividual();
     }
   }
@@ -387,7 +486,7 @@ export class Manejospage {
 
   adicionarFilhote(): void {
     if (this.filhoteEditando.sexo) {
-      this.animalSelecionado.manejoAtual!.reprodutivo!.filhotes.push({...this.filhoteEditando});
+      this.animalSelecionado.manejoAtual!.reprodutivo!.filhotes.push({ ...this.filhoteEditando });
       this.limparFilhote();
     }
   }
@@ -492,30 +591,30 @@ export class Manejospage {
 
   // Métodos para limpar formulários (LOTE)
   limparFormularioVacina(): void {
-    this.novaVacina = { 
-      produto: '', 
-      dose: '', 
-      via: '', 
-      lote: '', 
-      fabricante: '' 
+    this.novaVacina = {
+      produto: '',
+      dose: '',
+      via: '',
+      lote: '',
+      fabricante: ''
     };
   }
 
   limparFormularioVermifugo(): void {
-    this.novoVermifugo = { 
-      tipo: '', 
-      produto: '', 
-      dose: '', 
-      via: '' 
+    this.novoVermifugo = {
+      tipo: '',
+      produto: '',
+      dose: '',
+      via: ''
     };
   }
 
   limparFormularioMedicacao(): void {
-    this.novaMedicacao = { 
-      produto: '', 
-      dose: '', 
-      via: '', 
-      observacoes: '' 
+    this.novaMedicacao = {
+      produto: '',
+      dose: '',
+      via: '',
+      observacoes: ''
     };
   }
 
@@ -542,11 +641,11 @@ export class Manejospage {
       return;
     }
 
-    const animalComDados = animaisSelecionados.find(a => 
-      a.manejoTecnico.peso !== null || 
+    const animalComDados = animaisSelecionados.find(a =>
+      a.manejoTecnico.peso !== null ||
       a.manejoTecnico.escore !== ''
     );
-    
+
     if (animalComDados) {
       const confirmar = confirm(`Deseja aplicar os dados técnicos do animal ${animalComDados.brinco} para todos os ${animaisSelecionados.length} animais selecionados?`);
       if (confirmar) {
@@ -594,7 +693,7 @@ export class Manejospage {
   }
 
   getDescricaoEscore(escore: string): string {
-    const descricoes: {[key: string]: string} = {
+    const descricoes: { [key: string]: string } = {
       '1': 'Costelas e processos vertebrais visíveis',
       '2': 'Costelas palpáveis, pouca cobertura muscular',
       '3': 'Costelas palpáveis com leve pressão, condição ideal',
@@ -650,28 +749,24 @@ export class Manejospage {
     };
   }
 
-  voltarParaLote(): void {
-    this.segmento = 'lote';
-  }
-
   // VALIDAÇÃO E APLICAÇÃO DE MANEJOS (LOTE)
   podeAplicarManejo(): boolean {
     const temAnimaisSelecionados = this.animaisSelecionadosCount > 0;
-    const temManejosSelecionados = 
+    const temManejosSelecionados =
       this.manejosSelecionados.sanitario.length > 0 ||
       this.manejosSelecionados.fisico.length > 0 ||
       this.manejosSelecionados.tecnico.length > 0;
-    
+
     if (this.manejosSelecionados.tecnico.length > 0) {
-      const animaisComDadosTecnicos = this.animaisSelecionados.filter(animal => 
-        animal.manejoTecnico.peso !== null || 
+      const animaisComDadosTecnicos = this.animaisSelecionados.filter(animal =>
+        animal.manejoTecnico.peso !== null ||
         animal.manejoTecnico.escore !== ''
       ).length;
       if (animaisComDadosTecnicos === 0) {
         return false;
       }
     }
-    
+
     return temAnimaisSelecionados && temManejosSelecionados;
   }
 
@@ -687,36 +782,34 @@ export class Manejospage {
       return;
     }
 
-    // Verificar se há animais sem pesagem ou escore
     const animaisIncompletos = this.animaisSelecionados.filter(animal => {
       const precisaPesagem = this.isManejoSelecionado('tecnico', 'pesagem');
       const precisaEscore = this.isManejoSelecionado('tecnico', 'escore');
-      
+
       const temPesagem = precisaPesagem ? animal.manejoTecnico?.peso !== null : true;
       const temEscore = precisaEscore ? animal.manejoTecnico?.escore !== '' : true;
-      
+
       return !temPesagem || !temEscore;
     });
 
     if (animaisIncompletos.length > 0) {
       const confirmar = await this.mostrarAlertaAnimaisIncompletos(animaisIncompletos);
       if (!confirmar) {
-        return; // Usuário cancelou
+        return;
       }
     }
 
-    // Continuar com o salvamento normal
     await this.salvarManejoLote();
   }
 
   async mostrarAlertaAnimaisIncompletos(animaisIncompletos: any[]): Promise<boolean> {
     return new Promise(async (resolve) => {
-      const animaisLista = animaisIncompletos.slice(0, 3).map(animal => 
+      const animaisLista = animaisIncompletos.slice(0, 3).map(animal =>
         `• ${animal.brinco}`
       ).join('\n');
 
       let mensagem = `Existem ${animaisIncompletos.length} animais sem pesagem ou avaliação de escore:\n\n${animaisLista}`;
-      
+
       if (animaisIncompletos.length > 3) {
         mensagem += `\n• e mais ${animaisIncompletos.length - 3} animais...`;
       }
@@ -771,27 +864,24 @@ export class Manejospage {
       observacoes: this.dadosManejoLote.observacoes,
       animaisCount: animaisSelecionados.length
     };
-    
+
     console.log('Aplicando manejos:', manejosAplicados);
-    
-    // Simular salvamento no banco
+
     await this.salvarManejos(manejosAplicados);
-    
-    // Mostrar mensagem de sucesso
+
     const alert = await this.alertController.create({
       header: 'Sucesso',
       message: `Manejo aplicado para ${animaisSelecionados.length} animais com sucesso!`,
       buttons: ['OK']
     });
     await alert.present();
-    
+
     this.limparFormularios();
   }
 
   // Método para salvar no banco de dados (simulado)
   private async salvarManejos(manejos: any): Promise<void> {
     console.log('Salvando manejos no banco de dados:', manejos);
-    // Simular delay de salvamento
     return new Promise(resolve => setTimeout(resolve, 500));
   }
 
@@ -800,7 +890,7 @@ export class Manejospage {
     this.manejosSelecionados.sanitario = [];
     this.manejosSelecionados.fisico = [];
     this.manejosSelecionados.tecnico = [];
-    
+
     this.dadosManejoLote = {
       vacinas: [],
       vermifugos: [],
@@ -810,11 +900,11 @@ export class Manejospage {
       caudectomia: false,
       observacoes: ''
     };
-    
+
     this.limparFormularioVacina();
     this.limparFormularioVermifugo();
     this.limparFormularioMedicacao();
-    
+
     this.animais.forEach(animal => {
       animal.selecionado = false;
       animal.manejoTecnico = { peso: null, escore: '', observacoes: '' };
@@ -844,7 +934,7 @@ export class Manejospage {
     }
     this.animalSelecionado.manejoAtual.sanitario!.famacha = nota;
     this.modalFamachaAberto = false;
-    
+
     console.log(`FAMACHA ${nota} aplicado ao animal ${this.animalSelecionado.brinco}`);
   }
 
@@ -855,26 +945,25 @@ export class Manejospage {
   }
 
   getCorFamacha(nota: number | undefined): string {
-    // Se for undefined, retorna uma cor padrão (cinza)
     if (nota === undefined || nota === null) {
-      return 'linear-gradient(135deg, #CCCCCC 0%, #DDDDDD 100%)'; // Cor para indefinido
+      return 'linear-gradient(135deg, #CCCCCC 0%, #DDDDDD 100%)';
     }
-    
+
     const cores = [
-      'linear-gradient(135deg, #8B0000 0%, #B22222 100%)', // 1
-      'linear-gradient(135deg, #CD5C5C 0%, #F08080 100%)', // 2
-      'linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%)', // 3
-      'linear-gradient(135deg, #FFE4E1 0%, #FAF0F0 100%)', // 4
-      'linear-gradient(135deg, #FFFFFF 0%, #F8F8F8 100%)'  // 5
+      'linear-gradient(135deg, #8B0000 0%, #B22222 100%)',
+      'linear-gradient(135deg, #CD5C5C 0%, #F08080 100%)',
+      'linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%)',
+      'linear-gradient(135deg, #FFE4E1 0%, #FAF0F0 100%)',
+      'linear-gradient(135deg, #FFFFFF 0%, #F8F8F8 100%)'
     ];
-    
+
     return cores[nota - 1] || cores[0];
   }
 
   getDescricaoFamacha(nota: number): string {
     const descricoes = [
       'Vermelho - Animal saudável',
-      'Vermelho-pálido - Saudável', 
+      'Vermelho-pálido - Saudável',
       'Rosa - Monitorar',
       'Rosa-pálido - Anemia moderada',
       'Branco - Anemia severa'
@@ -907,7 +996,6 @@ export class Manejospage {
     const manejo = this.animalSelecionado.manejoAtual;
     if (!manejo) return false;
 
-    // Verifica se há pelo menos algum dado preenchido
     const temDadosSanitarios = !!(manejo.sanitario && (
       (manejo.sanitario.medicacoes && manejo.sanitario.medicacoes.length > 0) ||
       (manejo.sanitario.vacinas && manejo.sanitario.vacinas.length > 0) ||
@@ -935,8 +1023,8 @@ export class Manejospage {
 
     const temObservacoes = !!(manejo.observacao && manejo.observacao.trim().length > 0);
 
-    return temDadosSanitarios || temDadosTecnicos || temDadosFisicos || 
-           temDadosReprodutivos || temObservacoes;
+    return temDadosSanitarios || temDadosTecnicos || temDadosFisicos ||
+      temDadosReprodutivos || temObservacoes;
   }
 
   // Método para atualizar peso dos animais
@@ -951,10 +1039,5 @@ export class Manejospage {
   // Método para carregar dados existentes (se necessário)
   carregarDadosExistentes(): void {
     // Implementar se necessário para edição de manejos existentes
-  }
-
-  // Lifecycle hook (se necessário)
-  ngOnInit(): void {
-    this.carregarDadosExistentes();
   }
 }

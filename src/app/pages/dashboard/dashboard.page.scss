@@ -4,8 +4,10 @@
 // ==================================================
 
 :root {
+
   --primary: #2d4551;           // Azul-esverdeado escuro (principal)
   --secondary: #5cad82;         // Verde médio (secundário/destaque)
+  --tertiary: #593205;  
   --success: #27ae60;           // Verde para sucesso (mantido para consistência)
   --warning: #e67e22;           // Laranja para alertas (mantido)
   --danger: #c0392b;            // Vermelho para perigo (mantido)
@@ -16,6 +18,14 @@
   --background: #f8f9fa;        // Cor de fundo da página
   --border: #dce1e5;            // Cor das bordas dos elementos
   --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); // Sombra padrão dos cards
+}
+
+//Cabeçalho menu
+.menu-user {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 4px;
+  font-weight: 400;
 }
 
 /* Configurações principais do toolbar do header - ATUALIZADO */
@@ -422,7 +432,7 @@ ion-card-title {
 .weather-temp {
   font-size: 48px;               // Tamanho muito grande para destaque
   font-weight: 800;              // Negrito pesado
-  margin: 15px 0;                // Espaço acima e abaixo
+  //margin: 15px 0;                // Espaço acima e abaixo
   color: #2d4551 !important;     // Cor primária
   text-shadow: 0 2px 4px rgba(0,0,0,0.1); // Sombra sutil
 }
@@ -434,7 +444,7 @@ ion-card-title {
 .weather-stat-value {
   font-size: 22px;               // Tamanho grande
   font-weight: 700;              // Negrito
-  margin-bottom: 8px;            // Espaço abaixo
+  margin-bottom: 18px;            // Espaço abaixo
   color: #2d4551 !important;     // Cor primária
 }
 
@@ -500,6 +510,21 @@ ion-card-title {
   box-shadow: 0 4px 8px rgba(0,0,0,0.1); // Sombra sutil
 }
 
+.menu-logo {
+  width: 200px;
+  height: 150px;
+  margin: 0 auto 12px auto;
+  border-radius: 12px;
+  overflow: hidden;
+  //background: rgba(255, 255, 255, 0.1);
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    //padding: 8px;
+  }
+}
 // ==================================================
 // CONTEÚDO DAS ATIVIDADES
 // Estiliza o conteúdo textual das atividades

@@ -1,33 +1,234 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { IonSegment, IonSegmentButton, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, IonButton, IonIcon, IonLabel } from "@ionic/angular/standalone";
-import { IonicModule } from "@ionic/angular";
+import { ActivatedRoute, Router } from '@angular/router';
+import { IonSegment, IonSegmentButton, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, IonButton, IonIcon, IonLabel, IonModal, IonRadioGroup, IonRadio, IonItem, IonInput, IonSelect, IonSelectOption, IonTextarea, IonFooter } from "@ionic/angular/standalone";
 import { CommonModule } from '@angular/common';
+import { AnimalService } from '../../services/animal.service';
 
 @Component({
   selector: 'app-detalhe-animal',
   templateUrl: './detalhe-animal.page.html',
   styleUrls: ['./detalhe-animal.page.scss'],
-  imports: [IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, 
-           IonButton, IonIcon, IonSegment, IonSegmentButton, IonLabel, CommonModule]
+  imports: [IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent,
+    IonButton, IonIcon, IonSegment, IonSegmentButton, IonLabel,
+    IonModal, IonRadioGroup, IonRadio, IonItem, IonInput, IonSelect,
+    IonSelectOption, IonTextarea, CommonModule, IonFooter]
 })
 export class DetalheAnimalPage implements OnInit {
-  animal: any = {};
+  animal: any = null;
   animalFotos: any[] = [];
   manejos: any[] = [];
   manejosFiltrados: any[] = [];
   abaAtiva: string = 'vacinas';
   isCardExpanded: boolean = true;
 
-  constructor(private route: ActivatedRoute) {}
+  // ✅ PROPRIEDADES PARA OS GENITORES COMPLETOS
+  maeCompleta: any = null;
+  paiCompleto: any = null;
+  carregandoGenitores: boolean = false;
+
+  // VARIÁVEIS DO MODAL DE STATUS
+  modalStatusAberto: boolean = false;
+  novoStatus: string = 'ativo';
+  dataMudanca: string = '';
+  motivoSelecionado: string = '';
+  outroMotivo: string = '';
+  observacoesStatus: string = '';
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private animalService: AnimalService
+  ) { }
 
   ngOnInit() {
-    this.carregarDadosMockados();
+    this.carregarAnimal();
+  }
+
+  // ✅ NAVEGAR PARA EDIÇÃO
+  editarAnimal() {
+    if (this.animal && this.animal.id) {
+      this.router.navigate(['/cadastro-animais', this.animal.id]);
+    } else {
+      console.error('Animal ou ID não disponível para edição');
+      alert('Erro: Não foi possível editar o animal');
+    }
+  }
+
+  carregarAnimal() {
+    const animalId = this.route.snapshot.paramMap.get('id');
+
+    if (animalId) {
+      this.animalService.getAnimalById(animalId).subscribe({
+        next: (animal) => {
+          console.log('📥 Animal CARREGADO nos detalhes:', animal);
+          this.animal = animal;
+          this.carregarDadosAdicionais();
+          this.carregarDadosGenitores();
+        },
+        error: (error) => {
+          console.error('Erro ao carregar animal:', error);
+        }
+      });
+    } else {
+      console.error('ID do animal não encontrado na rota');
+    }
+  }
+
+  // ✅ CARREGAR DADOS COMPLETOS DOS GENITORES
+  async carregarDadosGenitores() {
+    this.carregandoGenitores = true;
+
+    try {
+      if (this.animal.mae_id) {
+        this.maeCompleta = await this.animalService.getAnimalById(this.animal.mae_id).toPromise();
+        console.log('Mãe carregada:', this.maeCompleta);
+      }
+
+      if (this.animal.pai_id) {
+        this.paiCompleto = await this.animalService.getAnimalById(this.animal.pai_id).toPromise();
+        console.log('Pai carregado:', this.paiCompleto);
+      }
+
+    } catch (error) {
+      console.error('Erro ao carregar dados dos genitores:', error);
+    } finally {
+      this.carregandoGenitores = false;
+    }
+  }
+
+  carregarDadosAdicionais() {
+    this.carregarFotos();
+    this.carregarManejosReais();
+    this.filtrarManejos('vacinas');
+  }
+
+  carregarFotos() {
+    this.animalFotos = [
+      {
+        url: 'https://via.placeholder.com/400x300/4CAF50/white?text=Animal+' + (this.animal?.brinco || ''),
+        descricao: 'Foto frontal do animal'
+      },
+      {
+        url: 'https://via.placeholder.com/400x300/2196F3/white?text=Animal+Lateral',
+        descricao: 'Foto lateral do animal'
+      },
+      {
+        url: 'https://via.placeholder.com/400x300/FF9800/white?text=Animal+Detalhe',
+        descricao: 'Detalhe do animal'
+      }
+    ];
+  }
+
+  carregarManejosReais() {
+    const animalId = this.route.snapshot.paramMap.get('id');
+
+    if (animalId) {
+      this.animalService.getManejosByAnimalId(animalId).subscribe({
+        next: (manejos) => {
+          console.log('Manejos REAIS carregados:', manejos);
+          this.manejos = manejos;
+          this.filtrarManejos(this.abaAtiva);
+        },
+        error: (error) => {
+          console.error('Erro ao carregar manejos reais:', error);
+        }
+      });
+    }
   }
 
   toggleCard() {
     this.isCardExpanded = !this.isCardExpanded;
   }
+
+  // MÉTODO PARA CALCULAR IDADE
+  calcularIdade(dataNascimento: string): string {
+    if (!dataNascimento) return 'N/A';
+
+    try {
+      const nascimento = new Date(dataNascimento);
+      const hoje = new Date();
+
+      if (isNaN(nascimento.getTime())) {
+        return 'N/A';
+      }
+
+      const diffMs = hoje.getTime() - nascimento.getTime();
+      const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+      if (diffDias < 0) return 'N/A';
+
+      if (diffDias < 30) {
+        return `${diffDias} dias`;
+      } else if (diffDias < 365) {
+        const diffMeses = Math.floor(diffDias / 30);
+        return `${diffMeses} ${diffMeses === 1 ? 'mês' : 'meses'}`;
+      } else {
+        const diffAnos = Math.floor(diffDias / 365);
+        const mesesRestantes = Math.floor((diffDias % 365) / 30);
+
+        if (mesesRestantes > 0) {
+          return `${diffAnos} ${diffAnos === 1 ? 'ano' : 'anos'} e ${mesesRestantes} ${mesesRestantes === 1 ? 'mês' : 'meses'}`;
+        } else {
+          return `${diffAnos} ${diffAnos === 1 ? 'ano' : 'anos'}`;
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao calcular idade:', error);
+      return 'N/A';
+    }
+  }
+
+  // MÉTODOS DO MODAL DE STATUS
+  abrirModalStatus(): void {
+    this.novoStatus = this.animal?.situacao || 'ativo';
+    this.dataMudanca = new Date().toISOString().split('T')[0];
+    this.motivoSelecionado = '';
+    this.outroMotivo = '';
+    this.observacoesStatus = '';
+    this.modalStatusAberto = true;
+  }
+
+  fecharModalStatus(): void {
+    this.modalStatusAberto = false;
+  }
+
+  onStatusChange(event: any): void {
+    this.novoStatus = String(event.detail.value);
+  }
+
+  confirmarMudancaStatus(): void {
+  if (this.novoStatus && this.animal?.id) {
+    console.log('📤 Enviando para API:', {
+      animalId: this.animal.id,
+      status: this.novoStatus,
+      data: this.dataMudanca,
+      observacoes: this.observacoesStatus,
+      categoria: this.animal.categoria // ✅ Categoria atual
+    });
+
+    // ✅ CHAMADA CORRIGIDA - incluindo categoria
+    this.animalService.atualizarStatusAnimal(
+      this.animal.id,
+      this.novoStatus,
+      this.dataMudanca,
+      this.observacoesStatus,
+      //this.animal.categoria // ✅ Passa a categoria atual
+    ).subscribe({
+      next: (response) => {
+        console.log('✅ Status atualizado no banco:', response);
+        this.animal.situacao = this.novoStatus;
+        alert('Status atualizado com sucesso!');
+        this.fecharModalStatus();
+      },
+      error: (error) => {
+        console.error('❌ Erro ao atualizar status:', error);
+        alert('Erro ao atualizar status. Tente novamente.');
+      }
+    });
+  } else {
+    alert('Selecione um status válido');
+  }
+}
 
   // MÉTODO PARA DEFINIR FOTO DE PERFIL
   setAsProfilePhoto(foto: any) {
@@ -42,7 +243,7 @@ export class DetalheAnimalPage implements OnInit {
       url: 'https://via.placeholder.com/400x300/9C27B0/white?text=Nova+Foto',
       descricao: 'Nova foto adicionada'
     };
-    
+
     this.animalFotos.push(novaFoto);
     alert('Nova foto adicionada com sucesso!');
   }
@@ -65,22 +266,19 @@ export class DetalheAnimalPage implements OnInit {
 
   // MÉTODO PARA SCROLL AUTOMÁTICO NA TAB SELECIONADA
   scrollToSelectedTab(tabValue: string) {
-    // Pequeno delay para garantir que o DOM esteja atualizado
     setTimeout(() => {
       const segmentContainer = document.querySelector('.segment-container');
       const selectedTab = document.querySelector(`ion-segment-button[value="${tabValue}"]`);
-      
+
       if (segmentContainer && selectedTab) {
         const container = segmentContainer as HTMLElement;
         const tab = selectedTab as HTMLElement;
-        
-        // Calcula a posição para centralizar a tab
+
         const tabLeft = tab.offsetLeft;
         const tabWidth = tab.offsetWidth;
         const containerWidth = container.offsetWidth;
         const scrollPosition = tabLeft - (containerWidth / 2) + (tabWidth / 2);
-        
-        // Scroll suave para a posição calculada
+
         container.scrollTo({
           left: scrollPosition,
           behavior: 'smooth'
@@ -89,109 +287,20 @@ export class DetalheAnimalPage implements OnInit {
     }, 100);
   }
 
-  carregarDadosMockados() {
-    // Dados do animal
-    this.animal = {
-      brinco: '0145',
-      sexo: 'Fêmea',
-      dataNascimento: '2021-02-15',
-      raca: 'Dorper',
-      categoria: 'Matriz',
-      pesoAtual: 47,
-      situacao: 'ativo'
-    };
-
-    // Fotos do animal mockadas
-    this.animalFotos = [
-      {
-        url: 'https://via.placeholder.com/400x300/4CAF50/white?text=Animal+0145',
-        descricao: 'Foto frontal do animal'
-      },
-      {
-        url: 'https://via.placeholder.com/400x300/2196F3/white?text=Animal+Lateral',
-        descricao: 'Foto lateral do animal'
-      },
-      {
-        url: 'https://via.placeholder.com/400x300/FF9800/white?text=Animal+Detalhe',
-        descricao: 'Detalhe do animal'
-      }
-    ];
-
-    // Dados de manejos mockados
-    this.manejos = [
-      {
-        data: '2024-05-12',
-        tipo: 'sanitario',
-        sanitario: {
-          vacinas: [{ produto: 'Policlost', dose: '2.5 ml', via: 'Subcutânea', lote: 'L123', fabricante: 'Labovet' }]
-        },
-        observacao: 'Animal reagiu normalmente'
-      },
-      {
-        data: '2024-04-28', 
-        tipo: 'sanitario',
-        sanitario: {
-          medicacoes: [{ produto: 'Ivomec Gold', tipo: 'vermífugo', dose: '2.5 ml', via: 'Subcutânea' }]
-        },
-        observacao: 'Leve desconforto ao aplicar'
-      },
-      {
-        data: '2024-03-15',
-        tipo: 'reprodutivo',
-        reprodutivo: {
-          acao: 'parto',
-          tipoParto: 'natural',
-          habilidadeMaterna: 4,
-          quantidadeFilhotes: 2,
-          observacao: 'Parto sem complicações'
-        }
-      },
-      {
-        data: '2024-02-10',
-        tipo: 'tecnico',
-        tecnico: {
-          peso: 45,
-          temperatura: 38.5,
-          escoreCorporal: 3
-        },
-        observacao: 'Controle mensal de peso'
-      },
-      {
-        data: '2024-01-20',
-        tipo: 'sanitario',
-        sanitario: {
-          vacinas: [{ produto: 'Raiva', dose: '1.0 ml', via: 'Intramuscular', lote: 'R456', fabricante: 'VetLab' }]
-        },
-        observacao: 'Vacinação anual contra raiva'
-      },
-      {
-        data: '2023-12-05',
-        tipo: 'reprodutivo',
-        reprodutivo: {
-          acao: 'monta',
-          touro: 'Brinco 0789',
-          observacao: 'Cobertura natural'
-        }
-      }
-    ];
-
-    this.filtrarManejos('vacinas');
-  }
-
   onSegmentChange(event: any) {
     const value = event.detail.value;
     if (value) {
       this.filtrarManejos(value);
-      this.scrollToSelectedTab(value); // CHAMA O SCROLL AUTOMÁTICO
+      this.scrollToSelectedTab(value);
     } else {
       this.filtrarManejos('vacinas');
-      this.scrollToSelectedTab('vacinas'); // CHAMA O SCROLL AUTOMÁTICO
+      this.scrollToSelectedTab('vacinas');
     }
   }
 
   filtrarManejos(tipo: string) {
     this.abaAtiva = tipo;
-    
+
     this.manejosFiltrados = this.manejos.filter(manejo => {
       switch (tipo) {
         case 'vacinas':
@@ -203,40 +312,13 @@ export class DetalheAnimalPage implements OnInit {
         case 'tecnicos':
           return manejo.tipo === 'tecnico';
         case 'fotos':
-          return true; // Para a aba de fotos
+          return true;
         default:
           return false;
       }
     });
 
-    this.scrollToSelectedTab(tipo); // CHAMA O SCROLL AUTOMÁTICO
-  }
-
-  calcularIdade(dataNascimento: string): string {
-    if (!dataNascimento) return 'Idade não informada';
-    
-    const nascimento = new Date(dataNascimento);
-    const hoje = new Date();
-    const anos = hoje.getFullYear() - nascimento.getFullYear();
-    const meses = hoje.getMonth() - nascimento.getMonth();
-    
-    let mesesAjustados = meses;
-    if (mesesAjustados < 0) {
-      mesesAjustados += 12;
-    }
-    
-    return `${anos} anos, ${mesesAjustados} meses`;
-  }
-
-  formatarSituacao(situacao: string): string {
-    const situacoes: {[key: string]: string} = {
-      'ativo': 'Ativo',
-      'vendido': 'Vendido',
-      'descartado': 'Descartado',
-      'morto': 'Morto'
-    };
-    
-    return situacoes[situacao] || situacao;
+    this.scrollToSelectedTab(tipo);
   }
 
   formatarData(data: string): string {
@@ -245,13 +327,15 @@ export class DetalheAnimalPage implements OnInit {
   }
 
   obterCorSituacao(situacao: string): string {
-    const cores: {[key: string]: string} = {
+    const cores: { [key: string]: string } = {
       'ativo': 'success',
       'vendido': 'warning',
       'descartado': 'medium',
-      'morto': 'danger'
+      'morto': 'danger',
+      'inativo': 'medium',
+      'abatido': 'danger'
     };
-    
+
     return cores[situacao] || 'medium';
   }
 }

@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-auth',
@@ -12,14 +13,16 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [FormsModule, IonicModule, CommonModule]
 })
-export class AuthPage {
-  // Controle de modo (login/cadastro)
+export class AuthPage implements OnInit {
+  // Controle de modo (login/cadastro/edição)
   isLogin: boolean = true;
-  
+  isModoEdicao: boolean = false;
+  userId: string = '';
+
   // Dados para login
   loginEmail: string = '';
   loginPassword: string = '';
-  
+
   // Controle de visualização de senha
   hidePassword: boolean = true;
   hideConfirmPassword: boolean = true;
@@ -45,7 +48,7 @@ export class AuthPage {
 
   registerConfirmPassword: string = '';
   aceitouTermos: boolean = false;
-  
+
   // Estados de loading
   isLoading: boolean = false;
 
@@ -82,9 +85,80 @@ export class AuthPage {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private alertController: AlertController,
-    private loadingController: LoadingController
-  ) {}
+    private loadingController: LoadingController,
+    private authService: AuthService
+  ) { }
+
+  ngOnInit() {
+    // Verifica se está no modo edição
+    this.route.queryParams.subscribe(params => {
+      console.log('Parâmetros da URL:', params);
+      if (params['modo'] === 'edicao' && params['userId']) {
+        this.isModoEdicao = true;
+        this.userId = params['userId'];
+        console.log('Modo edição ativado para userId:', this.userId);
+        this.carregarDadosUsuario();
+      }
+    });
+  }
+
+  // Carregar dados do usuário para edição
+  carregarDadosUsuario() {
+    this.isLoading = true;
+
+    // PRIMEIRO muda para o modo cadastro/edição
+    this.isLogin = false;
+
+    console.log('Tentando carregar perfil para userId:', this.userId);
+
+    // SOLUÇÃO ALTERNATIVA: Usa os dados já salvos no AuthService
+    const currentUser = this.authService.getCurrentUser();
+
+    if (currentUser && currentUser.id === this.userId) {
+      this.isLoading = false;
+      console.log('Usando dados do usuário logado:', currentUser);
+
+      // Preenche os dados do formulário
+      this.registerData.nomeCompleto = currentUser.nome_completo;
+      this.registerData.email = currentUser.email;
+      this.registerData.telefoneWhatsapp = currentUser.telefone_whatsapp || '';
+      this.registerData.preferenciaRecuperacao = currentUser.preferencia_recuperacao || 'whatsapp';
+
+      // Dados da cabanha
+      this.registerData.cabanha.nome = currentUser.cabanha_nome || '';
+      this.registerData.cabanha.municipio = currentUser.cabanha_municipio || '';
+      this.registerData.cabanha.estado = currentUser.cabanha_estado || '';
+      this.registerData.cabanha.localizacaoLivre = currentUser.cabanha_localizacao_livre || '';
+
+    } else {
+      // Se não tiver os dados, tenta pela API (sem parseInt - UUID é string)
+      this.authService.getProfile(this.userId).subscribe({
+        next: (user) => {
+          this.isLoading = false;
+          console.log('Dados recebidos do backend:', user);
+
+          // Preenche os dados do formulário
+          this.registerData.nomeCompleto = user.nome_completo;
+          this.registerData.email = user.email;
+          this.registerData.telefoneWhatsapp = user.telefone_whatsapp || '';
+          this.registerData.preferenciaRecuperacao = user.preferencia_recuperacao || 'whatsapp';
+
+          // Dados da cabanha
+          this.registerData.cabanha.nome = user.cabanha_nome || '';
+          this.registerData.cabanha.municipio = user.cabanha_municipio || '';
+          this.registerData.cabanha.estado = user.cabanha_estado || '';
+          this.registerData.cabanha.localizacaoLivre = user.cabanha_localizacao_livre || '';
+        },
+        error: (error) => {
+          this.isLoading = false;
+          console.error('Erro ao carregar dados da API:', error);
+          this.showAlert('Erro', 'Não foi possível carregar os dados do perfil');
+        }
+      });
+    }
+  }
 
   // Alternar entre login e cadastro
   toggleAuthMode() {
@@ -122,27 +196,29 @@ export class AuthPage {
     }
   }
 
-  // Validar formulário de cadastro
+  // Validar formulário de cadastro/edição
   formularioValido(): boolean {
-    if (!this.registerData.nomeCompleto || 
-        !this.registerData.email || 
-        !this.registerData.telefoneWhatsapp || 
-        !this.registerData.senha || 
-        !this.registerData.cabanha.nome || 
-        !this.registerData.cabanha.municipio || 
-        !this.registerData.cabanha.estado) {
+    if (!this.registerData.nomeCompleto ||
+      !this.registerData.email ||
+      !this.registerData.telefoneWhatsapp ||
+      !this.registerData.cabanha.nome ||
+      !this.registerData.cabanha.municipio ||
+      !this.registerData.cabanha.estado) {
       return false;
     }
 
-    if (this.registerData.senha !== this.registerConfirmPassword) {
-      return false;
+    // No modo edição, a senha é opcional
+    if (!this.isModoEdicao) {
+      if (!this.registerData.senha || this.registerData.senha.length < 6) {
+        return false;
+      }
+
+      if (this.registerData.senha !== this.registerConfirmPassword) {
+        return false;
+      }
     }
 
-    if (this.registerData.senha.length < 6) {
-      return false;
-    }
-
-    if (!this.aceitouTermos) {
+    if (!this.aceitouTermos && !this.isModoEdicao) {
       return false;
     }
 
@@ -164,60 +240,109 @@ export class AuthPage {
     }
 
     this.isLoading = true;
-    
+
     const loading = await this.loadingController.create({
-      message: 'Entrando...',
-      duration: 1500
+      message: 'Entrando...'
     });
-    
+
     await loading.present();
 
-    // Simulação de autenticação
-    setTimeout(() => {
-      this.isLoading = false;
-      loading.dismiss();
-      
-      // Login sempre bem-sucedido para teste
-      this.showSuccessAlert('Login realizado com sucesso!');
-      this.router.navigate(['/tabs']);
-    }, 1500);
+    // Login REAL com backend
+    this.authService.login(this.loginEmail, this.loginPassword).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        loading.dismiss();
+
+        //this.showSuccessAlert('Login realizado com sucesso!');
+        this.router.navigate(['/tabs']);
+      },
+      error: (error) => {
+        this.isLoading = false;
+        loading.dismiss();
+
+        const errorMessage = error.error?.erro || 'Erro ao fazer login';
+        this.showAlert('Erro', errorMessage);
+      }
+    });
   }
 
-  // Processar cadastro
+  // Processar cadastro OU atualização
   async register() {
     if (!this.formularioValido()) {
-      this.showAlert('Erro', 'Por favor, preencha todos os campos obrigatórios e aceite os termos');
+      this.showAlert('Erro', 'Por favor, preencha todos os campos obrigatórios' + (this.isModoEdicao ? '' : ' e aceite os termos'));
       return;
     }
 
     this.isLoading = true;
-    
+
     const loading = await this.loadingController.create({
-      message: 'Criando conta...',
-      duration: 2000
+      message: this.isModoEdicao ? 'Atualizando perfil...' : 'Criando conta...'
     });
-    
+
     await loading.present();
 
-    // Simulação de cadastro
-    setTimeout(() => {
-      this.isLoading = false;
-      loading.dismiss();
-      
-      // Adiciona data de cadastro
-      const dadosCompletos = {
-        ...this.registerData,
-        dataCadastro: new Date().toISOString()
-      };
+    if (this.isModoEdicao) {
+      // ATUALIZAR perfil existente (sem parseInt - UUID é string)
+      this.authService.updateProfile(this.userId, this.registerData).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          loading.dismiss();
 
-      console.log('Dados do cadastro:', dadosCompletos);
-      
-      this.showSuccessAlert('Conta criada com sucesso!');
-      
-      // Volta para o login após cadastro
-      this.isLogin = true;
-      this.clearFormFields();
-    }, 2000);
+          console.log('Perfil atualizado:', response);
+          this.showSuccessAlert('Perfil atualizado com sucesso!');
+
+          // Atualiza os dados locais também (sem criar objeto complexo)
+          const currentUser = this.authService.getCurrentUser();
+          if (currentUser) {
+            // Atualiza apenas os dados necessários
+            const userAtualizado = {
+              ...currentUser,
+              nome_completo: this.registerData.nomeCompleto,
+              email: this.registerData.email,
+              telefone_whatsapp: this.registerData.telefoneWhatsapp,
+              preferencia_recuperacao: this.registerData.preferenciaRecuperacao,
+              cabanha_nome: this.registerData.cabanha.nome,
+              cabanha_municipio: this.registerData.cabanha.municipio,
+              cabanha_estado: this.registerData.cabanha.estado,
+              cabanha_localizacao_livre: this.registerData.cabanha.localizacaoLivre
+            };
+            this.authService.setUser(userAtualizado);
+          }
+
+          // Volta para o dashboard
+          this.router.navigate(['/dashboard']);
+        },
+        error: (error) => {
+          this.isLoading = false;
+          loading.dismiss();
+
+          const errorMessage = error.error?.erro || 'Erro ao atualizar perfil';
+          this.showAlert('Erro', errorMessage);
+        }
+      });
+    } else {
+      // CRIAR nova conta
+      this.authService.register(this.registerData).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          loading.dismiss();
+
+          console.log('Conta criada:', response);
+          this.showSuccessAlert('Conta criada com sucesso! Faça login para continuar.');
+
+          // Volta para o login após cadastro
+          this.isLogin = true;
+          this.clearFormFields();
+        },
+        error: (error) => {
+          this.isLoading = false;
+          loading.dismiss();
+
+          const errorMessage = error.error?.erro || 'Erro ao criar conta';
+          this.showAlert('Erro', errorMessage);
+        }
+      });
+    }
   }
 
   // Esqueci a senha
@@ -247,7 +372,7 @@ export class AuthPage {
         }
       ]
     });
-    
+
     await alert.present();
   }
 
@@ -266,18 +391,18 @@ export class AuthPage {
   // Formatar telefone (opcional)
   formatarTelefone(event: any) {
     let value = event.target.value.replace(/\D/g, '');
-    
+
     if (value.length > 11) {
       value = value.substring(0, 11);
     }
-    
+
     if (value.length > 0) {
       value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
     }
     if (value.length > 10) {
       value = value.replace(/(\d)(\d{4})$/, '$1-$2');
     }
-    
+
     this.registerData.telefoneWhatsapp = value;
   }
 
@@ -288,7 +413,7 @@ export class AuthPage {
       message,
       buttons: ['OK']
     });
-    
+
     await alert.present();
   }
 
@@ -298,7 +423,7 @@ export class AuthPage {
       message,
       buttons: ['OK']
     });
-    
+
     await alert.present();
   }
 
@@ -307,5 +432,10 @@ export class AuthPage {
     this.loginEmail = email;
     this.loginPassword = password;
     this.login();
+  }
+
+  // Método para cancelar edição
+  cancelarEdicao() {
+    this.router.navigate(['/dashboard']);
   }
 }

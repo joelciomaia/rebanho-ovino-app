@@ -4,7 +4,7 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'auth', //Redireciona para auth
+    redirectTo: 'auth',
     pathMatch: 'full'
   },
   {
@@ -19,18 +19,30 @@ const routes: Routes = [
     path: 'cadastro-animais',
     loadChildren: () => import('./pages/cadastro-animais/cadastro-animais.module').then(m => m.CadastroAnimaisPageModule)
   },
+  // ✅ ADICIONAR ESTA ROTA PARA EDIÇÃO
   {
-  path: 'manejos',
-  loadChildren: () => import('./pages/manejos/manejos.module').then(m => m.ManejospageModule)
+    path: 'cadastro-animais/:id',
+    loadChildren: () => import('./pages/cadastro-animais/cadastro-animais.module').then(m => m.CadastroAnimaisPageModule)
+  },
+  {
+    path: 'manejos',
+    loadChildren: () => import('./pages/manejos/manejos.module').then(m => m.ManejospageModule)
   },
   {
     path: 'detalhe-animal/:id',
     loadChildren: () => import('./pages/detalhe-animal/detalhe-animal.module').then(m => m.DetalheAnimalPageModule)
   },
-  // Rota curinga para páginas não encontradas - DEVE SER SEMPRE A ÚLTIMA MEU CHAPA
+  {
+    path: 'lista-animais',
+    loadChildren: () => import('./pages/lista-animais/lista-animais.module').then(m => m.ListaAnimaisPageModule)
+  },
+  {
+    path: 'ajuda',
+    loadChildren: () => import('./pages/ajuda/ajuda.module').then(m => m.AjudaPageModule)
+  },
   {
     path: '**',
-    redirectTo: 'auth', // Redireciona para auth se rota não existir
+    redirectTo: 'dashboard',
     pathMatch: 'full'
   }
 ];

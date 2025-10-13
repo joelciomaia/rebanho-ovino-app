@@ -1,0 +1,880 @@
+// ==================================================
+// VARIÁVEIS DE CORES DO SISTEMA - NOVA PALETA AGRO
+// ==================================================
+
+:root {
+  --primary: #2d4551;           // Azul-esverdeado escuro principal
+  --secondary: #5cad82;         // Verde médio secundário
+  --success: #27ae60;           // Verde para sucesso
+  --warning: #e67e22;           // Laranja para alertas
+  --danger: #c0392b;            // Vermelho para perigo
+  --light: #ecf0f1;             // Cinza claro para fundos
+  --text: #2d4551;              // Cor padrão do texto
+  --text-light: #7f8c8d;        // Cor clara para texto secundário
+  --card-bg: #ffffff;           // Fundo branco dos cards
+  --background: #f8f9fa;        // Fundo cinza da página
+  --border: #dce1e5;            // Cor das bordas
+  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); // Sombra suave dos cards
+}
+
+// ==================================================
+// ESTILOS GLOBAIS
+// ==================================================
+
+* {
+  font-weight: 500;             // Peso de fonte médio para tudo
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700 !important;  // Títulos em negrito
+}
+
+// ==================================================
+// HEADER E TOOLBAR
+// ==================================================
+
+ion-header ion-toolbar {
+  --background: linear-gradient(135deg, #2d4551 0%, #3a5766 100%) !important; // Gradiente do header
+  --color: white !important;    // Texto branco no header
+}
+
+ion-header ion-toolbar ion-title,
+ion-header ion-toolbar ion-buttons,
+ion-header ion-toolbar ion-button {
+  --color: white !important;    // Força cor branca em todos os elementos
+  color: white !important;      // Fallback para cor branca
+}
+
+// ==================================================
+// CONTEÚDO PRINCIPAL
+// ==================================================
+
+ion-content {
+  --background: #e9eaeb;        // Fundo cinza do conteúdo
+  --padding-top: 10px;          // 10px de padding em todas as direções
+  --padding-bottom: 10px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+}
+
+// ==================================================
+// CARD DE ESTATÍSTICAS - MOBILE (VERSÃO ATUAL)
+// ==================================================
+
+.stats-card {
+  background: linear-gradient(135deg, #2d4551 0%, #5cad82 100%) !important; // Gradiente principal
+  border-radius: 12px;          // Bordas arredondadas
+  box-shadow: var(--card-shadow); // Sombra padrão
+  margin: 0 0 20px 0;           // Margem apenas abaixo
+  border: 1px solid rgba(255, 255, 255, 0.2); // Borda branca sutil
+  padding: 15px;                // Padding interno
+  color: white;                 // Texto branco
+}
+
+
+.stats-header {
+  display: flex;                // Flexbox para alinhar título e imagem
+  justify-content: space-between; // Espaço entre os elementos
+  align-items: flex-start;      // Alinha no topo
+  margin-bottom: 15px;          // Espaço abaixo do header
+}
+
+.stats-main {
+  flex: 1;                      // Ocupa espaço disponível
+}
+
+.stats-title {
+  font-size: 12px;              // Tamanho pequeno para "TOTAL DE ANIMAIS"
+  font-weight: 600;             // Semi-negrito
+  color: rgba(255, 255, 255, 0.9) !important; // Branco com opacidade
+  margin-bottom: 4px;           // Pequeno espaço abaixo
+  text-transform: uppercase;    // Texto em maiúsculas
+  letter-spacing: 0.5px;        // Espaçamento entre letras
+}
+
+.stats-total {
+  display: flex;                // Flexbox para número e variação
+  align-items: baseline;        // Alinha na base da linha
+  gap: 8px;                     // Espaço entre número e badge
+  margin-bottom: 5px;           // Espaço abaixo
+}
+
+.stats-number {
+  font-size: 32px;              // Tamanho grande para o número total
+  font-weight: 800;             // Extra-negrito
+  color: white !important;      // Texto branco
+}
+
+.stats-variation {
+  font-size: 11px;              // Tamanho muito pequeno
+  font-weight: 600;             // Semi-negrito
+  color: rgba(255, 255, 255, 0.9) !important; // Branco com opacidade
+  background: rgba(255, 255, 255, 0.2); // Fundo branco transparente
+  padding: 3px 8px;             // Padding compacto
+  border-radius: 10px;          // Bordas arredondadas
+}
+
+.stats-image {
+  flex: 0 0 60px;               // Largura fixa de 60px
+  display: flex;                // Flexbox para centralizar
+  justify-content: center;      // Centraliza horizontalmente
+  align-items: center;          // Centraliza verticalmente
+}
+
+.rebanho-image {
+  width: 100px;                 // Largura da imagem
+  height: 100px;                // Altura da imagem (quadrado)
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%); // Gradiente sutil
+  border-radius: 10px;          // Bordas arredondadas
+  display: flex;                // Flexbox para centralizar ícone
+  align-items: center;          // Centraliza verticalmente
+  justify-content: center;      // Centraliza horizontalmente
+  border: 2px solid rgba(255, 255, 255, 0.2); // Borda branca sutil
+}
+
+.rebanho-image ion-icon {
+  font-size: 80px;              // Tamanho do ícone
+  color: rgba(255, 255, 255, 0.7); // Cor do ícone com opacidade
+}
+
+
+.stat-number {
+  font-size: 16px;              // Tamanho médio para números
+  font-weight: 800;             // Extra-negrito
+  color: white !important;      // Texto branco
+  margin-bottom: 2px;           // Pequeno espaço abaixo
+}
+
+.stat-label {
+  font-size: 9px;               // Tamanho muito pequeno
+  font-weight: 600;             // Semi-negrito
+  color: rgba(255, 255, 255, 0.9); // Branco com opacidade
+  text-transform: uppercase;    // Texto em maiúsculas
+  letter-spacing: 0.5px;        // Espaçamento entre letras
+}
+
+// ==================================================
+// BARRA DE BUSCA
+// ==================================================
+
+.search-container {
+  margin-bottom: 10px;          // Espaço abaixo da barra
+}
+
+ion-searchbar {
+  --background: white;          // Fundo branco
+  --border-radius: 12px;        // Bordas arredondadas
+  --box-shadow: var(--card-shadow); // Sombra igual aos cards
+  --color: var(--text);         // Cor do texto padrão
+  --placeholder-color: var(--text-light); // Cor do placeholder
+  
+}
+
+// ==================================================
+// SEGMENTO DE FILTROS - AJUSTES MAIS AGRESSIVOS
+// ==================================================
+
+.segment-container {
+  overflow-x: auto; /* Habilita scroll horizontal */
+  white-space: nowrap; /* Impede quebra de linha */
+  margin-bottom: 16px;
+  -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
+  scrollbar-width: none; /* Esconde scrollbar no Firefox */
+  -ms-overflow-style: none; /* Esconde scrollbar no IE/Edge */
+  padding: 2px 0; /* REDUZIDO */
+  scroll-behavior: smooth; /* Animação suave do scroll */
+  
+  /* Esconde scrollbar no Chrome/Safari */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Segmento principal - layout inline para scroll */
+ion-segment {
+  width: auto; /* Largura automática baseada no conteúdo */
+  min-width: 100%; /* Mínimo de 100% da largura */
+  display: inline-flex; /* Permite scroll horizontal */
+  justify-content: flex-start; /* Alinha à esquerda */
+  background: #ffffff; /* Mantém cor original */
+  border-radius: 8px; /* Mantém bordas arredondadas */
+  //padding: 2px; /* REDUZIDO */
+  box-shadow: var(--card-shadow); /* Sombra igual aos cards */
+  gap: 0; /* ZERA o gap entre botões */
+}
+
+/* Botões individuais das tabs - ESPAÇOS MÁXIMOS REDUZIDOS */
+ion-segment-button {
+  min-width: 60px; /* Largura mínima MAIS REDUZIDA */
+  //max-width: 75px; /* Largura máxima MAIS REDUZIDA */
+  --padding-start: 6px; /* Espaçamento interno MAIS REDUZIDO */
+  --padding-end: 6px; /* Espaçamento interno MAIS REDUZIDO */
+  --color: #6c7d6d; /* Cor do texto inativo */
+  --color-checked: #2d4551 !important; /* Cor do texto ativo - primária */
+  --indicator-color: #5cad82 !important; /* Cor do indicador - secundária */
+  --border-radius: 8px; /* Bordas arredondadas */
+  --margin-start: 0; /* ZERA margem entre botões */
+  --margin-end: 0; /* ZERA margem entre botões */
+  flex: 0 0 auto; /* Impede que os botões estiquem */
+  height: 32px; /* Altura REDUZIDA */
+  scroll-margin: 0 10px; /* Margem para centralização REDUZIDA */
+  
+  
+  ion-label {
+    white-space: nowrap; /* Texto em linha única */
+    overflow: hidden; /* Esconde overflow */
+    text-overflow: ellipsis; /* Adiciona "..." se texto for longo */
+    font-size: 0.7rem; /* Tamanho de fonte MAIS REDUZIDO */
+    font-weight: 500; /* Peso da fonte */
+    margin: 0; /* Remove margens padrão */
+    line-height: 1.2; /* Line-height reduzido */
+  }
+}
+
+/* Remove o fundo colorido quando selecionado (mantém apenas a linha inferior) */
+ion-segment-button::part(indicator) {
+  height: 2px; /* Altura da linha inferior REDUZIDA */
+  border-radius: 0; /* Remove bordas arredondadas da linha */
+}
+
+/* Remove o background colorido do botão quando selecionado */
+ion-segment-button[aria-selected="true"] {
+  --background: transparent !important;
+  --background-checked: transparent !important;
+}
+
+/* Remove qualquer margin/padding extra dos botões */
+ion-segment-button::part(native) {
+  padding-inline-start: 0;
+  padding-inline-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+}
+
+/* ===== RESPONSIVIDADE DAS TABS ===== */
+/* Tablets e telas maiores - centraliza sem scroll */
+@media (min-width: 768px) {
+  .segment-container {
+    overflow-x: hidden; /* Esconde scroll em telas grandes */
+  }
+  
+  ion-segment {
+    width: 100%; /* Ocupa 100% da largura */
+    justify-content: center; /* Centraliza as tabs */
+    gap: 2px; /* Gap mínimo */
+  }
+  
+  ion-segment-button {
+    min-width: 80px; /* Largura um pouco maior */
+    max-width: 90px; /* Largura máxima maior */
+    --padding-start: 8px; /* Padding um pouco maior */
+    --padding-end: 8px; /* Padding um pouco maior */
+    
+    ion-label {
+      font-size: 0.75rem; /* Fonte um pouco maior */
+    }
+  }
+}
+
+/* Telas muito pequenas - ajusta ainda mais */
+@media (max-width: 360px) {
+  ion-segment-button {
+    min-width: 55px; /* Largura mínima MAIS REDUZIDA */
+    max-width: 65px; /* Largura máxima MAIS REDUZIDA */
+    --padding-start: 4px; /* Padding MAIS REDUZIDO */
+    --padding-end: 4px; /* Padding MAIS REDUZIDO */
+    
+    ion-label {
+      font-size: 0.65rem; /* Fonte MAIS REDUZIDA */
+    }
+  }
+}
+
+// ==================================================
+// LISTA DE ANIMAIS
+// ==================================================
+
+.animais-list {
+  display: flex;                // Flexbox em coluna
+  flex-direction: column;       // Direção coluna
+  gap: 15px;                    // Espaço entre cards
+}
+
+.animal-card {
+  background: white !important; // Fundo branco
+  border-radius: 12px;          // Bordas arredondadas
+  box-shadow: var(--card-shadow); // Sombra padrão
+  margin: 0;                    // Remove margem padrão
+  border: 1px solid var(--border); // Borda sutil
+  transition: all 0.3s ease;    // Transição suave
+}
+
+.animal-card:hover {
+  transform: translateY(-3px);  // Levanta o card no hover
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); // Sombra mais intensa
+}
+
+.animal-brinco {
+  font-size: 20px;              // Tamanho grande para número do brinco
+  font-weight: 800;             // Extra-negrito
+  color: #2d4551 !important;    // Cor primária
+  margin-bottom: 8px;           // Espaço abaixo
+}
+
+.animal-category {
+  display: flex;                // Flexbox para badges
+  gap: 8px;                     // Espaço entre badges
+  align-items: center;          // Alinha verticalmente
+}
+
+
+// ==================================================
+// BADGES DE CATEGORIA E SEXO
+// ==================================================
+
+ion-badge {
+  font-size: 12px;              // Tamanho pequeno
+  font-weight: 700;             // Negrito
+  padding: 6px 12px;            // Padding interno
+  border-radius: 20px;          // Bordas completamente arredondadas
+}
+
+.badge-matriz {
+  --background: linear-gradient(135deg, #5cad82 0%, #6bbd93 100%) !important; // Gradiente verde
+  --color: white;               // Texto branco
+}
+
+.badge-carneiro {
+  --background: linear-gradient(135deg, #2d4551 0%, #3a5766 100%) !important; // Gradiente azul
+  --color: white;               // Texto branco
+}
+
+.badge-borrega {
+  --background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%) !important; // Gradiente laranja
+  --color: white;               // Texto branco
+}
+
+.badge-cordeiro {
+  --background: linear-gradient(135deg, #3498db 0%, #5dade2 100%) !important; // Gradiente azul claro
+  --color: white;               // Texto branco
+}
+
+.badge-macho {
+  --background: linear-gradient(135deg, #2d4551 0%, #3a5766 100%) !important; // Gradiente azul
+  --color: white;               // Texto branco
+}
+
+.badge-femea {
+  --background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%) !important; // Gradiente laranja
+  --color: white;               // Texto branco
+}
+
+.sexo-badge {
+  margin-left: 8px;             // Espaço à esquerda do badge de sexo
+}
+
+// ==================================================
+// DETALHES DO ANIMAL
+// ==================================================
+
+.animal-details {
+  margin-bottom: 20px;          // Espaço abaixo dos detalhes
+}
+
+.detail-row {
+  display: flex;                // Flexbox para linha
+  justify-content: space-between; // Espaço entre label e valor
+  align-items: center;          // Alinha verticalmente
+  padding: 8px 0;               // Padding vertical
+  border-bottom: 1px solid var(--border); // Linha separadora
+}
+
+.detail-row:last-child {
+  border-bottom: none;          // Remove borda do último item
+}
+
+.detail-label {
+  font-size: 14px;              // Tamanho normal
+  font-weight: 600;             // Semi-negrito
+  color: var(--text-light);     // Cor clara
+}
+
+.detail-value {
+  font-size: 14px;              // Tamanho normal
+  font-weight: 700;             // Negrito
+  color: #2d4551 !important;    // Cor primária
+}
+
+// ==================================================
+// AÇÕES DO ANIMAL
+// ==================================================
+
+.animal-actions {
+  display: flex;                // Flexbox para botões
+  gap: 10px;                    // Espaço entre botões
+  justify-content: flex-end;    // Alinha à direita
+  border-top: 2px solid var(--border); // Linha separadora acima
+  padding-top: 15px;            // Espaço acima dos botões
+}
+
+.action-button {
+  --border-color: #5cad82;      // Cor da borda verde
+  --color: #5cad82;             // Cor do texto verde
+  --border-radius: 8px;         // Bordas arredondadas
+  font-size: 13px;              // Tamanho pequeno
+  font-weight: 600;             // Semi-negrito
+  min-height: 36px;             // Altura mínima
+}
+
+.action-button:hover {
+  --background: rgba(92, 173, 130, 0.1); // Fundo verde claro no hover
+}
+
+// ==================================================
+// ESTADO VAZIO (QUANDO NÃO HÁ RESULTADOS)
+// ==================================================
+
+.empty-state {
+  text-align: center;           // Texto centralizado
+  padding: 60px 20px;           // Padding generoso
+  background: white;            // Fundo branco
+  border-radius: 12px;          // Bordas arredondadas
+  box-shadow: var(--card-shadow); // Sombra padrão
+}
+
+.empty-icon {
+  font-size: 64px;              // Ícone grande
+  color: var(--text-light);     // Cor clara
+  margin-bottom: 20px;          // Espaço abaixo do ícone
+}
+
+.empty-state h3 {
+  font-size: 20px;              // Tamanho médio
+  font-weight: 700;             // Negrito
+  color: #2d4551 !important;    // Cor primária
+  margin-bottom: 10px;          // Espaço abaixo
+}
+
+.empty-state p {
+  font-size: 16px;              // Tamanho normal
+  color: var(--text-light);     // Cor clara
+  margin: 0;                    // Remove margem
+}
+
+// ==================================================
+// RESPONSIVIDADE
+// ==================================================
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr); // 2 colunas em mobile
+    gap: 8px;                   // Espaço reduzido
+  }
+
+  .animal-actions {
+    flex-direction: column;     // Botões em coluna
+  }
+
+  .action-button {
+    width: 100%;                // Largura total
+  }
+
+  ion-segment {
+    overflow-x: auto;           // Permite rolagem horizontal
+    white-space: nowrap;        // Impede quebra de linha
+  }
+
+  ion-segment-button {
+    min-width: auto;            // Largura automática
+    padding: 0 12px;            // Padding horizontal
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr; // 1 coluna em telas muito pequenas
+  }
+
+  .detail-row {
+    flex-direction: column;     // Label e valor em coluna
+    align-items: flex-start;    // Alinha à esquerda
+    gap: 4px;                   // Pequeno espaço entre
+  }
+
+  .animal-category {
+    flex-direction: column;     // Badges em coluna
+    align-items: flex-start;    // Alinha à esquerda
+    gap: 5px;                   // Espaço entre badges
+  }
+
+  .sexo-badge {
+    margin-left: 0;             // Remove margem esquerda
+  }
+}
+
+// ==================================================
+// ANIMAÇÕES E ESTADOS
+// ==================================================
+
+.animal-card {
+  animation: fadeInUp 0.5s ease; // Animação de entrada suave
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;                 // Inicia invisível
+    transform: translateY(20px); // Inicia 20px abaixo
+  }
+  to {
+    opacity: 1;                 // Termina visível
+    transform: translateY(0);   // Termina na posição normal
+  }
+}
+
+// ==================================================
+// CARDS HEADER STYLES
+// ==================================================
+
+ion-card-header {
+  padding: 20px 20px 15px 20px; // Padding interno
+  border-bottom: 2px solid var(--border); // Linha separadora
+}
+
+ion-card-content {
+  padding: 20px;                // Padding interno
+}
+
+// ==================================================
+// RESPONSIVIDADE - APENAS PARA TELAS MAIORES
+// ==================================================
+
+@media (min-width: 768px) {
+  .stats-header {
+    margin-bottom: 20px;        // Mais espaço abaixo do header
+  }
+  
+  .stats-number {
+    font-size: 36px;            // Número maior em desktop
+  }
+  
+  .stats-grid {
+    gap: 12px;                  // Mais espaço entre itens
+  }
+  
+  .stat-item {
+    padding: 10px 5px;          // Padding maior
+  }
+  
+  .stat-number {
+    font-size: 18px;            // Números maiores
+  }
+  
+  .stat-label {
+    font-size: 10px;            // Labels um pouco maiores
+  }
+}
+
+
+.rebanho-image ion-icon {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 8px 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+// ==================================================
+// CARDS DE ANIMAIS - OTIMIZADO PARA 180px
+// ==================================================
+
+.animais-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; // Espaço reduzido entre cards
+}
+
+.animal-card {
+  background: white !important;
+  border-radius: 10px; // Bordas mais suaves
+  box-shadow: var(--card-shadow);
+  margin: 0;
+  border: 1px solid var(--border);
+  padding: 12px; // Padding geral reduzido
+  max-height: 180px; // ALTURA MÁXIMA DEFINIDA
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Cabeçalho compacto */
+.card-header-compact {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.animal-identity {
+  flex: 1;
+}
+
+.animal-brinco {
+  font-size: 16px; // Fonte reduzida
+  font-weight: 800;
+  color: #2d4551 !important;
+  margin: 0 0 4px 0; // Margens reduzidas
+  line-height: 1.2;
+}
+
+.animal-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.badge-categoria, .badge-sexo {
+  font-size: 10px !important; // Fontes bem menores
+  font-weight: 700;
+  padding: 3px 8px !important;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.badge-categoria {
+  background: linear-gradient(135deg, #5cad82 0%, #6bbd93 100%) !important;
+  color: white;
+}
+
+.badge-sexo {
+  background: linear-gradient(135deg, #2d4551 0%, #3a5766 100%) !important;
+  color: white;
+}
+
+.animal-photo-mini {
+  width: 40px; // Foto muito menor
+  height: 40px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.animal-photo-mini ion-icon {
+  font-size: 20px;
+  color: var(--text-light);
+}
+
+/* Detalhes em grid compacto */
+.animal-details-compact {
+  display: grid;
+  grid-template-columns: 1fr 1fr; // 2 colunas
+  gap: 6px; // Gap mínimo
+  margin-bottom: 8px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.detail-icon {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.detail-text {
+  font-size: 11px !important; // Fontes bem pequenas
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Botões compactos */
+.animal-actions-compact {
+  display: flex;
+  gap: 6px;
+  border-top: 1px solid var(--border); // Linha mais fina
+  padding-top: 8px;
+}
+
+.btn-action {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 8px !important;
+  border: 1px solid;
+  border-radius: 6px;
+  font-size: 11px !important;
+  font-weight: 600;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 28px; // Altura mínima reduzida
+}
+
+.btn-detalhes {
+  border-color: #5cad82;
+  color: #5cad82;
+}
+
+.btn-detalhes:hover {
+  background: rgba(92, 173, 130, 0.1);
+}
+
+.btn-editar {
+  border-color: #2d4551;
+  color: #2d4551;
+}
+
+.btn-editar:hover {
+  background: rgba(45, 69, 81, 0.1);
+}
+
+.btn-action ion-icon {
+  font-size: 14px;
+}
+
+// ==================================================
+// RESPONSIVIDADE PARA CARDS COMPACTOS
+// ==================================================
+
+
+
+@media (max-width: 360px) {
+  .animal-card {
+    max-height: 165px;
+  }
+  
+  .card-header-compact {
+    margin-bottom: 6px;
+  }
+  
+  .animal-details-compact {
+    margin-bottom: 6px;
+  }
+  
+  .animal-actions-compact {
+    padding-top: 6px;
+  }
+}
+
+
+//checkbox para status
+.animal-header-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.animal-status {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  
+  &.status-ativo {
+    background: var(--ion-color-success);
+    color: white;
+  }
+  
+  &.status-descarte {
+    background: var(--ion-color-warning);
+    color: white;
+  }
+  
+  &.status-inativo {
+    background: var(--ion-color-danger);
+    color: white;
+  }
+  
+  &.status-desconhecido {
+    background: var(--ion-color-medium);
+    color: white;
+  }
+}
+
+.animal-brinco {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.toggle-container {
+  padding: 4px 16px 8px 16px; // MENOS PADDING EM CIMA
+  margin: -18px -18px -8px 0; // MARGEM NEGATIVA PRA SUBIR
+
+  //background: var(--ion-color-light);
+  border-bottom: 1px solid var(--ion-color-light-shade);
+  
+  ion-item {
+    --background: transparent;
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --min-height: 44px;
+    
+    ion-toggle {
+      --background: #d1d1d6;
+      --background-checked: var(--ion-color-primary);
+      --handle-background: #ffffff;
+      --handle-background-checked: #ffffff;
+      --handle-width: 20px;
+      --handle-height: 20px;
+      --handle-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      margin-right: 12px;
+    }
+    
+    ion-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ion-color-dark);
+      margin: 0;
+    }
+  }
+}
+
+// Estilo quando toggle está ativado
+.toggle-container ion-item[aria-checked="true"] {
+  ion-label {
+    color: var(--ion-color-primary);
+    font-weight: 600;
+  }
+}
+
+// Ajuste de espaçamento para mobile
+@media (max-width: 768px) {
+  .toggle-container {
+    padding: 6px 12px;
+    
+    ion-item {
+      --min-height: 40px;
+      
+      ion-label {
+        font-size: 13px;
+      }
+    }
+  }
+}

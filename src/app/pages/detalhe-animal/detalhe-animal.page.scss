@@ -1,7 +1,17 @@
 /* ================================================== */
 /* RESET E CONFIGURAÇÕES GERAIS DO HEADER - ATUALIZADO */
 /* ================================================== */
+ /* No arquivo .scss da sua página */
+:host {
+  --minha-cor-terciaria: #562800;
+}
 
+.botao-status-custom {
+  --background: #562800;
+  --background-hover: #6a3200;
+  --background-activated: #451f00;
+  --color: white;
+}
 /* Configurações principais do toolbar do header */
 ion-header ion-toolbar {
   --background: linear-gradient(135deg, #2d4551 0%, #3a5766 100%) !important;
@@ -126,7 +136,8 @@ ion-header ion-toolbar ion-back-button {
 /* ===== DETALHES DO ANIMAL ===== */
 .animal-details-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  //grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: 1fr 1fr;  // Duas colunas
   gap: 12px;
   margin-bottom: 20px;
 }
@@ -184,7 +195,7 @@ ion-header ion-toolbar ion-back-button {
 }
 
 .status-morto {
-  background: rgba(231, 76, 60, 0.9);
+  background: rgba(59, 10, 5, 0.9);
   color: white;
 }
 
@@ -648,4 +659,138 @@ ion-button[color="secondary"] {
   --ion-color-secondary-contrast-rgb: 255, 255, 255 !important;
   --ion-color-secondary-shade: #519873 !important;
   --ion-color-secondary-tint: #6cb591 !important;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.button-row {
+  display: flex;
+  gap: 8px;
+}
+
+.top-button {
+  flex: 1;
+  margin: 0;
+}
+
+.bottom-button {
+  margin: 0;
+}
+
+.modal-status-content {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+}
+
+.animal-info-modal {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border, #dce1e5);
+}
+
+.animal-info-modal h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.5em;
+  color: var(--text, #2d4551);
+  font-weight: 600;
+}
+
+.animal-info-modal p {
+  margin: 0;
+  color: var(--text-light, #7f8c8d);
+  font-size: 0.9em;
+}
+
+.status-atual {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 12px;
+  background: var(--light, #ecf0f1);
+  border-radius: 8px;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.8em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-ativo {
+  background: #27ae60;
+  color: white;
+}
+
+.novo-status {
+  margin-bottom: 20px;
+}
+
+.novo-status h4 {
+  margin: 0 0 12px 0;
+  font-size: 1.1em;
+  color: var(--text, #2d4551);
+}
+
+.status-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-indicator.ativo {
+  background: #27ae60;
+}
+
+.status-indicator.descarte {
+  background: #e67e22;
+}
+
+.status-indicator.inativo {
+  background: #c0392b;
+}
+
+.data-mudanca,
+.motivo-mudanca,
+.observacoes {
+  margin-bottom: 16px;
+}
+
+/* Melhorar os itens do formulário */
+ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --border-color: var(--border, #dce1e5);
+}
+
+/* Estilo para os botões do footer */
+ion-footer ion-toolbar {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+}
+
+.animal-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;  // Duas colunas
+  gap: 12px;
 }

@@ -13,63 +13,72 @@
   </ion-toolbar>
 </ion-header>
 
-  <!-- Menu lateral DENTRO do ion-content -->
-  <div class="menu-overlay" id="menuOverlay" (click)="closeMenu()"></div>
+<!-- Menu lateral DENTRO do ion-content -->
+<div class="menu-overlay" id="menuOverlay" (click)="closeMenu()"></div>
 
-  <div class="menu-drawer" id="menuDrawer">
-    <button class="menu-close" (click)="closeMenu()">×</button>
-    
-    <div (click)="closeMenu()" class="menu-header">
-      <div class="menu-company">NOME??</div>
-      <h2 class="menu-title">Home</h2>
+<div class="menu-drawer" id="menuDrawer">
+  <button class="menu-close" (click)="closeMenu()">×</button>
+
+  <div (click)="closeMenu()" class="menu-header">
+
+    <div class="menu-company">{{ getNomeCabanha() }}</div>
+    <div class="menu-logo">
+      <img src="assets/images/logo-ovino.png" alt="Logo OvinoGest">
     </div>
-    
-    <div class="menu-items">
-      <a class="menu-item" href="#">
-        <ion-icon name="home-outline"></ion-icon>
-        <span class="menu-item-text">Home</span>
-      </a>
-      
-      <a class="menu-item" href="#">
-        <ion-icon name="cash-outline"></ion-icon>
-        <span class="menu-item-text">Fust</span>
-      </a>
-      
-      <a class="menu-item" href="#">
-        <ion-icon name="git-branch-outline"></ion-icon>
-        <span class="menu-item-text">Processos</span>
-      </a>
-      
-      <a class="menu-item" href="#">
-        <ion-icon name="location-outline"></ion-icon>
-        <span class="menu-item-text">Estações</span>
-      </a>
-      
-      <a class="menu-item" href="#">
-        <ion-icon name="document-text-outline"></ion-icon>
-        <span class="menu-item-text">Boletos</span>
-      </a>
-      
-      <a class="menu-item" href="#">
-        <ion-icon name="call-outline"></ion-icon>
-        <span class="menu-item-text">Chamado</span>
-      </a>
-      
-      <a class="menu-item" href="#">
-        <ion-icon name="folder-open-outline"></ion-icon>
-        <span class="menu-item-text">Pasta pública</span>
-      </a>
-    </div>
+    <div class="menu-user">{{ getNomeUsuario() }}</div>
   </div>
 
-  <ion-content [fullscreen]="true" class="dashboard-content">
+  <div class="menu-items">
+    <!-- Seção Principal -->
+    <a class="menu-item" (click)="navegarPara('/dashboard'); closeMenu()">
+      <ion-icon name="home-outline"></ion-icon>
+      <span class="menu-item-text">Início</span>
+    </a>
+
+    <a class="menu-item" (click)="navegarPara('/lista-animais'); closeMenu()">
+      <ion-icon name="git-compare-outline"></ion-icon>
+      <span class="menu-item-text">Todos os Animais</span>
+    </a>
+
+    <a class="menu-item" (click)="navegarPara('/manejos'); closeMenu()">
+      <ion-icon name="clipboard-outline"></ion-icon>
+      <span class="menu-item-text">Manejos</span>
+    </a>
+
+    <a class="menu-item" (click)="navegarPara('/cadastro-animais'); closeMenu()">
+      <ion-icon name="add-circle-outline"></ion-icon>
+      <span class="menu-item-text">Cadastrar Animal</span>
+    </a>
+
+    <!-- Divisor -->
+    <div class="menu-divider"></div>
+
+    <!-- Seção Secundária -->
+    <a class="menu-item" (click)="abrirPerfil(); closeMenu()">
+      <ion-icon name="person-outline"></ion-icon>
+      <span class="menu-item-text">Perfil</span>
+    </a>
+
+    <a class="menu-item" (click)="navegarPara('/ajuda'); closeMenu()">
+      <ion-icon name="help-circle-outline"></ion-icon>
+      <span class="menu-item-text">Ajuda</span>
+    </a>
+
+    <a class="menu-item" (click)="sair(); closeMenu()">
+      <ion-icon name="log-out-outline"></ion-icon>
+      <span class="menu-item-text">Sair</span>
+    </a>
+  </div>
+</div>
+
+<ion-content [fullscreen]="true" class="dashboard-content">
   <div class="container">
     <!-- HEADER DO DASHBOARD -->
     <header class="dashboard-header">
       <div class="header-content">
         <div class="header-title">
           <h1>Ovinocultura de Precisão</h1>
-          <p>Monitoramento completo do seu rebanho</p>
+          <p>Monitoramento completo do seu rebanho ovino</p>
         </div>
         <div class="user-info">
           <div class="user-avatar">
@@ -79,188 +88,147 @@
       </div>
     </header>
 
-    <!-- CARDS DE ESTATÍSTICAS -->
-    <div class="dashboard-grid">
-      <!-- TOTAL DE ANIMAIS -->
-      <ion-card class="stats-card">
-        <ion-card-header class="card-header">
-          <ion-card-title>Total de Animais</ion-card-title>
-          <div class="card-icon icon-animals">
-            <ion-icon name="paw"></ion-icon>
-          </div>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="stat-number">63</div>
-          <div class="stat-change">
-            <span class="change-positive">
-              <ion-icon name="arrow-up"></ion-icon>
-              +12 este mês
-            </span>
-          </div>
-        </ion-card-content>
-      </ion-card>
-
-      <!-- FÊMEAS GESTANTES -->
-      <ion-card class="stats-card">
-        <ion-card-header class="card-header">
-          <ion-card-title>Fêmeas Gestantes</ion-card-title>
-          <div class="card-icon icon-pregnant">
-            <ion-icon name="heart"></ion-icon>
-          </div>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="stat-number">42</div>
-          <div class="stat-change">
-            <span class="change-positive">
-              <ion-icon name="arrow-up"></ion-icon>
-              +5 confirmadas
-            </span>
-          </div>
-        </ion-card-content>
-      </ion-card>
-
-      <!-- ANIMAIS PARA DESCARTE -->
-      <ion-card class="stats-card">
-        <ion-card-header class="card-header">
-          <ion-card-title>Animais para Descarte</ion-card-title>
-          <div class="card-icon icon-discard">
-            <ion-icon name="trash"></ion-icon>
-          </div>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="stat-number">11</div>
-          <div class="stat-change">
-            <span class="change-positive">
-              <ion-icon name="arrow-up"></ion-icon>
-              +2 este mês
-            </span>
-          </div>
-        </ion-card-content>
-      </ion-card>
-    </div>
-
-    <!-- SEÇÃO DE ALERTAS -->
-    <h2 class="section-title">Alertas e Lembretes</h2>
-
-    <div class="grid-2">
-      <!-- CARDS DE ALERTAS -->
-      <ion-card class="alerts-card">
-        <ion-card-content>
-          <!-- ALERTA VACINAÇÃO -->
-          <div class="alert-item">
-            <div class="alert-icon alert-vaccine">
-              <ion-icon name="medical"></ion-icon>
-            </div>
-            <div class="alert-content">
-              <h4>Vacinação</h4>
-              <div class="alert-date">Hoje</div>
-              <p class="alert-desc">15 animais precisam da vacina contra clostridiose</p>
-            </div>
-          </div>
-
-          <!-- ALERTA REPRODUÇÃO -->
-          <div class="alert-item">
-            <div class="alert-icon alert-breeding">
-              <ion-icon name="heart"></ion-icon>
-            </div>
-            <div class="alert-content">
-              <h4>Reprodução</h4>
-              <div class="alert-date">Amanhã</div>
-              <p class="alert-desc">3 fêmeas em período de cobertura</p>
-            </div>
-          </div>
-
-          <!-- ALERTA PESAGEM -->
-          <div class="alert-item">
-            <div class="alert-icon alert-weighing">
-              <ion-icon name="speedometer"></ion-icon>
-            </div>
-            <div class="alert-content">
-              <h4>Pesagem</h4>
-              <div class="alert-date">Esta semana</div>
-              <p class="alert-desc">12 cordeiros para pesagem mensal</p>
-            </div>
-          </div>
-        </ion-card-content>
-      </ion-card>
-
-      <!-- CONDIÇÕES CLIMÁTICAS -->
-      <ion-card class="weather-card">
-        <ion-card-header class="card-header">
-          <ion-card-title>Condições Climáticas</ion-card-title>
-          <div class="card-icon icon-weather">
-            <ion-icon name="sunny"></ion-icon>
-          </div>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="weather-content">
-            <div class="weather-temp">22°C</div>
-            <div>Temperatura</div>
-
-            <div class="weather-stats">
-              <div class="weather-stat">
-                <div class="weather-stat-value">65%</div>
-                <div class="weather-stat-label">Umidade</div>
-              </div>
-              <div class="weather-stat">
-                <div class="weather-stat-value">12 km/h</div>
-                <div class="weather-stat-label">Vento</div>
-              </div>
-              <div class="weather-stat">
-                <div class="weather-stat-value">0%</div>
-                <div class="weather-stat-label">Chuza</div>
-              </div>
-            </div>
-
-            <div class="weather-forecast">
-              Previsão: Condições ideais para pastoreio. Sem previsão de chuva para os próximos 3 dias.
-            </div>
-          </div>
-        </ion-card-content>
-      </ion-card>
-    </div>
-
-    <!-- ATIVIDADES RECENTES -->
-    <h2 class="section-title">Atividades Recentes</h2>
-
-    <ion-card class="activities-card">
+    <!-- TOTAL DE ANIMAIS -->
+    <ion-card class="stats-card" (click)="navegarPara('/lista-animais')">
+      <ion-card-header class="card-header">
+        <ion-card-title>Total de Animais</ion-card-title>
+        <div class="card-icon icon-animals">
+          <ion-icon name="git-compare-outline"></ion-icon>
+        </div>
+      </ion-card-header>
       <ion-card-content>
-        <!-- NASCIMENTO -->
-        <div class="activity-item">
-          <div class="activity-icon">
-            <ion-icon name="heart"></ion-icon>
-          </div>
-          <div class="activity-content">
-            <h4>Nascimento registrado</h4>
-            <p class="activity-desc">Cordeiro #249</p>
-            <div class="activity-time">2 horas atrás</div>
-          </div>
-        </div>
-
-        <!-- VACINAÇÃO -->
-        <div class="activity-item">
-          <div class="activity-icon">
-            <ion-icon name="medical"></ion-icon>
-          </div>
-          <div class="activity-content">
-            <h4>Vacinação aplicada</h4>
-            <p class="activity-desc">Ovelha #087</p>
-            <div class="activity-time">4 horas atrás</div>
-          </div>
-        </div>
-
-        <!-- PESAGEM -->
-        <div class="activity-item">
-          <div class="activity-icon">
-            <ion-icon name="speedometer"></ion-icon>
-          </div>
-          <div class="activity-content">
-            <h4>Pesagem realizada</h4>
-            <p class="activity-desc">Borrego #0132</p>
-            <div class="activity-time">6 horas atrás</div>
-          </div>
+        <div class="stat-number">{{ dadosDashboard.totalAnimais }}</div>
+        <div class="stat-change">
+          <span class="change-positive" *ngIf="dadosDashboard.totalAnimais > 0">
+            <ion-icon name="arrow-up"></ion-icon>
+            Sistema ativo
+          </span>
+          <span class="change-neutral" *ngIf="dadosDashboard.totalAnimais === 0">
+            <ion-icon name="refresh"></ion-icon>
+            Carregando...
+          </span>
         </div>
       </ion-card-content>
     </ion-card>
-  </div>
+
+    <!-- FÊMEAS GESTANTES -->
+    <ion-card class="stats-card" (click)="navegarParaGestantes()">
+      <ion-card-header class="card-header">
+        <ion-card-title>Fêmeas Gestantes</ion-card-title>
+        <div class="card-icon icon-pregnant">
+          <ion-icon name="heart-circle-outline"></ion-icon>
+        </div>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="stat-number">{{ dadosDashboard.femeasGestantes }}</div>
+        <div class="stat-change">
+          <span class="change-positive" *ngIf="dadosDashboard.femeasGestantes > 0">
+            <ion-icon name="arrow-up"></ion-icon>
+            Em reprodução
+          </span>
+          <span class="change-neutral" *ngIf="dadosDashboard.femeasGestantes === 0">
+            <ion-icon name="heart-outline"></ion-icon>
+            Sem gestações
+          </span>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- ANIMAIS PARA DESCARTE -->
+    <ion-card class="stats-card" (click)="navegarParaAnimaisDescarte()">
+      <ion-card-header class="card-header">
+        <ion-card-title>Animais para Descarte</ion-card-title>
+        <div class="card-icon icon-discard">
+          <ion-icon name="warning-outline"></ion-icon>
+        </div>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="stat-number">{{ dadosDashboard.animaisDescarte }}</div>
+        <div class="stat-change">
+          <span class="change-warning" *ngIf="dadosDashboard.animaisDescarte > 0">
+            <ion-icon name="warning"></ion-icon>
+            Atenção necessária
+          </span>
+          <span class="change-positive" *ngIf="dadosDashboard.animaisDescarte === 0">
+            <ion-icon name="checkmark"></ion-icon>
+            Todos saudáveis
+          </span>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div> 
+
+  <!-- CONDIÇÕES CLIMÁTICAS - AGORA COM DADOS REAIS -->
+  <ion-card class="weather-card">
+    <ion-card-header class="card-header">
+      <ion-card-title>Condições Climáticas</ion-card-title>
+      <div class="card-icon icon-weather">
+        <ion-icon [name]="getWeatherIcon()"></ion-icon>
+      </div>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="weather-content">
+        <div>Temperatura</div>
+        <div class="weather-temp">{{ dadosDashboard.clima.temperatura }}°C</div>
+
+
+        <div class="weather-stats">
+          <div class="weather-stat">
+            <div class="weather-stat-label">Umidade</div>
+            <div class="weather-stat-value">{{ dadosDashboard.clima.umidade }}%</div>
+
+          </div>
+          <div class="weather-stat">
+            <div class="weather-stat-label">Vento</div>
+            <div class="weather-stat-value">{{ dadosDashboard.clima.vento }} km/h</div>
+
+          </div>
+          <div class="weather-stat">
+            <div class="weather-stat-label">Chuva</div>
+            <div class="weather-stat-value">{{ dadosDashboard.clima.chuva }}%</div>
+
+          </div>
+        </div>
+
+        <div class="weather-forecast">
+          {{ dadosDashboard.clima.previsao }}
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- SEÇÃO DE ALERTAS - COMENTADA ATÉ IMPLEMENTAR -->
+  
+  <h2 class="section-title">Alertas e Lembretes</h2>
+
+  <div class="grid-2">
+    <ion-card class="alerts-card">
+      <ion-card-content>
+        <div class="empty-state">
+          <ion-icon name="notifications-off-outline" class="empty-icon"></ion-icon>
+          <h4>Sem alertas no momento</h4>
+          <p>Seu rebanho está em dia com os cuidados</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+    </div>
+
+  
+  <!-- </div> -->
+
+  <!-- ATIVIDADES RECENTES - COMENTADA ATÉ IMPLEMENTAR -->
+  
+  <h2 class="section-title">Atividades Recentes</h2>
+
+  <ion-card class="activities-card">
+    <ion-card-content>
+      <div class="empty-state">
+        <ion-icon name="time-outline" class="empty-icon"></ion-icon>
+        <h4>Nenhuma atividade recente</h4>
+        <p>As atividades aparecerão aqui</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  
+
 </ion-content>
