@@ -120,7 +120,7 @@ class Ovino {
     }
   }
 
-  // ✅ NOVO MÉTODO: Atualizar apenas o status
+  // ✅ Atualizar o status
   async updateStatus(id, data) {
     try {
       const existing = await this.getById(id);

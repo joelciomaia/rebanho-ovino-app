@@ -20,13 +20,12 @@
   <button class="menu-close" (click)="closeMenu()">×</button>
 
   <div (click)="closeMenu()" class="menu-header">
-
-    <div class="menu-company">{{ getNomeCabanha() }}</div>
+    <div class="menu-company" style="font-size: 1.4rem; font-weight: 700; color: #ffffff;">OvinoSync</div>
     <div class="menu-logo">
-      <img src="assets/images/logo-ovino.png" alt="Logo OvinoGest">
+      <img src="assets/images/logo-ovino.png" alt="Logo OvinoSync">
     </div>
     <div class="menu-user">{{ getNomeUsuario() }}</div>
-  </div>
+</div>
 
   <div class="menu-items">
     <!-- Seção Principal -->
@@ -59,7 +58,7 @@
       <span class="menu-item-text">Perfil</span>
     </a>
 
-    <a class="menu-item" (click)="navegarPara('/ajuda'); closeMenu()">
+    <a class="menu-item" (click)="abrirAjuda(); closeMenu()">
       <ion-icon name="help-circle-outline"></ion-icon>
       <span class="menu-item-text">Ajuda</span>
     </a>
@@ -156,9 +155,9 @@
         </div>
       </ion-card-content>
     </ion-card>
-  </div> 
+  </div>
 
-  <!-- CONDIÇÕES CLIMÁTICAS - AGORA COM DADOS REAIS -->
+  <!-- CONDIÇÕES CLIMÁTICAS - COM DADOS REAIS -->
   <ion-card class="weather-card">
     <ion-card-header class="card-header">
       <ion-card-title>Condições Climáticas</ion-card-title>
@@ -171,22 +170,18 @@
         <div>Temperatura</div>
         <div class="weather-temp">{{ dadosDashboard.clima.temperatura }}°C</div>
 
-
         <div class="weather-stats">
           <div class="weather-stat">
             <div class="weather-stat-label">Umidade</div>
             <div class="weather-stat-value">{{ dadosDashboard.clima.umidade }}%</div>
-
           </div>
           <div class="weather-stat">
             <div class="weather-stat-label">Vento</div>
             <div class="weather-stat-value">{{ dadosDashboard.clima.vento }} km/h</div>
-
           </div>
           <div class="weather-stat">
             <div class="weather-stat-label">Chuva</div>
             <div class="weather-stat-value">{{ dadosDashboard.clima.chuva }}%</div>
-
           </div>
         </div>
 
@@ -197,12 +192,41 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- SEÇÃO DE ALERTAS - COMENTADA ATÉ IMPLEMENTAR -->
-  
+  <!-- SEÇÃO DE ALERTAS -->
   <h2 class="section-title">Alertas e Lembretes</h2>
 
   <div class="grid-2">
-    <ion-card class="alerts-card">
+    <!-- RASCUNHOS DE PARTO PENDENTES - SÓ APARECE SE HOUVER -->
+    <ion-card class="alerts-card" *ngIf="temRascunhosPendentes()">
+      <ion-card-header class="card-header">
+        <ion-card-title>Partos com Cadastro Incompleto</ion-card-title>
+        <div class="card-icon icon-warning">
+          <ion-icon name="document-text-outline"></ion-icon>
+        </div>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="rascunhos-list">
+          <div *ngFor="let rascunho of rascunhosPendentes" class="rascunho-item">
+            <div class="rascunho-info">
+              <div class="rascunho-mae">🐑 {{ rascunho.mae_brinco }}</div>
+              <div class="rascunho-data">Iniciado em {{ formatarDataRascunho(rascunho.data_criacao) }}</div>
+              <div class="rascunho-filhotes">{{ rascunho.total_filhotes }} filhote(s) preenchido(s)</div>
+            </div>
+            <div class="rascunho-actions">
+              <ion-button size="small" fill="solid" (click)="continuarRascunho(rascunho)">
+                Continuar
+              </ion-button>
+              <ion-button size="small" fill="outline" color="medium" (click)="excluirRascunho(rascunho)">
+                Excluir
+              </ion-button>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- MENSAGEM "SEM ALERTAS" - SÓ APARECE SE NÃO HOUVEREM RASCUNHOS -->
+    <ion-card class="alerts-card" *ngIf="!temRascunhosPendentes()">
       <ion-card-content>
         <div class="empty-state">
           <ion-icon name="notifications-off-outline" class="empty-icon"></ion-icon>
@@ -211,16 +235,12 @@
         </div>
       </ion-card-content>
     </ion-card>
-    </div>
+  </div>
 
-  
-  <!-- </div> -->
-
-  <!-- ATIVIDADES RECENTES - COMENTADA ATÉ IMPLEMENTAR -->
-  
+  <!-- ATIVIDADES RECENTES -->
   <h2 class="section-title">Atividades Recentes</h2>
 
-  <ion-card class="activities-card">
+  <ion-card class="activities-card" *ngIf="!temAtividadesRecentes()">
     <ion-card-content>
       <div class="empty-state">
         <ion-icon name="time-outline" class="empty-icon"></ion-icon>
@@ -229,6 +249,25 @@
       </div>
     </ion-card-content>
   </ion-card>
-  
 
+  <ion-card class="activities-card" *ngIf="temAtividadesRecentes()">
+    <ion-card-content>
+      <div class="activities-list">
+        <div *ngFor="let atividade of atividadesRecentes" class="activity-item">
+          <div class="activity-icon">
+            {{ getAtividadeIcon(atividade.tipo) }}
+          </div>
+          <div class="activity-content">
+            <div class="activity-title">{{ atividade.titulo }}</div>
+            <div class="activity-desc" *ngIf="atividade.descricao">{{ atividade.descricao }}</div>
+            <div class="activity-meta">
+              <span class="activity-type">{{ atividade.tipo }}</span>
+              •
+              <span class="activity-time">{{ formatarDataAtividade(atividade.data_acao) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

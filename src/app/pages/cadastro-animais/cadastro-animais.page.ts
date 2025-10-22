@@ -1,8 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonBackButton, IonButtons,
   IonList, IonItem, IonLabel, IonNote,
@@ -11,6 +12,9 @@ import {
   ModalController, LoadingController, AlertController
 } from '@ionic/angular/standalone';
 import { OvinoService, Genitor, RacaOvina } from '../../services/ovino.service';
+import { ManejoService } from '../../services/manejo.service';
+import { RascunhoService } from '../../services/rascunho.service';
+
 
 @Component({
   selector: 'app-cadastro-animais',
@@ -36,6 +40,10 @@ export class CadastroAnimaisPage implements OnInit {
   formNascidos!: FormGroup;
   formComprados!: FormGroup;
 
+  // NOVAS VARIÁVEIS PARA CAROUSEL
+  indiceFilhoteAtual: number = 0;
+  totalFilhotes: number = 1;
+
   paiDisplay: string = '';
   maeDisplay: string = '';
   animaisFemeas: Genitor[] = [];
@@ -47,18 +55,36 @@ export class CadastroAnimaisPage implements OnInit {
   carregandoGenitores: boolean = false;
   carregandoAnimal: boolean = false;
 
+  // VARIÁVEIS AUTO-SAVE
+  private rascunhoService = inject(RascunhoService);
+  private saveTimeout: any;
+  private ultimoSave: string = '';
+  private maeAtualId: string = '';
+
   private fb = inject(FormBuilder);
   private modalController = inject(ModalController);
   private alertController = inject(AlertController);
   private http = inject(HttpClient);
   private loadingController = inject(LoadingController);
   private ovinoService = inject(OvinoService);
+  private manejoService = inject(ManejoService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private detector = inject(ChangeDetectorRef);
 
   async ngOnInit() {
     this.initForms();
     await this.carregarRacas();
+
+    const rascunhoStorage = localStorage.getItem('rascunho_continuar');
+    if (rascunhoStorage) {
+      const rascunho = JSON.parse(rascunhoStorage);
+      console.log('📥 Rascunho recebido do localStorage:', rascunho);
+      this.carregarRascunho(rascunho);
+      localStorage.removeItem('rascunho_continuar');
+    } else {
+      console.log('❌ Nenhum rascunho encontrado');
+    }
 
     const animalId = this.route.snapshot.paramMap.get('id');
     if (animalId) {
@@ -66,20 +92,59 @@ export class CadastroAnimaisPage implements OnInit {
       await this.carregarAnimalParaEdicao(animalId);
     } else {
       this.carregarGenitores();
+      this.iniciarAutoSave();
+    }
+  }
+
+  private iniciarAutoSave() {
+    window.addEventListener('beforeunload', () => {
+      this.salvarRascunhoSeNecessario();
+    });
+  }
+
+  private carregarRascunho(rascunho: any) {
+    console.log('🔄 Carregando rascunho no formulário...');
+
+    this.maeAtualId = rascunho.mae_id;
+    this.formNascidos.patchValue(rascunho.dados);
+
+    if (rascunho.dados.filhotes && rascunho.dados.filhotes.length > 0) {
+      this.filhotesArray.clear();
+      rascunho.dados.filhotes.forEach((filhote: any) => {
+        this.filhotesArray.push(this.fb.group(filhote));
+      });
+      this.totalFilhotes = rascunho.dados.filhotes.length;
+      this.indiceFilhoteAtual = 0;
+      console.log(`✅ ${this.totalFilhotes} filhotes carregados do rascunho`);
+    }
+
+    console.log('✅ Rascunho carregado com sucesso!');
+  }
+
+  private salvarRascunhoSeNecessario() {
+    const maeId = this.formNascidos.get('identificacaoMae')?.value;
+    const dadosAtuais = JSON.stringify(this.formNascidos.value);
+
+    if (this.segmento === 'nascidos' && maeId && dadosAtuais !== this.ultimoSave) {
+      const maeSelecionada = this.animaisFemeas.find(f => f.id === maeId);
+      const maeBrinco = maeSelecionada?.brinco || 'Mãe não identificada';
+
+      this.rascunhoService.salvarRascunho(this.formNascidos, maeId, maeBrinco);
+      this.ultimoSave = dadosAtuais;
+      this.maeAtualId = maeId;
+
+      console.log('💾 Auto-save executado para mãe:', maeBrinco);
     }
   }
 
   async carregarRacas() {
-  try {
-    console.log('🔍 [DEBUG] Carregando raças...');
-    const racas = await this.ovinoService.getRacasOvinas().toPromise();
-    console.log('🔍 [DEBUG] Raças retornadas:', racas);
-    console.log('🔍 [DEBUG] Número de raças:', racas?.length);
-    this.racasOvinas = racas || [];
-  } catch (error) {
-    console.error('❌ Erro ao carregar raças ovinas:', error);
+    try {
+      const racas = await this.ovinoService.getRacasOvinas().toPromise();
+      this.racasOvinas = racas || [];
+    } catch (error) {
+      console.error('❌ Erro ao carregar raças ovinas:', error);
+    }
   }
-}
 
   async carregarAnimalParaEdicao(animalId: string) {
     this.carregandoAnimal = true;
@@ -131,28 +196,25 @@ export class CadastroAnimaisPage implements OnInit {
 
   initForms() {
     this.formNascidos = this.fb.group({
-      numeroBrinco: ['', [Validators.required]],
-      sexo: ['', [Validators.required]],
-      dataNascimento: [this.obterDataAtualFormatada(), [Validators.required]],
-      peso: [''],
+      dataParto: [this.obterDataAtualFormatada(), [Validators.required]],
       tipoParto: ['simples', [Validators.required]],
-      viabilidade: ['vivo'],
-      mamouColostro: [true],
       identificacaoMae: ['', [Validators.required]],
-      identificacaoMaeTerceiros: [''],
-      origemPai: ['proprio'],
-      identificacaoPai: [''],
-      identificacaoPaiTerceiros: [''],
-      identificacaoSemen: [''],
+      nomeAnimal: [''],
       escoreCorporalMae: ['3'],
       avaliacaoUbere: ['3'],
       viabilidadeMae: ['5'],
       habilidadeMaterna: ['3'],
+      origemPai: ['proprio'],
+      identificacaoPai: [''],
+      identificacaoPaiTerceiros: [''],
+      identificacaoSemen: [''],
+      filhotes: this.fb.array([this.criarFormFilhote()]),
       observacoes: ['']
     });
 
     this.formComprados = this.fb.group({
       numeroBrinco: ['', [Validators.required]],
+      nomeAnimal: [''],
       dataCompra: [this.obterDataAtualFormatada(), [Validators.required]],
       valorCompra: [''],
       vendedor: [''],
@@ -165,17 +227,24 @@ export class CadastroAnimaisPage implements OnInit {
       numeroDentes: [''],
       escoreCorporal: ['3'],
       possuiRegistro: [false],
-      nomeAnimal: [''],
       numeroRegistro: [''],
       entidadeRegistro: ['arco'],
       observacoes: ['']
     });
 
-    this.formNascidos.get('dataNascimento')?.valueChanges.subscribe(data => {
+    this.formNascidos.get('tipoParto')?.valueChanges.subscribe(tipo => {
+      console.log('🔄 Tipo de parto alterado para:', tipo);
+      this.ajustarQuantidadeFilhotes();
+    });
+
+    this.formNascidos.get('dataParto')?.valueChanges.subscribe(data => {
       if (data) this.carregarGenitores(data);
     });
 
-    this.formNascidos.get('identificacaoMae')?.valueChanges.subscribe(() => {
+    this.formNascidos.get('identificacaoMae')?.valueChanges.subscribe(maeId => {
+      if (maeId) {
+        this.maeAtualId = maeId;
+      }
       this.determinarRacaAutomaticamente();
     });
 
@@ -193,10 +262,107 @@ export class CadastroAnimaisPage implements OnInit {
 
     this.formComprados.get('sexo')?.valueChanges.subscribe(sexo => {
       if (sexo === 'macho') {
-        // Se for macho, limpa o status reprodutivo
         this.formComprados.get('statusReprodutivo')?.setValue('');
       }
     });
+
+    this.filhotesArray.valueChanges.subscribe(() => {
+      console.log('🔄 Validação dos filhotes alterada');
+    });
+  }
+
+  criarFormFilhote(): FormGroup {
+    return this.fb.group({
+      numeroBrinco: ['', [Validators.required]],
+      nomeAnimal: [''],
+      sexo: ['', [Validators.required]],
+      peso: [''],
+      viabilidade: ['vivo'],
+      mamouColostro: [true]
+    });
+  }
+
+  get filhotesArray(): FormArray {
+    return this.formNascidos.get('filhotes') as FormArray;
+  }
+
+  getFilhoteAtual(): FormGroup {
+    return this.filhotesArray.at(this.indiceFilhoteAtual) as FormGroup;
+  }
+
+  verificarDadosFilhotes() {
+    console.log('🔍 DADOS ATUAIS DOS FILHOTES:');
+    this.filhotesArray.controls.forEach((filhote, index) => {
+      const dados = (filhote as FormGroup).value;
+      console.log(`👶 Filhote ${index + 1}:`, dados);
+    });
+    console.log('🎯 Filhote atual:', this.indiceFilhoteAtual + 1);
+  }
+
+  proximoFilhote() {
+    if (this.indiceFilhoteAtual < this.totalFilhotes - 1) {
+      this.indiceFilhoteAtual++;
+      console.log(`➡️ Próximo filhote: ${this.indiceFilhoteAtual + 1}/${this.totalFilhotes}`);
+      this.verificarDadosFilhotes();
+    }
+  }
+
+  filhoteAnterior() {
+    if (this.indiceFilhoteAtual > 0) {
+      this.indiceFilhoteAtual--;
+      console.log(`⬅️ Filhote anterior: ${this.indiceFilhoteAtual + 1}/${this.totalFilhotes}`);
+      this.verificarDadosFilhotes();
+    }
+  }
+
+  private limparFormularioFilhotes() {
+    this.filhotesArray.controls.forEach((filhote, index) => {
+      (filhote as FormGroup).reset({
+        numeroBrinco: '',
+        nomeAnimal: '',
+        sexo: '',
+        peso: '',
+        viabilidade: 'vivo',
+        mamouColostro: true
+      });
+    });
+  }
+
+  ajustarQuantidadeFilhotes() {
+    const tipoParto = this.formNascidos.get('tipoParto')?.value;
+    const quantidades: { [key: string]: number } = {
+      'simples': 1,
+      'duplo': 2,
+      'triplo': 3,
+      'quadruplo': 4
+    };
+
+    const novaQuantidade = quantidades[tipoParto] || 1;
+    console.log(`🔄 Ajustando filhotes: ${this.totalFilhotes} → ${novaQuantidade}`);
+
+    this.limparFormularioFilhotes();
+    this.totalFilhotes = novaQuantidade;
+
+    const currentLength = this.filhotesArray.length;
+
+    if (this.totalFilhotes > currentLength) {
+      for (let i = currentLength; i < this.totalFilhotes; i++) {
+        this.filhotesArray.push(this.criarFormFilhote());
+        console.log(`➕ Adicionado filhote ${i + 1}`);
+      }
+    } else if (this.totalFilhotes < currentLength) {
+      for (let i = currentLength - 1; i >= this.totalFilhotes; i--) {
+        this.filhotesArray.removeAt(i);
+        console.log(`➖ Removido filhote ${i + 1}`);
+      }
+    }
+
+    if (this.indiceFilhoteAtual >= this.totalFilhotes) {
+      this.indiceFilhoteAtual = this.totalFilhotes - 1;
+    }
+
+    console.log(`✅ Carousel ajustado: ${this.totalFilhotes} filhotes, índice: ${this.indiceFilhoteAtual}`);
+    this.detector.detectChanges();
   }
 
   preencherFormularioCompradoEdicao(animal: any) {
@@ -223,21 +389,28 @@ export class CadastroAnimaisPage implements OnInit {
 
   preencherFormularioNascidoEdicao(animal: any) {
     this.formNascidos.patchValue({
-      numeroBrinco: animal?.brinco || '',
-      sexo: animal?.sexo || '',
-      dataNascimento: this.formatarDataParaExibicao(animal?.data_nascimento) || this.obterDataAtualFormatada(),
-      peso: animal?.peso_nascimento ?? '',
+      dataParto: this.formatarDataParaExibicao(animal?.data_nascimento) || this.obterDataAtualFormatada(),
       tipoParto: animal?.tipo_parto_nascimento ?? 'simples',
-      viabilidade: this.mapearNumeroParaViabilidade(animal?.vigor_nascimento),
-      mamouColostro: animal?.mamou_colostro !== undefined ? Boolean(animal.mamou_colostro) : true,
       identificacaoMae: animal?.mae_id ?? '',
       identificacaoPai: animal?.pai_id ?? '',
+      nomeAnimal: animal?.nome ?? '',
       escoreCorporalMae: (animal?.escore_corporal_mae ?? '3').toString(),
       avaliacaoUbere: (animal?.avaliacao_ubre ?? '3').toString(),
       viabilidadeMae: (animal?.viabilidade_mae ?? '5').toString(),
       habilidadeMaterna: (animal?.habilidade_materna_nascimento ?? '3').toString(),
       observacoes: animal?.observacao_nascimento ?? ''
     });
+
+    if (this.filhotesArray.length > 0) {
+      this.filhotesArray.at(0).patchValue({
+        numeroBrinco: animal?.brinco || '',
+        nomeAnimal: animal?.nome || '',
+        sexo: animal?.sexo || '',
+        peso: animal?.peso_nascimento ?? '',
+        viabilidade: this.mapearNumeroParaViabilidade(animal?.vigor_nascimento),
+        mamouColostro: animal?.mamou_colostro !== undefined ? Boolean(animal.mamou_colostro) : true
+      });
+    }
 
     if (animal?.pai_id) {
       this.formNascidos.patchValue({ origemPai: 'proprio' });
@@ -265,37 +438,28 @@ export class CadastroAnimaisPage implements OnInit {
   }
 
   async carregarGenitores(dataNascimento?: string) {
-  console.log('🔍 [DEBUG] Iniciando carregarGenitores com data:', dataNascimento);
-  
-  this.carregandoGenitores = true;
-  try {
-    const dataParaBusca = dataNascimento ? this.formatarDataParaBanco(dataNascimento) : undefined;
-    
-    console.log('🔍 [DEBUG] Data para busca no banco:', dataParaBusca);
-    console.log('🔍 [DEBUG] Chamando APIs...');
-    
-    const [femeas, machos] = await Promise.all([
-      this.ovinoService.getFemeasParaMaternidade(dataParaBusca).toPromise(),
-      this.ovinoService.getMachosParaReproducao(dataParaBusca).toPromise()
-    ]);
-    
-    console.log('🔍 [DEBUG] Fêmeas retornadas:', femeas);
-    console.log('🔍 [DEBUG] Machos retornados:', machos);
-    console.log('🔍 [DEBUG] Número de fêmeas:', femeas?.length);
-    console.log('🔍 [DEBUG] Número de machos:', machos?.length);
-    
-    this.animaisFemeas = femeas || [];
-    this.animaisMachos = machos || [];
-    
-  } catch (error) {
-    console.error('❌ Erro ao carregar genitores:', error);
-    this.animaisFemeas = [];
-    this.animaisMachos = [];
-  } finally {
-    this.carregandoGenitores = false;
-    console.log('🔍 [DEBUG] Carregamento finalizado');
+    console.log('🔍 [DEBUG] Iniciando carregarGenitores com data:', dataNascimento);
+
+    this.carregandoGenitores = true;
+    try {
+      const dataParaBusca = dataNascimento ? this.formatarDataParaBanco(dataNascimento) : undefined;
+
+      const [femeas, machos] = await Promise.all([
+        this.ovinoService.getFemeasParaMaternidade(dataParaBusca).toPromise(),
+        this.ovinoService.getMachosParaReproducao(dataParaBusca).toPromise()
+      ]);
+
+      this.animaisFemeas = femeas || [];
+      this.animaisMachos = machos || [];
+
+    } catch (error) {
+      console.error('❌ Erro ao carregar genitores:', error);
+      this.animaisFemeas = [];
+      this.animaisMachos = [];
+    } finally {
+      this.carregandoGenitores = false;
+    }
   }
-}
 
   async determinarRacaAutomaticamente() {
     const maeId = this.formNascidos.get('identificacaoMae')?.value;
@@ -381,99 +545,205 @@ export class CadastroAnimaisPage implements OnInit {
   }
 
   async cadastrarNascido() {
-    if (this.formNascidos.valid) {
+    console.log('🔄 Iniciando cadastro de nascido...');
+    console.log('📋 Form válido:', this.formNascidos.valid);
+    console.log('👶 Filhotes válidos:', this.validarFilhotes());
+    console.log('👥 Número de filhotes:', this.totalFilhotes);
+
+    if (this.formNascidos.valid && this.validarFilhotes()) {
       const loading = await this.loadingController.create({
-        message: this.modoEdicao ? 'Atualizando animal...' : 'Cadastrando animal...'
+        message: 'Cadastrando parto completo...'
       });
       await loading.present();
 
       try {
         const formData = this.formNascidos.value;
         const maeId = formData.identificacaoMae;
-        let paiId = null;
+        const dataParto = this.formatarDataParaBanco(formData.dataParto);
 
-        if (formData.origemPai === 'proprio') {
-          paiId = formData.identificacaoPai;
-        }
+        console.log('📝 Dados do parto:', {
+          maeId,
+          dataParto,
+          tipoParto: formData.tipoParto,
+          totalFilhotes: this.totalFilhotes
+        });
 
-        let racaDeterminada: number | null = null;
-        if (maeId && paiId) {
-          try {
-            const resultado = await this.ovinoService.determinarRacaCordeiro(maeId, paiId).toPromise();
-            racaDeterminada = resultado?.raca_id || null;
-          } catch (error) {
-            console.warn('Erro ao determinar raça:', error);
-          }
-        }
-
-        const dadosParaEnvio: any = {
-          brinco: formData.numeroBrinco,
-          sexo: formData.sexo,
-          data_nascimento: this.formatarDataParaBanco(formData.dataNascimento),
-          peso_nascimento: formData.peso ? parseFloat(formData.peso) : null,
-          tipo_parto_nascimento: formData.tipoParto,
-          vigor_nascimento: this.mapearViabilidadeParaNumero(formData.viabilidade),
-          mamou_colostro: formData.mamouColostro ? 1 : 0,
-          habilidade_materna_nascimento: parseInt(formData.habilidadeMaterna) || 3,
-          mae_id: maeId || null,
-          pai_id: paiId || null,
-          escore_corporal_mae: parseInt(formData.escoreCorporalMae) || 3,
-          avaliacao_ubre: parseInt(formData.avaliacaoUbere) || 3,
-          viabilidade_mae: parseInt(formData.viabilidadeMae) || 5,
-          observacao_nascimento: formData.observacoes || '',
-          situacao: 'ativo',
-          categoria: this.determinarCategoriaNascido(formData.sexo),
-          origem: 'nascido',
-          produtor_id: 'd4a3b2c1-1234-5678-90ab-cdef12345678'
+        const manejoData = {
+          produtor_id: 'd4a3b2c1-1234-5678-90ab-cdef12345678',
+          ovino_id: maeId,
+          data: new Date().toISOString(),
+          tipos: ['reprodutivo'],
+          reprodutivo_acao: 'parto',
+          reprodutivo_tipo_parto: formData.tipoParto,
+          reprodutivo_habilidade_materna: parseInt(formData.habilidadeMaterna) || 3,
+          reprodutivo_quantidade_filhotes: this.totalFilhotes,
+          tecnico_escore_corporal: parseInt(formData.escoreCorporalMae) || 3,
+          observacao: `Parto ${formData.tipoParto} - ${formData.observacoes || 'Sem observações'}`
         };
 
-        if (racaDeterminada) {
-          dadosParaEnvio.raca_id = racaDeterminada;
+        await this.manejoService.salvarManejo(manejoData).toPromise();
+        console.log('✅ Manejo reprodutivo criado para a mãe');
+
+        let primeiroAnimalId: string | null = null;
+
+        // ✅ CORREÇÃO: DIFERENCIAR ENTRE EDIÇÃO E CRIAÇÃO
+        if (this.modoEdicao && this.animalEditando) {
+          // ✅ MODO EDIÇÃO - ATUALIZAR APENAS O ANIMAL EM EDIÇÃO
+          const filhote = formData.filhotes[0];
+          console.log(`👶 Editando filhote existente:`, filhote);
+
+          const dadosFilhote = await this.prepararDadosFilhote(filhote, formData, maeId, dataParto);
+          const response = await this.ovinoService.atualizarOvino(this.animalEditando.id, dadosFilhote).toPromise();
+
+          primeiroAnimalId = this.animalEditando.id;
+          console.log('✅ Animal atualizado:', primeiroAnimalId);
+        } else {
+          // ✅ MODO CRIAÇÃO - CRIAR TODOS OS FILHOTES
+          for (let i = 0; i < formData.filhotes.length; i++) {
+            const filhote = formData.filhotes[i];
+            console.log(`👶 Processando filhote ${i + 1}:`, filhote);
+
+            const dadosFilhote = await this.prepararDadosFilhote(filhote, formData, maeId, dataParto);
+            const response = await this.ovinoService.criarOvino(dadosFilhote).toPromise();
+
+            if (i === 0 && response && response.id) {
+              primeiroAnimalId = response.id;
+              console.log('🎯 Primeiro animal criado com ID:', primeiroAnimalId);
+            }
+          }
+          console.log('✅ Todos os filhotes cadastrados');
         }
 
-        let response;
-        if (this.modoEdicao && this.animalEditando) {
-          response = await this.ovinoService.atualizarOvino(this.animalEditando.id, dadosParaEnvio).toPromise();
-        } else {
-          response = await this.ovinoService.criarOvino(dadosParaEnvio).toPromise();
-        }
+        this.rascunhoService.limparRascunho(maeId);
 
         await loading.dismiss();
-        this.mostrarAlerta('Sucesso',
-          this.modoEdicao ? 'Animal atualizado com sucesso!' : 'Animal nascido cadastrado com sucesso!'
-        );
 
-        if (this.modoEdicao) {
-          this.router.navigate(['/detalhe-animal', this.animalEditando.id]);
+        if (primeiroAnimalId) {
+          this.mostrarAlertaESeguir('Sucesso', 'Parto cadastrado com sucesso!', primeiroAnimalId);
         } else {
-          this.formNascidos.reset({
-            dataNascimento: this.obterDataAtualFormatada(),
-            origemPai: 'proprio',
-            mamouColostro: true,
-            viabilidade: 'vivo',
-            tipoParto: 'simples',
-            escoreCorporalMae: '3',
-            avaliacaoUbere: '3',
-            viabilidadeMae: '5',
-            habilidadeMaterna: '3'
-          });
-          this.fotos = [];
-          this.carregarGenitores();
+          this.mostrarAlerta('Sucesso', 'Parto cadastrado com sucesso!');
+          this.limparFormularioNascimento();
         }
 
       } catch (error: any) {
         await loading.dismiss();
-        console.error('Erro no cadastro:', error);
+        console.error('Erro no cadastro do parto:', error);
         if (error?.status === 409) {
           this.mostrarAlerta('Erro', 'Já existe um animal ativo com este número de brinco.');
         } else {
-          this.mostrarAlerta('Erro', 'Erro ao processar animal. Tente novamente.');
+          this.mostrarAlerta('Erro', 'Erro ao cadastrar parto. Tente novamente.');
         }
       }
     } else {
+      console.log('❌ Formulário inválido - marcando campos...');
       this.marcarCamposInvalidos(this.formNascidos);
       this.mostrarAlerta('Atenção', 'Por favor, preencha todos os campos obrigatórios.');
     }
+  }
+
+  validarFilhotes(): boolean {
+    const todosValidos = this.filhotesArray.controls.every((filhote, index) => {
+      const form = filhote as FormGroup;
+      const brincoValido = form.get('numeroBrinco')?.valid && form.get('numeroBrinco')?.value;
+      const sexoValido = form.get('sexo')?.valid && form.get('sexo')?.value;
+
+      console.log(`👶 Filhote ${index + 1}: brinco=${brincoValido}, sexo=${sexoValido}`);
+
+      return brincoValido && sexoValido;
+    });
+
+    console.log(`✅ Todos os ${this.filhotesArray.length} filhotes válidos: ${todosValidos}`);
+    return todosValidos;
+  }
+
+  private async mostrarAlertaESeguir(titulo: string, mensagem: string, animalId: string) {
+    const alert = await this.alertController.create({
+      header: titulo,
+      message: mensagem,
+      buttons: [
+        {
+          text: 'Ver Animal',
+          handler: () => {
+            this.router.navigate(['/detalhe-animal', animalId]);
+          }
+        },
+        {
+          text: 'Cadastrar Outro',
+          role: 'cancel',
+          handler: () => {
+            this.limparFormularioNascimento();
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async prepararDadosFilhote(filhote: any, formData: any, maeId: string, dataParto: string): Promise<any> {
+    let paiId = null;
+    if (formData.origemPai === 'proprio') {
+      paiId = formData.identificacaoPai;
+    }
+
+    let racaDeterminada: number | null = null;
+    if (maeId && paiId) {
+      try {
+        const resultado = await this.ovinoService.determinarRacaCordeiro(maeId, paiId).toPromise();
+        racaDeterminada = resultado?.raca_id || null;
+      } catch (error) {
+        console.warn('Erro ao determinar raça:', error);
+      }
+    }
+
+    return {
+      brinco: filhote.numeroBrinco,
+      nome: filhote.nomeAnimal || formData.nomeAnimal || null,
+      sexo: filhote.sexo,
+      data_nascimento: dataParto,
+      peso_nascimento: filhote.peso ? parseFloat(filhote.peso) : null,
+      tipo_parto_nascimento: formData.tipoParto,
+      vigor_nascimento: this.mapearViabilidadeParaNumero(filhote.viabilidade),
+      mamou_colostro: filhote.mamouColostro ? 1 : 0,
+      habilidade_materna_nascimento: parseInt(formData.habilidadeMaterna) || 3,
+      mae_id: maeId,
+      pai_id: paiId,
+      escore_corporal_mae: parseInt(formData.escoreCorporalMae) || 3,
+      avaliacao_ubre: parseInt(formData.avaliacaoUbere) || 3,
+      viabilidade_mae: parseInt(formData.viabilidadeMae) || 5,
+      observacao_nascimento: formData.observacoes || '',
+      situacao: 'ativo',
+      categoria: this.determinarCategoriaNascido(filhote.sexo),
+      origem: 'nascido',
+      produtor_id: 'd4a3b2c1-1234-5678-90ab-cdef12345678',
+      ...(racaDeterminada && { raca_id: racaDeterminada })
+    };
+  }
+
+  ngOnDestroy() {
+    if (this.saveTimeout) {
+      clearTimeout(this.saveTimeout);
+    }
+  }
+
+  limparFormularioNascimento() {
+    this.formNascidos.reset({
+      dataParto: this.obterDataAtualFormatada(),
+      tipoParto: 'simples',
+      origemPai: 'proprio',
+      escoreCorporalMae: '3',
+      avaliacaoUbere: '3',
+      viabilidadeMae: '5',
+      habilidadeMaterna: '3'
+    });
+
+    this.filhotesArray.clear();
+    this.filhotesArray.push(this.criarFormFilhote());
+    this.indiceFilhoteAtual = 0;
+    this.totalFilhotes = 1;
+
+    this.fotos = [];
+    this.carregandoGenitores = false;
+    this.carregarGenitores();
   }
 
   async cadastrarComprado() {
@@ -487,6 +757,7 @@ export class CadastroAnimaisPage implements OnInit {
         const formData = this.formComprados.value;
         const dadosParaEnvio: any = {
           brinco: formData.numeroBrinco,
+          nome: formData.nomeAnimal || null,
           sexo: formData.sexo,
           raca_id: formData.raca ? parseInt(formData.raca) : null,
           peso_atual: formData.peso ? parseFloat(formData.peso) : null,
@@ -515,26 +786,26 @@ export class CadastroAnimaisPage implements OnInit {
         let response;
         if (this.modoEdicao && this.animalEditando) {
           response = await this.ovinoService.atualizarOvino(this.animalEditando.id, dadosParaEnvio).toPromise();
-        } else {
-          response = await this.ovinoService.criarOvino(dadosParaEnvio).toPromise();
-        }
-
-        await loading.dismiss();
-        this.mostrarAlerta('Sucesso',
-          this.modoEdicao ? 'Animal atualizado com sucesso!' : 'Animal comprado cadastrado com sucesso!'
-        );
-
-        if (this.modoEdicao) {
+          await loading.dismiss();
+          this.mostrarAlerta('Sucesso', 'Animal atualizado com sucesso!');
           this.router.navigate(['/detalhe-animal', this.animalEditando.id]);
         } else {
-          this.formComprados.reset({
-            dataCompra: this.obterDataAtualFormatada(),
-            escoreCorporal: '3',
-            statusReprodutivo: 'vazia',
-            possuiRegistro: false,
-            entidadeRegistro: 'arco'
-          });
-          this.fotos = [];
+          response = await this.ovinoService.criarOvino(dadosParaEnvio).toPromise();
+          await loading.dismiss();
+
+          if (response && response.id) {
+            this.mostrarAlertaESeguir('Sucesso', 'Animal comprado cadastrado com sucesso!', response.id);
+          } else {
+            this.mostrarAlerta('Sucesso', 'Animal comprado cadastrado com sucesso!');
+            this.formComprados.reset({
+              dataCompra: this.obterDataAtualFormatada(),
+              escoreCorporal: '3',
+              statusReprodutivo: 'vazia',
+              possuiRegistro: false,
+              entidadeRegistro: 'arco'
+            });
+            this.fotos = [];
+          }
         }
 
       } catch (error: any) {
@@ -594,16 +865,20 @@ export class CadastroAnimaisPage implements OnInit {
     const possuiRegistro = this.formComprados.get('possuiRegistro')?.value;
 
     if (possuiRegistro) {
-      // Mostrar campos de registro
       this.formComprados.get('nomeAnimal')?.setValidators([Validators.required]);
       this.formComprados.get('numeroRegistro')?.setValidators([Validators.required]);
     } else {
-      // Ocultar campos de registro
       this.formComprados.get('nomeAnimal')?.clearValidators();
       this.formComprados.get('numeroRegistro')?.clearValidators();
     }
 
     this.formComprados.get('nomeAnimal')?.updateValueAndValidity();
     this.formComprados.get('numeroRegistro')?.updateValueAndValidity();
+  }
+
+  //Voltar para a tela de origem
+  private location = inject(Location);
+  voltar() {
+    this.location.back();
   }
 }

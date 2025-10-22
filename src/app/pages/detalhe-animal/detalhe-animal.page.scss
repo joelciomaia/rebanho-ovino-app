@@ -1,7 +1,7 @@
 /* ================================================== */
 /* RESET E CONFIGURAÇÕES GERAIS DO HEADER - ATUALIZADO */
 /* ================================================== */
- /* No arquivo .scss da sua página */
+/* No arquivo .scss da sua página */
 :host {
   --minha-cor-terciaria: #562800;
 }
@@ -12,6 +12,7 @@
   --background-activated: #451f00;
   --color: white;
 }
+
 /* Configurações principais do toolbar do header */
 ion-header ion-toolbar {
   --background: linear-gradient(135deg, #2d4551 0%, #3a5766 100%) !important;
@@ -36,7 +37,7 @@ ion-header ion-toolbar ion-back-button {
 }
 
 
-  /* ===== CARD RECOLHÍVEL - COM A IMAGEM ===== */
+/* ===== CARD RECOLHÍVEL - COM A IMAGEM ===== */
 .collapsible-card {
   background: white;
   border-radius: 30px;
@@ -84,7 +85,8 @@ ion-header ion-toolbar ion-back-button {
   overflow: hidden;
   border: 3px solid rgba(255, 255, 255, 0.3);
   flex-shrink: 0;
-  order: 2; /* Imagem à direita */
+  order: 2;
+  /* Imagem à direita */
 }
 
 .animal-profile-image {
@@ -114,7 +116,8 @@ ion-header ion-toolbar ion-back-button {
 .collapse-icon {
   font-size: 1.5rem;
   transition: transform 0.3s ease;
-  order: 3; /* Ícone à direita da imagem */
+  order: 3;
+  /* Ícone à direita da imagem */
   margin-left: 8px;
 }
 
@@ -124,7 +127,7 @@ ion-header ion-toolbar ion-back-button {
   transition: max-height 0.3s ease, opacity 0.3s ease;
   max-height: 500px;
   opacity: 1;
-  
+
   &.collapsed {
     max-height: 0;
     padding: 0;
@@ -137,7 +140,7 @@ ion-header ion-toolbar ion-back-button {
 .animal-details-grid {
   display: grid;
   //grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  grid-template-columns: 1fr 1fr;  // Duas colunas
+  grid-template-columns: 1fr 1fr; // Duas colunas
   gap: 12px;
   margin-bottom: 20px;
 }
@@ -160,7 +163,8 @@ ion-header ion-toolbar ion-back-button {
 .detail-value {
   display: block;
   font-size: 1rem;
-  color: #2d4551 !important; /* Cor primária atualizada */
+  color: #2d4551 !important;
+  /* Cor primária atualizada */
   font-weight: 600;
 }
 
@@ -180,7 +184,8 @@ ion-header ion-toolbar ion-back-button {
 
 /* ===== CORES DOS STATUS - ATUALIZADO ===== */
 .status-ativo {
-  background: rgba(12, 225, 112, 0.9) !important; /* Verde secundário */
+  background: rgba(12, 225, 112, 0.9) !important;
+  /* Verde secundário */
   color: white;
 }
 
@@ -202,15 +207,21 @@ ion-header ion-toolbar ion-back-button {
 /* ===== CONTAINER DAS TABS COM SCROLL HORIZONTAL - ATUALIZADO ===== */
 /* Container principal com scroll suave e horizontal */
 .segment-container {
-  overflow-x: auto; /* Habilita scroll horizontal */
-  white-space: nowrap; /* Impede quebra de linha */
+  overflow-x: auto;
+  /* Habilita scroll horizontal */
+  white-space: nowrap;
+  /* Impede quebra de linha */
   margin-bottom: 16px;
-  -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
-  scrollbar-width: none; /* Esconde scrollbar no Firefox */
-  -ms-overflow-style: none; /* Esconde scrollbar no IE/Edge */
+  -webkit-overflow-scrolling: touch;
+  /* Scroll suave no iOS */
+  scrollbar-width: none;
+  /* Esconde scrollbar no Firefox */
+  -ms-overflow-style: none;
+  /* Esconde scrollbar no IE/Edge */
   padding: 4px 0;
-  scroll-behavior: smooth; /* Animação suave do scroll */
-  
+  scroll-behavior: smooth;
+  /* Animação suave do scroll */
+
   /* Esconde scrollbar no Chrome/Safari */
   &::-webkit-scrollbar {
     display: none;
@@ -219,37 +230,60 @@ ion-header ion-toolbar ion-back-button {
 
 /* Segmento principal - layout inline para scroll */
 ion-segment {
-  width: auto; /* Largura automática baseada no conteúdo */
-  min-width: 100%; /* Mínimo de 100% da largura */
-  display: inline-flex; /* Permite scroll horizontal */
-  justify-content: flex-start; /* Alinha à esquerda */
-  background: #f8f9fa; /* Mantém cor original */
-  border-radius: 8px; /* Mantém bordas arredondadas */
-  padding: 4px; /* Mantém padding original */
+  width: auto;
+  /* Largura automática baseada no conteúdo */
+  min-width: 100%;
+  /* Mínimo de 100% da largura */
+  display: inline-flex;
+  /* Permite scroll horizontal */
+  justify-content: flex-start;
+  /* Alinha à esquerda */
+  background: #f8f9fa;
+  /* Mantém cor original */
+  border-radius: 8px;
+  /* Mantém bordas arredondadas */
+  //zpadding: 4px; /* Mantém padding original */
 }
 
 /* Botões individuais das tabs - ATUALIZADO */
 ion-segment-button {
-  min-width: 90px; /* Largura mínima para caber texto */
-  max-width: 110px; /* Largura máxima para não ficar muito largo */
-  --padding-start: 12px; /* Espaçamento interno */
-  --padding-end: 12px; /* Espaçamento interno */
-  --color: #6c757d; /* Cor do texto inativo */
-  --color-checked: #2d4551 !important; /* Cor do texto ativo - primária */
-  --indicator-color: #5cad82 !important; /* Cor do indicador - secundária */
-  --border-radius: 6px; /* Bordas arredondadas */
-  --margin-start: 2px; /* Margem entre botões */
-  --margin-end: 2px; /* Margem entre botões */
-  flex: 0 0 auto; /* Impede que os botões estiquem */
-  height: 36px; /* Altura consistente */
-  scroll-margin: 0 20px; /* Margem para centralização no scroll */
-  
+  min-width: 90px;
+  /* Largura mínima para caber texto */
+  //max-width: 110px; /* Largura máxima para não ficar muito largo */
+  --padding-start: 2px;
+  /* Espaçamento interno */
+  --padding-end: 2px;
+  /* Espaçamento interno */
+  --color: #6c757d;
+  /* Cor do texto inativo */
+  --color-checked: #2d4551 !important;
+  /* Cor do texto ativo - primária */
+  --indicator-color: #5cad82 !important;
+  /* Cor do indicador - secundária */
+  --border-radius: 6px;
+  /* Bordas arredondadas */
+  --margin-start: 1px;
+  /* Margem entre botões */
+  --margin-end: 1px;
+  /* Margem entre botões */
+  flex: 0 0 auto;
+  /* Impede que os botões estiquem */
+  height: 36px;
+  /* Altura consistente */
+  scroll-margin: 0 20px;
+  /* Margem para centralização no scroll */
+
   ion-label {
-    white-space: nowrap; /* Texto em linha única */
-    overflow: hidden; /* Esconde overflow */
-    text-overflow: ellipsis; /* Adiciona "..." se texto for longo */
-    font-size: 0.8rem; /* Tamanho de fonte */
-    font-weight: 500; /* Peso da fonte */
+    white-space: nowrap;
+    /* Texto em linha única */
+    overflow: hidden;
+    /* Esconde overflow */
+    text-overflow: ellipsis;
+    /* Adiciona "..." se texto for longo */
+    font-size: 0.8rem;
+    /* Tamanho de fonte */
+    font-weight: 500;
+    /* Peso da fonte */
   }
 }
 
@@ -257,30 +291,39 @@ ion-segment-button {
 /* Tablets e telas maiores - centraliza sem scroll */
 @media (min-width: 768px) {
   .segment-container {
-    overflow-x: hidden; /* Esconde scroll em telas grandes */
+    overflow-x: hidden;
+    /* Esconde scroll em telas grandes */
   }
-  
+
   ion-segment {
-    width: 100%; /* Ocupa 100% da largura */
-    justify-content: center; /* Centraliza as tabs */
+    width: 100%;
+    /* Ocupa 100% da largura */
+    justify-content: center;
+    /* Centraliza as tabs */
   }
-  
+
   ion-segment-button {
-    min-width: 100px; /* Largura um pouco maior */
-    max-width: 130px; /* Largura máxima maior */
+    min-width: 100px;
+    /* Largura um pouco maior */
+    //max-width: 130px; /* Largura máxima maior */
   }
 }
 
 /* Telas muito pequenas - ajusta ainda mais */
 @media (max-width: 360px) {
   ion-segment-button {
-    min-width: 80px; /* Largura mínima reduzida */
-    max-width: 95px; /* Largura máxima reduzida */
-    --padding-start: 8px; /* Padding reduzido */
-    --padding-end: 8px; /* Padding reduzido */
-    
+    min-width: 80px;
+    /* Largura mínima reduzida */
+    max-width: 95px;
+    /* Largura máxima reduzida */
+    --padding-start: 8px;
+    /* Padding reduzido */
+    --padding-end: 8px;
+    /* Padding reduzido */
+
     ion-label {
-      font-size: 0.75rem; /* Fonte um pouco menor */
+      font-size: 0.75rem;
+      /* Fonte um pouco menor */
     }
   }
 }
@@ -295,12 +338,14 @@ ion-segment-button {
 
 .history-section h2 {
   font-size: 18px;
-  color: #2d4551 !important; /* Cor primária */
+  color: #2d4551 !important;
+  /* Cor primária */
   margin-bottom: 16px;
 }
 
 .history-item {
-  border-left: 3px solid #5cad82 !important; /* Cor secundária */
+  border-left: 3px solid #5cad82 !important;
+  /* Cor secundária */
   padding: 12px 0 12px 16px;
   margin-bottom: 16px;
   background: #f8f9fa;
@@ -309,12 +354,14 @@ ion-segment-button {
 
 .history-date {
   font-weight: bold;
-  color: #2d4551 !important; /* Cor primária */
+  color: #2d4551 !important;
+  /* Cor primária */
   margin-bottom: 4px;
 }
 
 .history-type {
-  color: #5cad82 !important; /* Cor secundária */
+  color: #5cad82 !important;
+  /* Cor secundária */
   font-weight: 500;
   margin-bottom: 8px;
 }
@@ -391,7 +438,8 @@ ion-segment-button {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: #5cad82 !important; /* Cor secundária */
+  background: #5cad82 !important;
+  /* Cor secundária */
   color: white;
   padding: 4px 8px;
   border-radius: 12px;
@@ -418,41 +466,41 @@ ion-segment-button {
   .animal-details-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .buttons-row {
     grid-template-columns: 1fr;
     gap: 8px;
   }
-  
+
   .action-btn-simple {
     height: 40px;
   }
-  
+
   .header-content {
     flex-direction: row;
     justify-content: space-between;
     text-align: left;
     gap: 8px;
   }
-  
+
   .animal-image-container {
     width: 50px;
     height: 50px;
   }
-  
+
   .animal-id {
     font-size: 1.3rem;
   }
-  
+
   .photos-grid {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 12px;
   }
-  
+
   .history-item {
     padding: 10px 0 10px 12px;
   }
-  
+
   .history-date,
   .history-type {
     font-size: 0.9rem;
@@ -465,6 +513,7 @@ ion-segment-button {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -491,8 +540,8 @@ ion-segment-button {
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
   .photo-image {
     width: 100%;
     height: 120px;
@@ -506,7 +555,7 @@ ion-segment-button {
   right: 8px;
   display: flex;
   gap: 4px;
-  
+
   ion-button {
     --padding-start: 8px;
     --padding-end: 8px;
@@ -520,7 +569,8 @@ ion-segment-button {
   padding: 8px;
   font-size: 0.8rem;
   color: #6c757d;
-  background: rgba(45, 69, 81, 0.9) !important; /* Cor primária com transparência */
+  background: rgba(45, 69, 81, 0.9) !important;
+  /* Cor primária com transparência */
   color: white;
   position: absolute;
   bottom: 0;
@@ -528,11 +578,12 @@ ion-segment-button {
   right: 0;
 }
 
-.empty-gallery, .empty-history {
+.empty-gallery,
+.empty-history {
   text-align: center;
   padding: 40px 20px;
   color: #6c757d;
-  
+
   ion-icon {
     font-size: 3rem;
     margin-bottom: 16px;
@@ -603,6 +654,7 @@ ion-segment-button {
   --padding-end: 8px !important;
   height: 28px !important;
 }
+
 /* ================================================== */
 /* CORREÇÃO DAS CORES DOS BOTÕES - APENAS CORES */
 /* ================================================== */
@@ -638,8 +690,9 @@ ion-segment-button {
   --background: #5cad82 !important;
   --background-activated: #6bbd93 !important;
 }
+
 /* ================================================== */
-/* CORREÇÃO DAS CORES DOS BOTÕES IONIC - APENAS CORES */
+/* CORREÇÃO DAS CORES DOS BOTÕES IONIC - CORES */
 /* ================================================== */
 
 /* SOBRESCREVER VARIÁVEIS DE CORES DO IONIC */
@@ -682,6 +735,86 @@ ion-button[color="secondary"] {
   margin: 0;
 }
 
+.animal-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; // Duas colunas
+  gap: 12px;
+}
+
+.animal-identification {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.animal-name-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.animal-name {
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+  margin: 0;
+}
+
+.add-name-placeholder {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  font-style: italic;
+}
+
+.edit-icon {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.animal-name-container:hover .edit-icon {
+  color: white;
+}
+
+// Ajuste o animal-id para ficar alinhado
+.animal-id {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+}
+
+
+//cabeçalho e botão arredondados
+.action-buttons {
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  overflow: hidden;
+}
+
+
+.card-header {
+  border-radius: 30px 30px 0 0;
+}
+
+.card-header.recolhido {
+  border-radius: 30px;
+}
+
+/* ================================================== */
+/* ================================================== */
+/* ============= MODAL DE STATUS ==================== */
+/* ================================================== */
+/* ================================================== */
+
 .modal-status-content {
   --padding-start: 16px;
   --padding-end: 16px;
@@ -693,19 +826,19 @@ ion-button[color="secondary"] {
   text-align: center;
   margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--border, #dce1e5);
+  border-bottom: 1px solid #e9ecef;
 }
 
 .animal-info-modal h3 {
   margin: 0 0 4px 0;
   font-size: 1.5em;
-  color: var(--text, #2d4551);
+  color: #2d4551;
   font-weight: 600;
 }
 
 .animal-info-modal p {
   margin: 0;
-  color: var(--text-light, #7f8c8d);
+  color: #6c757d;
   font-size: 0.9em;
 }
 
@@ -715,20 +848,16 @@ ion-button[color="secondary"] {
   gap: 8px;
   margin-bottom: 24px;
   padding: 12px;
-  background: var(--light, #ecf0f1);
+  background: #f8f9fa;
   border-radius: 8px;
 }
 
 .status-badge {
-  padding: 4px 12px;
+  padding: 6px 12px;
   border-radius: 16px;
   font-size: 0.8em;
   font-weight: 600;
   text-transform: uppercase;
-}
-
-.status-ativo {
-  background: #27ae60;
   color: white;
 }
 
@@ -739,7 +868,7 @@ ion-button[color="secondary"] {
 .novo-status h4 {
   margin: 0 0 12px 0;
   font-size: 1.1em;
-  color: var(--text, #2d4551);
+  color: #2d4551;
 }
 
 .status-option {
@@ -757,7 +886,7 @@ ion-button[color="secondary"] {
 }
 
 .status-indicator.ativo {
-  background: #27ae60;
+  background: #5cad82;
 }
 
 .status-indicator.descarte {
@@ -765,32 +894,134 @@ ion-button[color="secondary"] {
 }
 
 .status-indicator.inativo {
-  background: #c0392b;
+  background: #dc3545;
 }
 
 .data-mudanca,
-.motivo-mudanca,
 .observacoes {
   margin-bottom: 16px;
 }
 
-/* Melhorar os itens do formulário */
-ion-item {
+/* BOTÕES DO MODAL - MESMO PADRÃO DOS BOTÕES DO APP */
+.modal-status-content ion-footer {
+  padding: 16px;
+}
+
+.modal-status-content ion-footer ion-toolbar {
+  --background: transparent;
   --padding-start: 0;
-  --inner-padding-end: 0;
-  --border-color: var(--border, #dce1e5);
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
 }
 
-/* Estilo para os botões do footer */
-ion-footer ion-toolbar {
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --padding-top: 8px;
-  --padding-bottom: 8px;
+.modal-status-content ion-button {
+  --border-radius: 12px !important;
+  font-weight: 600 !important;
+  height: 50px !important;
+  margin: 0 !important;
+  font-size: 14px !important;
+  flex: 1;
 }
 
-.animal-details-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;  // Duas colunas
+/* BOTÃO CANCELAR - CINZA OUTLINE */
+.modal-status-content ion-button[fill="outline"] {
+  --background: transparent !important;
+  --color: #6c757d !important;
+  --border-color: #6c757d !important;
+  --border-width: 2px !important;
+}
+
+/* BOTÃO CONFIRMAR - AZUL ESCURO */
+.modal-status-content ion-button:not([fill="outline"]) {
+  --background: #2d4551 !important;
+  --color: white !important;
+}
+
+/* Container dos botões lado a lado */
+.modal-status-content ion-footer ion-toolbar {
+  display: flex;
   gap: 12px;
+}
+
+.modal-status-content ion-footer ion-toolbar ion-buttons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.modal-status-content ion-footer ion-toolbar ion-buttons ion-button {
+  flex: 1;
+}
+
+/* CORREÇÃO: BOTÕES LADO A LADO NO MODAL */
+.modal-buttons-container {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+}
+
+.modal-buttons-container ion-button {
+  flex: 1;
+  --border-radius: 12px !important;
+  height: 50px !important;
+  margin: 0 !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+/* BOTÃO CANCELAR - CINZA OUTLINE */
+.modal-buttons-container .cancel-btn {
+  --background: transparent !important;
+  --color: #6c757d !important;
+  --border-color: #6c757d !important;
+  --border-width: 2px !important;
+}
+
+
+.modal-buttons-container .confirm-btn[disabled] {
+  --background: #a4a7a6 !important;
+  --color: white !important;
+}
+
+/* BOTÃO CONFIRMAR - CINZA QUANDO DESABILITADO, VERDE QUANDO HABILITADO */
+.modal-buttons-container .confirm-btn {
+  --background: #a4a7a6 !important; /* CINZA quando desabilitado */
+  --color: white !important;
+}
+
+.modal-buttons-container .confirm-btn:not([disabled]) {
+  --background: #5cad82 !important; /* VERDE quando habilitado */
+  --background-activated: #4a9c72 !important;
+  --background-hover: #52a479 !important;
+}
+
+.status-option {
+  display: flex;
+  align-items: center;
+  min-width: 200px;
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.status-indicator.ativo {
+  background-color: #4CAF50;
+}
+
+.status-indicator.descarte {
+  background-color: #FF9800;
+}
+
+.status-indicator.inativo {
+  background-color: #F44336;
+}
+
+ion-item {
+  --min-height: 48px;
 }

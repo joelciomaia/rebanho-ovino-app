@@ -307,18 +307,21 @@ ion-list-header {
 /* BOTÕES DE AÇÃO */
 /* ================================================== */
 
-.action-buttons {
-  display: flex;
-  gap: 12px;
-  margin-top: 24px;
-}
-
 .action-buttons ion-button {
   flex: 1;
   --border-radius: 12px !important;
-  height: 50px !important;
+  height: 40px !important;
   font-weight: 600 !important;
+  max-width: 48% !important;
 }
+
+.action-buttons {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
 
 /* ================================================== */
 /* RESPONSIVIDADE */
@@ -458,4 +461,22 @@ ion-button[color="medium"] {
 .action-buttons ion-button:not([disabled]):active {
   transform: translateY(0) !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+
+//Botões do carousel sem a cor ionic e centralizados
+.carousel-navigation ion-button {
+  --color: #2d4551 !important;
+}
+
+.carousel-navigation ion-button[disabled] {
+  --color: #6c757d !important;
+  opacity: 0.5;
+}
+
+.carousel-navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
 }

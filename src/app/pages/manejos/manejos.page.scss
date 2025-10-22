@@ -28,7 +28,14 @@ ion-header {
     }
   }
 }
+/* ================================================== */
+/* CONFIGURAÇÃO DO ION-CONTENT PARA SCROLL */
+/* ================================================== */
 
+ion-content {
+  --overflow: auto !important;
+  --padding-bottom: 100px !important; /* espaço extra pro scroll */
+}
 /* ================================================== */
 /* SELEÇÃO DE ABA (SEGMENTO) - LOTE vs INDIVIDUAL */
 /* ================================================== */
@@ -205,61 +212,63 @@ ion-card-content {
     }
   }
 }
+.action-button,
+.action-buttons-individual {
+  position: fixed;
+  bottom: 20px;
+  left: 16px;
+  right: 16px;
+  z-index: 1000;
+  display: flex;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(233, 236, 239, 0.8);
+}
 
-/* ================================================== */
-/* BOTÕES DE AÇÃO PRINCIPAIS - SALVAR, APLICAR, VOLTAR */
-/* ================================================== */
-/* Container para botões de ação fixos na parte inferior */
-.action-button,              /* Botão da aba Lote */
-.action-buttons-individual { /* Botões da aba Individual */
-  position: fixed !important;            /* Posição fixa na tela */
-  bottom: 20px !important;               /* 20px da parte inferior */
-  left: 16px !important;                 /* 16px da esquerda */
-  right: 16px !important;                /* 16px da direita */
-  z-index: 1000 !important;              /* Garante que fique acima de outros elementos */
-  display: flex !important;              /* Layout flex para organizar botões */
-  gap: 12px !important;                  /* Espaço entre botões */
-  background: rgba(255, 255, 255, 0.95) !important; /* Fundo branco semi-transparente */
-  backdrop-filter: blur(10px) !important; /* Efeito de desfoque no fundo (glassmorphism) */
-  padding: 16px !important;              /* Espaçamento interno */
-  border-radius: 16px !important;        /* Bordas arredondadas */
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1) !important; /* Sombra para dar profundidade */
-  border: 1px solid rgba(233, 236, 239, 0.8) !important; /* Borda sutil */
-  
-  /* Botões individuais dentro do container */
-  ion-button {
-    flex: 1 !important;                  /* Cada botão ocupa espaço igual */
-    --border-radius: 12px !important;    /* Bordas arredondadas */
-    font-weight: 600 !important;         /* Texto em negrito */
-    height: 56px !important;             /* Altura fixa */
-    margin: 0 !important;                /* Remove margens */
-    font-size: 16px !important;          /* Tamanho da fonte */
-    transition: all 0.3s ease !important; /* Transição suave */
-    
-    /* BOTÃO PRIMÁRIO (Salvar, Aplicar) - Primeiro botão */
-    &:first-child:not(.voltar-button) {
-      --background: #5cad82 !important;           /* Fundo verde */
-      --background-activated: #4a9c72 !important; /* Cor quando pressionado */
-      --background-hover: #52a479 !important;     /* Cor no hover */
-      --color: white !important;                  /* Texto branco */
-      
-      /* Efeito hover quando não está desabilitado */
-      &:not([disabled]):hover {
-        transform: translateY(-2px) !important;   /* Levanta o botão */
-        box-shadow: 0 4px 15px rgba(92, 173, 130, 0.3) !important; /* Sombra verde */
-      }
-    }
-    
-    /* BOTÃO SECUNDÁRIO (Voltar) - Último botão ou classe específica */
-    &:last-child,
-    .voltar-button {
-      --background: transparent !important;       /* Fundo transparente */
-      --background-activated: rgba(45, 69, 81, 0.1) !important; /* Fundo ao clicar */
-      --color: #2d4551 !important;                /* Texto azul escuro */
-      --border-color: #2d4551 !important;         /* Borda azul escuro */
-      --border-width: 2px !important;             /* Espessura da borda */
-    }
-  }
+.action-button ion-button,
+.action-buttons-individual ion-button {
+  flex: 0 0 48%;
+  max-width: 48%;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 56px;
+  margin: 0;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+/* BOTÃO PRIMÁRIO (Salvar/Aplicar) */
+.action-button ion-button:first-child,
+.action-buttons-individual ion-button:first-child {
+  --background: #a4a7a6;
+  --color: white;
+}
+
+.action-button ion-button:first-child:not([disabled]),
+.action-buttons-individual ion-button:first-child:not([disabled]) {
+  --background: #5cad82;
+  --background-activated: #4a9c72;
+  --background-hover: #52a479;
+}
+
+.action-button ion-button:first-child:not([disabled]):hover,
+.action-buttons-individual ion-button:first-child:not([disabled]):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(92, 173, 130, 0.3);
+}
+
+/* BOTÃO SECUNDÁRIO (Cancelar/Voltar) */
+.action-button ion-button:last-child,
+.action-buttons-individual ion-button:last-child {
+  --background: transparent;
+  --background-activated: rgba(45, 69, 81, 0.1);
+  --color: #2d4551;
+  --border-color: #2d4551;
+  --border-width: 2px;
 }
 
 /* ================================================== */
@@ -732,4 +741,436 @@ fiquem sempre lado a lado, mesmo em mobile
     right: 20% !important;
     gap: 16px !important;                  /* Espaço maior entre botões */
   }
+}
+/* ================================================== */
+/* BOTÕES DE AÇÃO - PADRÃO DO APP */
+/* ================================================== */
+
+/* BOTÃO CANCELAR - CINZA OUTLINE */
+.action-buttons-individual ion-button:last-child,
+.action-button ion-button:last-child {
+  --background: transparent !important;
+  --color: #6c757d !important;
+  --border-color: #6c757d !important;
+  --border-width: 2px !important;
+}
+
+.action-buttons-individual ion-button,
+.action-button ion-button {
+  height: 40px !important;
+}
+
+
+.tab-individual[disabled] {
+  position: relative;
+}
+
+.tab-individual[disabled]:hover::after {
+  content: "Selecione um animal para acessar";
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2d4551;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+}
+
+/* ================================================== */
+/* ================================================== */
+/* ================================================== */
+/* CSS ESPECÍFICO PARA O MODAL DE STATUS DO ANIMAL */
+/* ================================================== */
+/* ================================================== */
+/* ================================================== */
+
+/* Container de informações do animal no modal */
+.animal-info-modal {
+  padding: 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-bottom: 1px solid #e9ecef;
+
+  h3 {
+    color: #2d4551;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  p {
+    color: #6c757d;
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+/* Status atual do animal */
+.status-atual {
+  padding: 16px 20px;
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  strong {
+    color: #2d4551;
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+/* Badge de status */
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-ativo {
+  background: rgba(92, 173, 130, 0.1);
+  color: #2d5132;
+  border: 1px solid rgba(92, 173, 130, 0.3);
+}
+
+.status-descarte {
+  background: rgba(255, 193, 7, 0.1);
+  color: #856404;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.status-vendido,
+.status-morto,
+.status-abatido,
+.status-doado {
+  background: rgba(108, 117, 125, 0.1);
+  color: #495057;
+  border: 1px solid rgba(108, 117, 125, 0.3);
+}
+
+/* Seção de novo status */
+.novo-status {
+  padding: 20px;
+
+  h4 {
+    color: #2d4551;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+}
+
+/* Opções de status no radio group */
+.status-option {
+  display: flex;
+  align-items: center;
+  min-width: 200px;
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.status-indicator.ativo {
+  background-color: #4CAF50;
+}
+
+.status-indicator.descarte {
+  background-color: #FF9800;
+}
+
+.status-indicator.inativo {
+  background-color: #F44336;
+}
+
+/* Seção de data e observações */
+.data-mudanca,
+.observacoes {
+  padding: 0 20px 20px 20px;
+}
+
+/* Footer do modal */
+ion-footer {
+  ion-toolbar {
+    --background: white;
+    --border-color: #e9ecef;
+  }
+}
+
+/* Responsividade do modal de status */
+@media (max-width: 480px) {
+  .animal-info-modal {
+    padding: 16px;
+
+    h3 {
+      font-size: 16px;
+    }
+  }
+
+  .status-option {
+    min-width: 180px;
+  }
+
+  .novo-status,
+  .data-mudanca,
+  .observacoes {
+    padding: 0 16px 16px 16px;
+  }
+}
+
+/* ================================================== */
+/* BOTÕES DO MODAL STATUS - GARANTIDO */
+/* ================================================== */
+
+.modal-status-content ion-footer {
+  padding: 0 !important;
+}
+
+.modal-status-content ion-footer ion-toolbar {
+  --background: white !important;
+  --padding-start: 16px !important;
+  --padding-end: 16px !important;
+  --padding-top: 16px !important;
+  --padding-bottom: 16px !important;
+  border-top: 1px solid #e9ecef !important;
+}
+
+.modal-buttons-container {
+  display: flex !important;
+  gap: 12px !important;
+  width: 100% !important;
+}
+
+/* BOTÃO CANCELAR */
+.cancel-button {
+  --border-radius: 12px !important;
+  --border-width: 2px !important;
+  --border-color: #6c757d !important;
+  --color: #6c757d !important;
+  --background: transparent !important;
+  height: 50px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  flex: 1 !important;
+  margin: 0 !important;
+}
+
+/* BOTÃO CONFIRMAR */
+.confirm-button {
+  --border-radius: 12px !important;
+  --background: #a4a7a6 !important;
+  --color: white !important;
+  height: 50px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  flex: 1 !important;
+  margin: 0 !important;
+}
+
+/* BOTÃO CONFIRMAR QUANDO HABILITADO */
+.confirm-button:not([disabled]) {
+  --background: #5cad82 !important;
+  --background-activated: #4a9c72 !important;
+  --background-hover: #52a479 !important;
+}
+
+/* BOTÃO CONFIRMAR QUANDO DESABILITADO */
+.confirm-button[disabled] {
+  --background: #a4a7a6 !important;
+  --color: white !important;
+  opacity: 1 !important;
+}
+
+/////////////////////////////////////////
+/// //////////////////////////////////
+.modal-status-content ion-toolbar {
+  --background: transparent !important;
+  //border-top: 1px solid #e9ecef !important;
+  padding: 0 !important;
+}
+
+.modal-buttons-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  width: 100%;
+}
+
+/* Botão CANCELAR */
+.cancel-button {
+  flex: 1;
+  height: 48px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+
+  --background: white;
+  --color: #2d4551;
+  --border-color: #2d4551;
+  --border-width: 2px;
+  --border-radius: 12px;
+  --box-shadow: none;
+}
+
+.cancel-button:hover {
+  --background: #f8f9fa;
+}
+
+/* Botão CONFIRMAR */
+.confirm-button {
+  flex: 1;
+  height: 48px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+
+  --background: #5cad82;
+  --background-hover: #52a479;
+  --background-activated: #4a9c72;
+  --color: white;
+  --border-radius: 12px;
+}
+
+.confirm-button[disabled] {
+  --background: #a4a7a6;
+  --color: white;
+  opacity: 1;
+}
+.modal-cancel-button {
+  flex: 1;
+  height: 48px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+
+  --background: white;
+  --color: #2d4551;
+  --border-color: #2d4551;
+  --border-width: 2px;
+  --border-radius: 12px;
+  --box-shadow: none;
+}
+/* Container dos botões no rodapé */
+.modal-buttons-container {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+}
+
+/* Botão CANCELAR do modal */
+.modal-cancel-button {
+  flex: 1;
+  --background: white;
+  --color: #2d4551;
+  --border-color: #2d4551;
+  --border-width: 2px;
+  --border-radius: 12px;
+  height: 48px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  box-shadow: none;
+}
+
+/* Hover do botão cancelar */
+.modal-cancel-button:hover {
+  --background: #f8f9fa;
+}
+
+/* Botão CONFIRMAR do modal */
+.modal-confirm-button {
+  flex: 1;
+  --background: #5cad82;
+  --background-hover: #52a479;
+  --background-activated: #4a9c72;
+  --color: white;
+  --border-radius: 12px;
+  height: 48px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Botão CONFIRMAR desabilitado */
+.modal-confirm-button[disabled] {
+  --background: #a4a7a6;
+  --color: white;
+  opacity: 1;
+}
+
+/* Remover fundo do footer padrão do Ionic */
+.modal-status-content ion-toolbar {
+  --background: transparent;
+  background: transparent;
+  //border-top: 1px solid #e9ecef;
+}
+.modal-cancel-button::part(native) {
+  //background: white !important;
+  color: #2d4551 !important;
+  border: px solid #2d4551 !important;
+  border-radius: 12px !important;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-cancel-button:hover::part(native) {
+  //background: #f8f9fa !important;
+}
+.modal-confirm-button::part(native) {
+  background: #5cad82;
+  color: white;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  height: 48px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* EFEITO VISUAL QUANDO DESABILITADO */
+.modal-confirm-button[disabled]::part(native) {
+  background: #a4a7a6 !important; /* cinza claro */
+  color: white !important;
+  opacity: 1 !important;
+  cursor: not-allowed;
+}
+.modal-cancel-button::part(native) {
+  background: white !important;
+  color: #2d4551 !important;
+  border: 2px solid #2d4551 !important;
+  border-radius: 12px !important;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.modal-cancel-button:hover::part(native) {
+  background: #f8f9fa !important;
 }

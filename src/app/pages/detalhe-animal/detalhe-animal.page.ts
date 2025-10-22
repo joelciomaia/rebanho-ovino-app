@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonSegment, IonSegmentButton, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, IonButton, IonIcon, IonLabel, IonModal, IonRadioGroup, IonRadio, IonItem, IonInput, IonSelect, IonSelectOption, IonTextarea, IonFooter } from "@ionic/angular/standalone";
+import { Location } from '@angular/common';
+import { IonSegment, IonSegmentButton, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, IonButton, IonIcon, IonLabel, IonModal, IonRadioGroup, IonRadio, IonItem, IonInput, IonSelect, IonSelectOption, IonTextarea, IonFooter, AlertController, LoadingController } from "@ionic/angular/standalone";
 import { CommonModule } from '@angular/common';
 import { AnimalService } from '../../services/animal.service';
+import { ManejoService } from '../../services/manejo.service';
+import { OvinoService } from '../../services/ovino.service';
 
 @Component({
   selector: 'app-detalhe-animal',
@@ -18,7 +21,7 @@ export class DetalheAnimalPage implements OnInit {
   animalFotos: any[] = [];
   manejos: any[] = [];
   manejosFiltrados: any[] = [];
-  abaAtiva: string = 'vacinas';
+  abaAtiva: string = 'todos';
   isCardExpanded: boolean = true;
 
   // ✅ PROPRIEDADES PARA OS GENITORES COMPLETOS
@@ -35,9 +38,14 @@ export class DetalheAnimalPage implements OnInit {
   observacoesStatus: string = '';
 
   constructor(
+    private location: Location,
     private route: ActivatedRoute,
     private router: Router,
-    private animalService: AnimalService
+    private animalService: AnimalService,
+    private manejoService: ManejoService,
+    private ovinoService: OvinoService,
+    private alertController: AlertController,
+    private loadingController: LoadingController
   ) { }
 
   ngOnInit() {
@@ -64,6 +72,12 @@ export class DetalheAnimalPage implements OnInit {
           this.animal = animal;
           this.carregarDadosAdicionais();
           this.carregarDadosGenitores();
+
+          // ✅ SE FOR MACHO E ABA ATIVA FOR REPRODUTIVOS, MUDA PARA TODOS
+          if (!this.mostrarAbaReprodutivos() && this.abaAtiva === 'reprodutivos') {
+            this.abaAtiva = 'todos';
+            this.filtrarManejos('todos');
+          }
         },
         error: (error) => {
           console.error('Erro ao carregar animal:', error);
@@ -99,7 +113,7 @@ export class DetalheAnimalPage implements OnInit {
   carregarDadosAdicionais() {
     this.carregarFotos();
     this.carregarManejosReais();
-    this.filtrarManejos('vacinas');
+    this.filtrarManejos(this.abaAtiva);
   }
 
   carregarFotos() {
@@ -119,21 +133,75 @@ export class DetalheAnimalPage implements OnInit {
     ];
   }
 
+  // ✅ MÉTODO ATUALIZADO - CARREGA MANEJOS REAIS DO BACKEND
   carregarManejosReais() {
     const animalId = this.route.snapshot.paramMap.get('id');
 
     if (animalId) {
-      this.animalService.getManejosByAnimalId(animalId).subscribe({
+      this.manejoService.getHistoricoAnimal(animalId).subscribe({
         next: (manejos) => {
-          console.log('Manejos REAIS carregados:', manejos);
+          console.log('📊 Manejos REAIS carregados do backend:', manejos);
           this.manejos = manejos;
           this.filtrarManejos(this.abaAtiva);
         },
         error: (error) => {
-          console.error('Erro ao carregar manejos reais:', error);
+          console.error('❌ Erro ao carregar manejos reais:', error);
+          this.manejos = [];
+          this.manejosFiltrados = [];
         }
       });
     }
+  }
+
+  // ✅ MÉTODO PARA CONTROLAR VISIBILIDADE DA ABA REPRODUTIVOS
+  mostrarAbaReprodutivos(): boolean {
+    if (!this.animal?.sexo) return false;
+
+    const sexo = this.animal.sexo.toLowerCase();
+    // Mostrar apenas para fêmeas
+    return sexo.includes('fêmea') || sexo.includes('femea') || sexo === 'fêmea';
+  }
+
+  // ✅ MÉTODO NOVO - DETECTAR TIPOS AUTOMATICAMENTE
+  detectarTiposManejo(manejo: any): string[] {
+    const tipos: string[] = [];
+
+    // Verificar se é TÉCNICO
+    if (manejo.tecnico_peso || manejo.tecnico_escore_corporal || manejo.tecnico_temperatura) {
+      tipos.push('tecnico');
+    }
+
+    // Verificar se é FÍSICO
+    if (manejo.fisico_tosquia || manejo.fisico_casqueamento_realizado ||
+      manejo.fisico_caudectomia || manejo.fisico_descorna || manejo.fisico_castracao) {
+      tipos.push('fisico');
+    }
+
+    // Verificar se é SANITÁRIO
+    if (manejo.sanitario_famacha || manejo.sanitario_opg ||
+      (manejo.vacinas && manejo.vacinas.length > 0) ||
+      (manejo.vermifugos && manejo.vermifugos.length > 0) ||
+      (manejo.medicacoes && manejo.medicacoes.length > 0)) {
+      tipos.push('sanitario');
+    }
+
+    // Verificar se é REPRODUTIVO
+    if (manejo.reprodutivo_acao || manejo.reprodutivo_tipo_parto ||
+      manejo.reprodutivo_habilidade_materna || manejo.reprodutivo_quantidade_filhotes) {
+      tipos.push('reprodutivo');
+    }
+
+    return tipos.length > 0 ? tipos : ['geral'];
+  }
+
+  // MÉTODO PARA OBTER TIPOS (USA DETECÇÃO AUTOMÁTICA SE NECESSÁRIO)
+  obterTiposManejo(manejo: any): string[] {
+    // Se já tem tipos definidos no banco, usa eles
+    if (manejo.tipos && manejo.tipos !== '') {
+      return manejo.tipos.split(',');
+    }
+    // Senão, detecta automaticamente
+    return this.detectarTiposManejo(manejo);
   }
 
   toggleCard() {
@@ -194,41 +262,48 @@ export class DetalheAnimalPage implements OnInit {
 
   onStatusChange(event: any): void {
     this.novoStatus = String(event.detail.value);
+    console.log('🔍 Status selecionado:', this.novoStatus);
   }
+
+voltar(): void {
+  this.location.back(); // volta para a tela anterior real
+}
+
 
   confirmarMudancaStatus(): void {
-  if (this.novoStatus && this.animal?.id) {
-    console.log('📤 Enviando para API:', {
-      animalId: this.animal.id,
-      status: this.novoStatus,
-      data: this.dataMudanca,
-      observacoes: this.observacoesStatus,
-      categoria: this.animal.categoria // ✅ Categoria atual
-    });
+    if (!this.novoStatus || this.novoStatus === this.animal?.situacao) {
+      // Não deixa confirmar se não selecionou novo status ou se é o mesmo
+      return;
+    } else if (this.novoStatus && this.animal?.id) {
+      console.log('📤 Enviando para API:', {
+        animalId: this.animal.id,
+        status: this.novoStatus === 'doacao' ? 'doado' : this.novoStatus,
+        data: this.dataMudanca,
+        observacoes: this.observacoesStatus,
+        categoria: this.animal.categoria
+      });
 
-    // ✅ CHAMADA CORRIGIDA - incluindo categoria
-    this.animalService.atualizarStatusAnimal(
-      this.animal.id,
-      this.novoStatus,
-      this.dataMudanca,
-      this.observacoesStatus,
-      //this.animal.categoria // ✅ Passa a categoria atual
-    ).subscribe({
-      next: (response) => {
-        console.log('✅ Status atualizado no banco:', response);
-        this.animal.situacao = this.novoStatus;
-        alert('Status atualizado com sucesso!');
-        this.fecharModalStatus();
-      },
-      error: (error) => {
-        console.error('❌ Erro ao atualizar status:', error);
-        alert('Erro ao atualizar status. Tente novamente.');
-      }
-    });
-  } else {
-    alert('Selecione um status válido');
+      this.animalService.atualizarStatusAnimal(
+        this.animal.id,
+        this.novoStatus,
+        this.dataMudanca,
+        this.observacoesStatus,
+      ).subscribe({
+        next: (response) => {
+          console.log('✅ Status atualizado no banco:', response);
+          this.animal.situacao = this.novoStatus;
+          alert('Status atualizado com sucesso!');
+          this.fecharModalStatus();
+        },
+        error: (error) => {
+          console.error('❌ Erro ao atualizar status:', error);
+          alert('Erro ao atualizar status. Tente novamente.');
+        }
+      });
+    } else {
+      alert('Selecione um status válido');
+    }
   }
-}
 
   // MÉTODO PARA DEFINIR FOTO DE PERFIL
   setAsProfilePhoto(foto: any) {
@@ -293,26 +368,29 @@ export class DetalheAnimalPage implements OnInit {
       this.filtrarManejos(value);
       this.scrollToSelectedTab(value);
     } else {
-      this.filtrarManejos('vacinas');
-      this.scrollToSelectedTab('vacinas');
+      this.filtrarManejos('todos');
+      this.scrollToSelectedTab('todos');
     }
   }
 
+  // MÉTODO ATUALIZADO - USA DETECÇÃO AUTOMÁTICA DE TIPOS
   filtrarManejos(tipo: string) {
     this.abaAtiva = tipo;
 
     this.manejosFiltrados = this.manejos.filter(manejo => {
+      const tipos = this.obterTiposManejo(manejo);
+
       switch (tipo) {
-        case 'vacinas':
-          return manejo.sanitario?.vacinas?.length > 0;
-        case 'partos':
-          return manejo.tipo === 'reprodutivo' && manejo.reprodutivo?.acao === 'parto';
-        case 'sanitarios':
-          return manejo.sanitario?.medicacoes?.length > 0;
-        case 'tecnicos':
-          return manejo.tipo === 'tecnico';
-        case 'fotos':
+        case 'todos':
           return true;
+        case 'reprodutivos':
+          return tipos.includes('reprodutivo');
+        case 'tecnicos':
+          return tipos.includes('tecnico');
+        case 'fisicos':
+          return tipos.includes('fisico');
+        case 'sanitarios':
+          return tipos.includes('sanitario');
         default:
           return false;
       }
@@ -337,5 +415,103 @@ export class DetalheAnimalPage implements OnInit {
     };
 
     return cores[situacao] || 'medium';
+  }
+
+  // MÉTODO PARA GERENCIAR NOME
+  async gerenciarNome() {
+    const alert = await this.alertController.create({
+      header: this.animal?.nome ? 'Editar Nome' : 'Adicionar Nome',
+      inputs: [
+        {
+          name: 'nome',
+          type: 'text',
+          placeholder: 'Digite o nome do animal',
+          value: this.animal?.nome || ''
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Salvar',
+          handler: async (data) => {
+            if (data.nome && data.nome.trim()) {
+              await this.salvarNome(data.nome.trim());
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+
+  // ✅ MÉTODO CORRIGIDO - usar os mesmos parâmetros da lista
+  adicionarManejo() {
+    if (this.animal && this.animal.id) {
+      console.log('Aplicando manejo para o animal:', this.animal.id);
+      this.router.navigate(['/manejos'], {
+        queryParams: {
+          animal: this.animal.id,
+          tab: 'individual',
+          origem: 'detalhe-animal'
+        }
+      });
+    } else {
+      console.error('Animal ou ID não disponível para manejo');
+      alert('Erro: Não foi possível adicionar manejo');
+    }
+  }
+
+  async salvarNome(nome: string) {
+    const loading = await this.loadingController.create({
+      message: 'Salvando nome...'
+    });
+    await loading.present();
+
+    try {
+      const nomeFormatado = nome.charAt(0).toUpperCase() + nome.slice(1).toLowerCase();
+
+      console.log('📤 Enviando nome para API:', nomeFormatado);
+
+      // ✅ SOLUÇÃO: Enviar apenas os campos essenciais que sabemos que existem
+      const dadosParaEnvio = {
+        nome: nomeFormatado,
+        categoria: this.animal.categoria || 'outro', // 🔥 CAMPO OBRIGATÓRIO
+        situacao: this.animal.situacao || 'ativo',   // 🔥 CAMPO OBRIGATÓRIO
+        sexo: this.animal.sexo,                      // 🔥 CAMPO OBRIGATÓRIO
+        brinco: this.animal.brinco,                  // 🔥 CAMPO OBRIGATÓRIO
+        origem: this.animal.origem || 'nascido'      // 🔥 CAMPO OBRIGATÓRIO
+      };
+
+      console.log('📤 Dados para envio:', dadosParaEnvio);
+
+      await this.ovinoService.atualizarOvino(this.animal.id, dadosParaEnvio).toPromise();
+
+      this.animal.nome = nomeFormatado;
+      await loading.dismiss();
+
+      const alert = await this.alertController.create({
+        header: 'Sucesso',
+        message: 'Nome salvo com sucesso!',
+        buttons: ['OK']
+      });
+      await alert.present();
+
+    } catch (error: any) {
+      await loading.dismiss();
+
+      console.error('❌ Erro ao salvar nome:', error);
+
+      const alert = await this.alertController.create({
+        header: 'Erro',
+        message: 'Erro ao salvar nome. Verifique o console do servidor.',
+        buttons: ['OK']
+      });
+      await alert.present();
+    }
   }
 }

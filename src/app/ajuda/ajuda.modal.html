@@ -1,0 +1,118 @@
+<ion-header translucent="true">
+  <ion-toolbar color="primary">
+    <ion-title>Ajuda e Suporte</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="fecharModal()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ajuda-content">
+
+  <!-- Abas (Tabs) -->
+  <ion-segment [(ngModel)]="abaSelecionada" value="sobre" class="ajuda-tabs">
+    <ion-segment-button value="sobre">Sobre</ion-segment-button>
+    <ion-segment-button value="como-usar">Como usar</ion-segment-button>
+    <ion-segment-button value="contato">Contato</ion-segment-button>
+  </ion-segment>
+
+  <!-- Conteúdo das abas -->
+  <div [ngSwitch]="abaSelecionada" class="ajuda-sections">
+
+    <!-- Aba SOBRE -->
+    <div *ngSwitchCase="'sobre'" class="ajuda-section">
+      <h2>O que é o OvinoSync?</h2>
+      <p>
+        O <strong>OvinoSync</strong> é um sistema desenvolvido para auxiliar produtores rurais no
+        gerenciamento completo do rebanho ovino — do nascimento ao descarte.
+      </p>
+      <p>
+        Com ele, é possível controlar cruzamentos, partos, castrações, pesagens, vacinação,
+        e muito mais, de forma prática e centralizada.
+      </p>
+      <ion-card>
+        <ion-card-content>
+          <p><strong>Versão:</strong> 1.0.0</p>
+          <p><strong>Desenvolvido por:</strong> Equipe OvinoSync</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Aba COMO USAR -->
+    <div *ngSwitchCase="'como-usar'" class="ajuda-section">
+      <h2>Guia rápido de uso</h2>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>📋 Cadastrar Animal</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          Acesse o menu <strong>“Cadastrar Animal”</strong>, preencha os dados do animal (brinco, raça, peso, etc.)
+          e toque em <strong>Salvar</strong>.
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>🐑 Registrar Parto</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          Em <strong>“Manejos → Novo Parto”</strong>, selecione a mãe, informe os cordeiros e a data do parto.
+          O sistema cria automaticamente o histórico de nascimento.
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>✂️ Castração e outros manejos</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          Vá até <strong>“Manejos”</strong> e escolha o tipo de manejo desejado (castração, vermifugação, etc.).
+          O histórico é salvo automaticamente.
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>📊 Acompanhar rebanho</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          No <strong>Dashboard</strong>, visualize resumos de fêmeas gestantes, descartes e clima local.
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Aba CONTATO -->
+    <div *ngSwitchCase="'contato'" class="ajuda-section">
+      <h2>Fale conosco</h2>
+      <p>
+        Caso tenha dúvidas, sugestões ou queira reportar algum problema, entre em contato
+        com nossa equipe de suporte.
+      </p>
+
+      <ion-item>
+        <ion-label position="stacked">Seu nome</ion-label>
+        <ion-input [(ngModel)]="nome" placeholder="Digite seu nome"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Seu e-mail</ion-label>
+        <ion-input [(ngModel)]="email" placeholder="exemplo@email.com"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Mensagem</ion-label>
+        <ion-textarea [(ngModel)]="mensagem" rows="4" placeholder="Digite sua mensagem..."></ion-textarea>
+      </ion-item>
+
+      <ion-button expand="block" color="success" (click)="enviarEmail()">
+        <ion-icon name="mail-outline" slot="start"></ion-icon>
+        Enviar Feedback
+      </ion-button>
+
+    </div>
+  </div>
+
+</ion-content>

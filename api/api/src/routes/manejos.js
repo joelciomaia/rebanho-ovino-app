@@ -6,9 +6,7 @@ const manejoController = require('../controllers/manejoController');
 // Rotas para /manejos
 // ============================================================
 
-// GET /manejos?ovino_id=xxx - Buscar manejos por ovino_id
-// GET /manejos - Buscar todos os manejos
-// ⚠️ As duas rotas acima conflitam! Vamos unir em uma só:
+// GET /manejos - Buscar todos OU por ovino_id
 router.get('/', (req, res) => {
   const { ovino_id } = req.query;
   
@@ -24,7 +22,10 @@ router.get('/', (req, res) => {
 // GET /manejos/:id - Buscar manejo por ID
 router.get('/:id', manejoController.getById);
 
-// POST /manejos - Criar novo manejo
+// POST /manejos/lote - Criar manejos em lote
+router.post('/lote', manejoController.createLote);
+
+// POST /manejos - Criar manejo individual
 router.post('/', manejoController.create);
 
 // PUT /manejos/:id - Atualizar manejo

@@ -232,6 +232,40 @@ exports.create = async (req, res) => {
     const data = await ovinoModel.create(ovinoData);
 
     // ============================================================
+    // 🔹 REGISTRAR ATIVIDADE NO DASHBOARD
+    // ============================================================
+    try {
+      const ovinoId = data.insertId || data.id;
+      const ovinoBrinco = req.body.brinco;
+      let tipoAtividade, tituloAtividade;
+
+      if (req.body.origem === 'nascido') {
+        tipoAtividade = 'nascimento';
+        tituloAtividade = `${ovinoBrinco} teve parição registrada`;
+      } else {
+        tipoAtividade = 'compra';
+        tituloAtividade = `${ovinoBrinco} foi comprado`;
+      }
+
+      await pool.execute(
+        `INSERT INTO atividades (tipo, titulo, descricao, animal_id, animal_brinco, usuario_id)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          tipoAtividade,
+          tituloAtividade,
+          req.body.observacao_nascimento || null,
+          ovinoId,
+          ovinoBrinco,
+          req.body.usuario_id || null
+        ]
+      );
+
+      console.log('✅ Atividade registrada no dashboard:', tituloAtividade);
+    } catch (erroAtividade) {
+      console.error('❌ Erro ao registrar atividade (não afeta criação do ovino):', erroAtividade.message);
+    }
+
+    // ============================================================
     // 🔹 Registrar parto automaticamente se for cordeiro nascido
     // ============================================================
     if (req.body.mae_id && req.body.data_nascimento) {
@@ -619,6 +653,76 @@ exports.updateStatus = async (req, res) => {
       descarte_observacao,
       descarte_tipo
     });
+
+    // ============================================================
+    // 🔹 REGISTRAR ATIVIDADE DE DESCARTE NO DASHBOARD
+    // ============================================================
+    if (situacao === 'descarte') {
+      try {
+        // Buscar dados do animal para obter o brinco
+        const [animal] = await pool.execute(
+          'SELECT brinco FROM ovinos WHERE id = ?',
+          [id]
+        );
+
+        if (animal.length > 0) {
+          const ovinoBrinco = animal[0].brinco;
+          const tituloAtividade = `${ovinoBrinco} mudou para descarte`;
+          const descricaoAtividade = descarte_observacao || `Motivo: ${descarte_tipo || 'não informado'}`;
+
+          await pool.execute(
+            `INSERT INTO atividades (tipo, titulo, descricao, animal_id, animal_brinco, usuario_id)
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [
+              'descarte',
+              tituloAtividade,
+              descricaoAtividade,
+              id,
+              ovinoBrinco,
+              req.body.usuario_id || null
+            ]
+          );
+
+          console.log('✅ Atividade de descarte registrada no dashboard:', tituloAtividade);
+        }
+      } catch (erroAtividade) {
+        console.error('❌ Erro ao registrar atividade de descarte:', erroAtividade.message);
+      }
+    }
+
+    // ============================================================
+    // 🔹 REGISTRAR ATIVIDADE DE REATIVAÇÃO
+    // ============================================================
+    if (situacao === 'ativo' && req.body.situacao_anterior === 'descarte') {
+      try {
+        const [animal] = await pool.execute(
+          'SELECT brinco FROM ovinos WHERE id = ?',
+          [id]
+        );
+
+        if (animal.length > 0) {
+          const ovinoBrinco = animal[0].brinco;
+          const tituloAtividade = `${ovinoBrinco} foi reativado`;
+
+          await pool.execute(
+            `INSERT INTO atividades (tipo, titulo, descricao, animal_id, animal_brinco, usuario_id)
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [
+              'categoria',
+              tituloAtividade,
+              'Animal reativado no sistema',
+              id,
+              ovinoBrinco,
+              req.body.usuario_id || null
+            ]
+          );
+
+          console.log('✅ Atividade de reativação registrada:', tituloAtividade);
+        }
+      } catch (erroAtividade) {
+        console.error('❌ Erro ao registrar atividade de reativação:', erroAtividade.message);
+      }
+    }
     
     res.json(data);
   } catch (error) {

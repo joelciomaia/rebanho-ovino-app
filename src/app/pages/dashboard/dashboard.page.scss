@@ -255,7 +255,7 @@ ion-header ion-toolbar ion-buttons ion-button.menu-button:hover .menu-icon span 
 }
 
 // ==================================================
-// TÍTULOS DOS CARDS - ATUALIZADO
+// TÍTULOS DOS CARDS
 // Estiliza os títulos dentro dos cards
 // ==================================================
 ion-card-title {
@@ -365,20 +365,20 @@ ion-card-title {
 }
 
 // ==================================================
-// DESCRIÇÃO DOS ALERTAS - ATUALIZADO
+// DESCRIÇÃO DOS ALERTAS
 // Estiliza o texto descritivo dos alertas
 // ==================================================
 
 .alert-desc {
   font-size: 15px;               // Tamanho confortável para leitura
   font-weight: 500;              // Peso normal
-  color: #2d4551 !important;     // Cor primária para texto
-  margin: 0;                     // Remove margem
+  color: #2d4551 !important;   // Cor primária para texto
+  margin: 10;                     // Remove margem
   line-height: 1.5;              // Espaçamento entre linhas
   background: rgba(45, 69, 81, 0.05);  // Fundo muito claro da cor primária
   padding: 10px;                 // Espaçamento interno
   border-radius: 8px;            // Bordas levemente arredondadas
-  //border-left: 4px solid #5cad82 !important; // Borda lateral com cor secundária
+  border-left: 4px solid #5cad82 !important; // Borda lateral com cor secundária
 }
 
 // ==================================================
@@ -710,4 +710,66 @@ ion-header {
 
 .menu-drawer.open {
   left: 0 !important;
+}
+
+/* Uniformiza as margens laterais dos cards fora do container */
+.weather-card,
+.alerts-card,
+.activities-card {
+  margin-left: 10px !important;
+  margin-right: 10px !important;
+}
+
+/* Alinha os títulos das seções finais com os cards */
+.section-title {
+  margin-left: 10px !important;
+  margin-right: 10px !important;
+}
+
+/* ================================
+   BOTÕES DOS ALERTAS
+   Ajuste de cores para seguir a paleta do sistema
+================================= */
+
+/* Botão principal (Continuar) */
+ion-button[fill="solid"] {
+  --background: #447869  !important;
+  --background-hover: #4b9e75 !important; /* tom mais escuro no hover */
+  --color: #ffffff !important;
+  --border-radius: 8px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+
+/* Botão secundário (Excluir) */
+ion-button[fill="outline"][color="medium"] {
+  --border-color: var(--danger) !important;
+  --color: var(--danger) !important;
+  --border-width: 2px;
+  --border-radius: 8px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+
+/* Efeito hover suave */
+ion-button:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease;
+}
+
+/* ================================
+   SEPARAÇÃO ENTRE ITENS DE ALERTA
+================================= */
+.rascunho-item {
+  border-bottom: 1px solid #4b9e75; /* tom cinza-azulado leve */
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.rascunho-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }

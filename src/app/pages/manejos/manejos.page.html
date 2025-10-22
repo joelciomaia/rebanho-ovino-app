@@ -1,26 +1,27 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+      <ion-button fill="clear" (click)="voltarDashboard()">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
     </ion-buttons>
+
+
     <ion-title>Registro de Manejos</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-
-  <!-- SEGMENTO DENTRO DO CONTEÚDO -->
-  <div class="segment-container">
-    <ion-segment [value]="segmento" (ionChange)="alternarSegmento($event)">
-      <ion-segment-button value="lote">
-        <ion-label>Manejo em Lote</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="individual">
-        <ion-label>Individual</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </div>
-
+<div class="segment-container">
+  <ion-segment [value]="segmento" (ionChange)="alternarSegmento($event)">
+    <ion-segment-button value="lote">
+      <ion-label>Manejo em Lote</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="individual" [disabled]="!temAnimalSelecionado()">
+      <ion-label>Manejo Individual</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+</div>
+<ion-content>
   <!-- MANEJO EM LOTE -->
   @if (segmento === 'lote') {
   <div class="tab-content">
@@ -400,10 +401,6 @@
                     @if (isManejoSelecionado('tecnico', 'pesagem')) {
                     <ion-col size="12" size-md="6">
                       <ion-item>
-                        <!-- <ion-input type="number" label="Peso (kg)" placeholder="Ex: 65,5"
-                          [ngModel]="animalSelecionado.manejoAtual?.tecnico?.peso"
-                          (ngModelChange)="onPesoChange($event)"></ion-input>-->
-
                         <ion-input type="number" label="Peso (kg)" placeholder="Ex: 65.5"
                           [ngModel]="animal.manejoTecnico.peso" (ngModelChange)="atualizarPesoAnimal(animal, $event)">
                         </ion-input>
@@ -512,16 +509,40 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- BOTÃO APLICAR MANEJO -->
-    <div class="action-button">
+    <div class="action-buttons-individual">
       <ion-button expand="block" size="large" [disabled]="!podeAplicarManejo()" (click)="aplicarManejoLote()">
         <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
-        Aplicar Manojos Selecionados
+        Aplicar Manejos
+      </ion-button>
+      <ion-button fill="outline" (click)="voltarDashboard()">
+        <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+        Cancelar
       </ion-button>
     </div>
 
   </div>
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   <!-- MANEJO INDIVIDUAL -->
   @if (segmento === 'individual') {
@@ -540,9 +561,9 @@
       </ion-card-header>
 
       <ion-card-content>
-        <ion-button fill="outline" color="danger" size="small">
-          <ion-icon name="trash-outline" slot="start"></ion-icon>
-          ALTERAR STATUS DO ANIMAL
+        <ion-button expand="block" color="medium" (click)="abrirModalStatus()">
+          <ion-icon name="swap-horizontal-outline" slot="start"></ion-icon>
+          ALTERAR STATUS
         </ion-button>
       </ion-card-content>
     </ion-card>
@@ -660,17 +681,6 @@
         <div class="subsecao">
           <h4>Exames:</h4>
 
-          <!-- OPG -  -->
-          <!-- <ion-item>
-            <ion-checkbox slot="start" [ngModel]="animalSelecionado.manejoAtual?.sanitario?.opg || false"
-              (ngModelChange)="animalSelecionado.manejoAtual!.sanitario!.opg = $event"></ion-checkbox>
-            <ion-label>
-              <h3>OPG</h3>
-              <p>Exame de OPG (Ovos Por Grama)</p>
-            </ion-label>
-          </ion-item>
-          -->
-
           <!-- NOVO FAMACHA VISUAL -->
           <div class="item-manejo">
             <ion-item button (click)="abrirModalFamacha()">
@@ -718,6 +728,18 @@
           </ion-label>
         </ion-item>
 
+        <!-- CASTRACAO - APENAS PARA MACHOS NÃO CAPÕES -->
+        @if (mostrarCastracao()) {
+        <ion-item>
+          <ion-checkbox slot="start" [ngModel]="animalSelecionado.manejoAtual?.fisico?.castracao || false"
+            (ngModelChange)="animalSelecionado.manejoAtual!.fisico!.castracao = $event"></ion-checkbox>
+          <ion-label>
+            <h3>Castração (Orquiectomia)</h3>
+            <p>Remoção dos testículos</p>
+          </ion-label>
+        </ion-item>
+        }
+
         <ion-item>
           <ion-checkbox slot="start" [ngModel]="animalSelecionado.manejoAtual?.fisico?.caudectomia || false"
             (ngModelChange)="animalSelecionado.manejoAtual!.fisico!.caudectomia = $event"></ion-checkbox>
@@ -737,7 +759,6 @@
         </ion-item>
 
         <!-- Casqueamento com Observações -->
-
         <ion-item>
           <ion-checkbox slot="start" [ngModel]="animalSelecionado.manejoAtual?.fisico?.casqueamento?.realizado || false"
             (ngModelChange)="animalSelecionado.manejoAtual!.fisico!.casqueamento.realizado = $event"></ion-checkbox>
@@ -757,7 +778,6 @@
           </ion-item>
         </div>
         }
-
 
       </ion-card-content>
       }
@@ -780,12 +800,6 @@
             [ngModel]="animalSelecionado.manejoAtual?.tecnico?.peso" (ngModelChange)="onPesoChange($event)"></ion-input>
         </ion-item>
 
-        <!--<ion-item>
-          <ion-input type="number" label="Temperatura (°C)" placeholder="Ex: 38,5"
-            [ngModel]="animalSelecionado.manejoAtual?.tecnico?.temperatura"
-            (ngModelChange)="onTemperaturaChange($event)"></ion-input>
-        </ion-item>-->
-
         <ion-item>
           <ion-select label="Escore Corporal" [ngModel]="animalSelecionado.manejoAtual?.tecnico?.escoreCorporal"
             (ngModelChange)="onEscoreChange($event)">
@@ -801,7 +815,8 @@
       }
     </ion-card>
 
-    <!-- REPRODUTIVO -->
+    <!-- REPRODUTIVO - APENAS PARA FÊMEAS -->
+    @if (mostrarReprodutivo()) {
     <ion-card class="manejo-section">
       <ion-card-header (click)="toggleSecaoIndividual('reprodutivo')" class="secao-expansivel">
         <ion-card-title>
@@ -817,9 +832,14 @@
         <ion-item>
           <ion-select label="Ação Reprodutiva" [ngModel]="animalSelecionado.manejoAtual?.reprodutivo?.acao"
             (ngModelChange)="animalSelecionado.manejoAtual!.reprodutivo!.acao = $event">
-            <ion-select-option value="parto">Parto</ion-select-option>
+
+            @if (mostrarReprodutivo()) {
             <ion-select-option value="cobertura">Cobertura</ion-select-option>
+            <ion-select-option value="parto">Parto</ion-select-option>
             <ion-select-option value="aborto">Aborto</ion-select-option>
+            }
+
+            <ion-select-option value="problema_reprodutivo">Problema Reprodutivo</ion-select-option>
           </ion-select>
         </ion-item>
 
@@ -883,6 +903,7 @@
       </ion-card-content>
       }
     </ion-card>
+    }
 
     <!-- OBSERVAÇÕES GERAIS -->
     <ion-card>
@@ -897,24 +918,24 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- NO FINAL DA TELA INDIVIDUAL - CORRIGIR O BOTÃO VOLTAR -->
     <div class="action-buttons-individual">
       <ion-button expand="block" size="large" (click)="salvarManejoIndividual()"
         [disabled]="!podeSalvarManejoIndividual()">
-        <ion-icon name="star-outline" slot="start"></ion-icon>
-        Salvar Manejo
+        <ion-icon slot="start" name="save-outline"></ion-icon>
+        Salvar
       </ion-button>
 
       <!-- BOTÃO VOLTAR CORRIGIDO -->
-      <ion-button expand="block" fill="outline" (click)="voltar()">
+      <ion-button fill="outline" (click)="voltar()">
         <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
-        Cancelar e Voltar
+        Cancelar
       </ion-button>
     </div>
   </div>
   }
 
-  <!-- MODAL DO FAMACHA - ADICIONADO NO FINAL -->
+
+  <!-- MODAL DO FAMACHA -->
   <ion-modal [isOpen]="modalFamachaAberto" (ionModalDidDismiss)="fecharModalFamacha()">
     <ng-template>
       <ion-header>
@@ -986,7 +1007,7 @@
             </div>
           </div>
 
-          <!-- ENTRADA MANUAL PARA USUÁRIOS EXPERIENTES -->
+          <!-- ENTRADA MANUAL -->
           <div class="entrada-manual">
             <ion-item>
               <ion-input type="number" label="Ou digite a nota (1-5):" min="1" max="5" [ngModel]="notaFamachaManual"
@@ -1012,5 +1033,125 @@
       </ion-content>
     </ng-template>
   </ion-modal>
+  <ion-modal [isOpen]="modalStatusAberto" (ionModalDidDismiss)="fecharModalStatus()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Alterar Status do Animal</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="fecharModalStatus()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
 
+      <div class="animal-info-modal">
+        <h3>{{ animalSelecionado?.brinco || 'Carregando...' }}</h3>
+        <p>{{ animalSelecionado?.categoria || 'N/A' }} • {{ animalSelecionado?.idade || 'N/A' }}</p>
+      </div>
+
+      <div class="status-atual">
+        <strong>Status atual:</strong>
+        <span class="status-badge" [class]="'status-' + (animalSelecionado?.situacao || 'ativo')">
+          {{ animalSelecionado?.situacao || 'Ativo' }}
+        </span>
+      </div>
+
+      <div class="novo-status">
+        <h4>Novo Status:</h4>
+
+        <ion-radio-group [value]="novoStatus || 'ativo'" (ionChange)="onStatusChange($event)">
+          <ion-item>
+            <ion-radio value="ativo" labelPlacement="end">
+              <div class="status-option">
+                <span class="status-indicator ativo"></span>
+                Ativo
+              </div>
+            </ion-radio>
+          </ion-item>
+
+          <ion-item>
+            <ion-radio value="descarte" labelPlacement="end">
+              <div class="status-option">
+                <span class="status-indicator descarte"></span>
+                Marcado para Descarte
+              </div>
+            </ion-radio>
+          </ion-item>
+
+          <ion-item>
+            <ion-radio value="vendido" labelPlacement="end">
+              <div class="status-option">
+                <span class="status-indicator inativo"></span>
+                Vendida
+              </div>
+            </ion-radio>
+          </ion-item>
+
+          <ion-item>
+            <ion-radio value="morto" labelPlacement="end">
+              <div class="status-option">
+                <span class="status-indicator inativo"></span>
+                Morta
+              </div>
+            </ion-radio>
+          </ion-item>
+
+          <ion-item>
+            <ion-radio value="abatido" labelPlacement="end">
+              <div class="status-option">
+                <span class="status-indicator inativo"></span>
+                Abatida
+              </div>
+            </ion-radio>
+          </ion-item>
+
+          <ion-item>
+            <ion-radio value="doado" labelPlacement="end">
+              <div class="status-option">
+                <span class="status-indicator inativo"></span>
+                Doação
+              </div>
+            </ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </div>
+
+      <div class="data-mudanca">
+        <ion-item>
+          <ion-input type="date" label="Data da mudança" [value]="dataMudanca || ''"
+            (ionInput)="dataMudanca = $event.detail.value || ''">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <div class="observacoes">
+        <ion-item>
+          <ion-textarea label="Observações" rows="3" placeholder="Observações adicionais..."
+            [value]="observacoesStatus || ''" (ionInput)="observacoesStatus = $event.detail.value || ''">
+          </ion-textarea>
+        </ion-item>
+      </div>
+      <ion-footer class="modal-status-content">
+        <ion-toolbar>
+          <div class="modal-buttons-container">
+            <ion-button fill="outline" expand="block" class="modal-cancel-button" (click)="fecharModalStatus()">
+              Cancelar
+            </ion-button>
+
+            <ion-button expand="block" class="modal-confirm-button" (click)="confirmarMudancaStatus()"
+              [disabled]="!novoStatus || novoStatus === animalSelecionado?.situacao">
+              <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+              Confirmar
+            </ion-button>
+
+          </div>
+        </ion-toolbar>
+      </ion-footer>
+
+
+
+    </ng-template>
+  </ion-modal>
 </ion-content>

@@ -5,6 +5,9 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from "@ionic/angular";
 import { ActivatedRoute, Router } from '@angular/router';
 import { AnimalService } from '../../services/animal.service';
+import { ManejoService } from '../../services/manejo.service';
+import { AuthService } from '../../services/auth.service';
+import { Location } from '@angular/common';
 
 // Interfaces para tipagem - MANEJO EM LOTE
 interface ItemSanitario {
@@ -38,6 +41,7 @@ interface Animal {
   categoria: string;
   pesoAtual: number;
   idade: number;
+  situacao?: string;
   selecionado: boolean;
   manejoTecnico: ManejoTecnico;
 }
@@ -93,6 +97,7 @@ interface FisicoIndividual {
   tosquia: boolean;
   caudectomia: boolean;
   descorna: boolean;
+  castracao: boolean;
 }
 
 interface NutricionalIndividual {
@@ -147,6 +152,7 @@ interface AnimalIndividual {
   categoria: string;
   idade: string;
   pesoAtual: string;
+  situacao?: string;
   manejoAtual?: Partial<ManejoIndividual>;
 }
 
@@ -161,11 +167,19 @@ export class Manejospage implements OnInit {
   segmento = 'lote';
 
   // Variáveis para navegação
-  origem: string = 'dashboard'; // 'dashboard' ou 'todos-animais'
+  origem: string = 'dashboard';
 
   // Variáveis para o modal do FAMACHA
   modalFamachaAberto: boolean = false;
   notaFamachaManual: number | null = null;
+
+  // VARIÁVEIS DO MODAL DE STATUS
+  modalStatusAberto: boolean = false;
+  novoStatus: string = 'ativo';
+  dataMudanca: string = '';
+  motivoSelecionado: string = '';
+  outroMotivo: string = '';
+  observacoesStatus: string = '';
 
   // Controle de expansão dos cards (LOTE)
   manejosExpandidos = {
@@ -265,16 +279,15 @@ export class Manejospage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private navCtrl: NavController,
-    private animalService: AnimalService
+    private animalService: AnimalService,
+    private manejoService: ManejoService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
     this.carregarDadosExistentes();
-
-    // CARREGA ANIMAIS PRIMEIRO
     this.carregarAnimaisReais();
 
-    // DEPOIS PROCESSA OS PARÂMETROS DA URL
     this.route.queryParams.subscribe(params => {
       const animalId = params['animal'];
       const tab = params['tab'];
@@ -287,7 +300,6 @@ export class Manejospage implements OnInit {
         this.segmento = 'individual';
 
         if (animalId) {
-          // AGUARDA OS ANIMAIS SEREM CARREGADOS ANTES DE BUSCAR
           setTimeout(() => {
             this.carregarAnimalIndividual(animalId);
           }, 500);
@@ -299,34 +311,112 @@ export class Manejospage implements OnInit {
     });
   }
 
-  // NOVO MÉTODO: CARREGAR ANIMAIS REAIS DO BANCO
-  carregarAnimaisReais() {
-  this.animalService.getAnimais().subscribe({
-    next: (animais) => {
-      console.log('Animais carregados para manejo:', animais);
-      
-      // FILTRAR ANIMAIS ATIVOS E MARCADOS PARA DESCARTE
-      const animaisAtivos = animais.filter(animal => 
-        animal.situacao === 'ativo' || animal.situacao === 'marcado para descarte'
-      );
 
-      this.animais = animaisAtivos.map(animal => ({
-        id: animal.id,
-        brinco: animal.brinco,
-        sexo: animal.sexo,
-        categoria: animal.categoria,
-        pesoAtual: animal.peso_atual || 0,
-        idade: this.calcularIdadeParaManejo(animal.data_nascimento),
-        selecionado: false,
-        manejoTecnico: { peso: null, escore: '', observacoes: '' }
-      }));
-      console.log('Animais ATIVOS + DESCARTE processados:', this.animais);
-    },
-    error: (error) => {
-      console.error('Erro ao carregar animais:', error);
-    }
-  });
-}
+  // ============================================================
+  // MÉTODOS DE CONTROLE DE VISIBILIDADE - NOVOS
+  // ============================================================
+
+  /**
+   * Mostrar seção reprodutiva apenas para fêmeas
+   */
+  mostrarReprodutivo(): boolean {
+    if (!this.animalSelecionado?.sexo) return false;
+
+    const sexo = this.animalSelecionado.sexo.toLowerCase();
+    return sexo.includes('fêmea') || sexo.includes('femea') || sexo.includes('fêmea');
+  }
+
+  /**
+   * Mostrar campo castração apenas para machos não castrados
+   */
+  mostrarCastracao(): boolean {
+    const sexo = this.animalSelecionado.sexo?.toLowerCase();
+    const categoria = this.animalSelecionado.categoria?.toLowerCase();
+
+    // Mostrar apenas para machos que não são capões
+    return sexo === 'macho' && categoria !== 'capão';
+  }
+
+  /**
+   * Mostrar opções de parto apenas para fêmeas
+   */
+  mostrarParto(): boolean {
+    return this.animalSelecionado.sexo?.toLowerCase() === 'fêmea';
+  }
+
+  /**
+   * Mostrar opção de cobertura apenas para fêmeas
+   */
+  mostrarCobertura(): boolean {
+    return this.animalSelecionado.sexo?.toLowerCase() === 'fêmea';
+  }
+
+  /**
+   * Mostrar opção de aborto apenas para fêmeas
+   */
+  mostrarAborto(): boolean {
+    return this.animalSelecionado.sexo?.toLowerCase() === 'fêmea';
+  }
+
+  /**
+   * Mostrar problemas reprodutivos para todos os sexos
+   */
+  mostrarProblemasReprodutivos(): boolean {
+    return true; // Disponível para todos
+  }
+
+  /**
+   * Verificar se animal é capão (já castrado)
+   */
+  isCapao(): boolean {
+    return this.animalSelecionado.categoria?.toLowerCase() === 'capão';
+  }
+
+  /**
+   * Verificar se animal é macho
+   */
+  isMacho(): boolean {
+    return this.animalSelecionado.sexo?.toLowerCase() === 'macho';
+  }
+
+  /**
+   * Verificar se animal é fêmea
+   */
+  isFemea(): boolean {
+    return this.animalSelecionado.sexo?.toLowerCase() === 'fêmea';
+  }
+
+  // ============================================================
+  // MÉTODOS EXISTENTES
+  // ============================================================
+
+  carregarAnimaisReais() {
+    this.animalService.getAnimais().subscribe({
+      next: (animais) => {
+        console.log('Animais carregados para manejo:', animais);
+
+        const animaisAtivos = animais.filter(animal =>
+          animal.situacao === 'ativo' || animal.situacao === 'marcado para descarte'
+        );
+
+        this.animais = animaisAtivos.map(animal => ({
+          id: animal.id,
+          brinco: animal.brinco,
+          sexo: animal.sexo,
+          categoria: animal.categoria,
+          pesoAtual: animal.peso_atual || 0,
+          idade: this.calcularIdadeParaManejo(animal.data_nascimento),
+          situacao: animal.situacao || 'ativo',
+          selecionado: false,
+          manejoTecnico: { peso: null, escore: '', observacoes: '' }
+        }));
+        console.log('Animais ATIVOS + DESCARTE processados:', this.animais);
+      },
+      error: (error) => {
+        console.error('Erro ao carregar animais:', error);
+      }
+    });
+  }
 
   // MÉTODO AUXILIAR PARA CALCULAR IDADE
   calcularIdadeParaManejo(dataNascimento: string): number {
@@ -344,14 +434,32 @@ export class Manejospage implements OnInit {
     }
   }
 
-  // MÉTODO PARA VOLTAR CORRETAMENTE
+
   voltar(): void {
-    if (this.origem === 'lista-animais') {
-      this.router.navigate(['/lista-animais']);
-    } else if (this.segmento === 'individual') {
-      this.segmento = 'lote';
+    const origem = this.route.snapshot.queryParamMap.get('origem');
+
+    if (origem === 'detalhe-animal') {
+      // Mantém na aba individual e volta pros detalhes
+      const animalId = this.route.snapshot.queryParamMap.get('animal');
+      this.router.navigate(['/detalhe-animal', animalId]);
     } else {
-      this.router.navigate(['/dashboard']);
+      // Outras origens: limpa animal e volta pro lote
+      this.animalSelecionado = {
+        id: '',
+        brinco: '',
+        sexo: '',
+        categoria: '',
+        idade: '',
+        pesoAtual: '',
+        manejoAtual: undefined
+      };
+      this.segmento = 'lote';
+
+      if (origem === 'lista-animais') {
+        this.router.navigate(['/lista-animais']);
+      } else {
+        //this.router.navigate(['/dashboard']);
+      }
     }
   }
 
@@ -371,11 +479,12 @@ export class Manejospage implements OnInit {
         categoria: animalEncontrado.categoria,
         idade: animalEncontrado.idade.toString(),
         pesoAtual: animalEncontrado.pesoAtual.toString(),
+        situacao: animalEncontrado.situacao || 'ativo',
         manejoAtual: {
           produtorId: 'produtor-123',
           ovinoId: animalEncontrado.id,
           data: new Date(),
-          tipo: 'sanitario',
+          tipo: 'geral',
           manejoEmLote: false,
           observacao: '',
           sanitario: {
@@ -384,12 +493,17 @@ export class Manejospage implements OnInit {
             opg: false
           },
           fisico: {
-            casqueamento: { realizado: false },
+            casqueamento: { realizado: false, observacao: '' },
             tosquia: false,
             caudectomia: false,
-            descorna: false
+            descorna: false,
+            castracao: false
           },
-          tecnico: {},
+          tecnico: {
+            peso: undefined,
+            temperatura: undefined,
+            escoreCorporal: undefined
+          },
           nutricional: {},
           reprodutivo: {
             filhotes: []
@@ -410,6 +524,167 @@ export class Manejospage implements OnInit {
       };
     }
   }
+
+  // ============================================================
+  // MÉTODO COMPLETO PARA SALVAR MANEJO EM LOTE
+  // ============================================================
+  async salvarManejoLote(): Promise<void> {
+    // Validações básicas
+    if (this.animaisSelecionadosCount === 0) {
+      const alert = await this.alertController.create({
+        header: 'Atenção',
+        message: 'Selecione pelo menos um animal!',
+        buttons: ['OK']
+      });
+      await alert.present();
+      return;
+    }
+
+    // 1. DETECTAR TIPOS DE MANEJO SELECIONADOS (VALIDAÇÃO CORRIGIDA)
+    const tipos: string[] = [];
+
+    // Verificar se há manejos FÍSICOS (BASTA TER CHECKBOX MARCADO - NÃO PRECISA DE DADOS)
+    const temManejoFisico = this.manejosSelecionados.fisico.length > 0;
+
+    // Verificar se há manejos SANITÁRIOS (PRECISA TER DADOS PREENCHIDOS)
+    const temManejoSanitario = this.manejosSelecionados.sanitario.length > 0 && (
+      this.dadosManejoLote.vacinas.length > 0 ||
+      this.dadosManejoLote.vermifugos.length > 0 ||
+      this.dadosManejoLote.medicacoes.length > 0
+    );
+
+    // Verificar se há manejos TÉCNICOS (PRECISA TER DADOS PREENCHIDOS)
+    const temManejoTecnico = this.manejosSelecionados.tecnico.length > 0 &&
+      this.temDadosTecnicosPreenchidos;
+
+    // ADICIONAR TIPOS CONFORME VALIDAÇÃO ESPECÍFICA
+    if (temManejoFisico) tipos.push('fisico');
+    if (temManejoSanitario) tipos.push('sanitario');
+    if (temManejoTecnico) tipos.push('tecnico');
+
+    if (tipos.length === 0) {
+      const alert = await this.alertController.create({
+        header: 'Atenção',
+        message: 'Preencha pelo menos um tipo de manejo (sanitário, físico ou técnico)!',
+        buttons: ['OK']
+      });
+      await alert.present();
+      return;
+    }
+
+    // 2. FILTRAGEM INTELIGENTE DOS ANIMAIS
+    const animaisFiltrados = this.animaisSelecionados.filter(animal => {
+      // Se inclui manejo físico com castração, filtrar apenas machos não castrados
+      if (tipos.includes('fisico') && this.isManejoSelecionado('fisico', 'castracao')) {
+        const isMachoNaoCastrado = animal.sexo?.toLowerCase() === 'macho' &&
+          animal.categoria?.toLowerCase() !== 'capão';
+        return isMachoNaoCastrado;
+      }
+
+      // Para outros manejos, incluir todos os animais selecionados
+      return true;
+    });
+
+    if (animaisFiltrados.length === 0) {
+      const alert = await this.alertController.create({
+        header: 'Atenção',
+        message: 'Nenhum animal atende aos critérios para os manejos selecionados! Ex: Castração só aplica a machos não castrados.',
+        buttons: ['OK']
+      });
+      await alert.present();
+      return;
+    }
+
+    // 3. PREPARAR DADOS PARA O BACKEND
+    const usuarioLogado = this.authService.getCurrentUser();
+    if (!usuarioLogado?.id) {
+      const alert = await this.alertController.create({
+        header: 'Erro',
+        message: 'Usuário não autenticado!',
+        buttons: ['OK']
+      });
+      await alert.present();
+      return;
+    }
+
+    const dadosParaEnviar = {
+      produtor_id: usuarioLogado.id,
+      animais: animaisFiltrados.map(animal => ({
+        id: animal.id,
+        dados_tecnicos: {
+          peso: animal.manejoTecnico.peso || null,
+          escore_corporal: animal.manejoTecnico.escore || null,
+          temperatura: null
+        }
+      })),
+      tipos: tipos,
+      data: new Date().toISOString(),
+      observacao: this.dadosManejoLote.observacoes || '',
+
+      // Dados físicos (COMUNS a todos)
+      fisico_casqueamento_realizado: this.dadosManejoLote.casqueamento || false,
+      fisico_casqueamento_observacao: null,
+      fisico_tosquia: this.dadosManejoLote.tosquia || false,
+      fisico_caudectomia: this.dadosManejoLote.caudectomia || false,
+      fisico_descorna: false,
+      fisico_castracao: this.isManejoSelecionado('fisico', 'castracao') || false,
+
+      // Dados sanitários (COMUNS a todos)
+      sanitario_famacha: null,
+      sanitario_opg: false,
+
+      // Arrays de produtos sanitários
+      vacinas: this.dadosManejoLote.vacinas.map(vacina => ({
+        produto: vacina.produto,
+        dose: vacina.dose,
+        via: vacina.via,
+        lote: vacina.lote || '',
+        fabricante: vacina.fabricante || ''
+      })),
+
+      vermifugos: this.dadosManejoLote.vermifugos.map(vermifugo => ({
+        produto: vermifugo.produto,
+        dose: vermifugo.dose,
+        via: vermifugo.via,
+        tipo: vermifugo.tipo
+      })),
+
+      medicacoes: this.dadosManejoLote.medicacoes.map(medicacao => ({
+        produto: medicacao.produto,
+        dose: medicacao.dose,
+        via: medicacao.via,
+        observacoes: medicacao.observacoes || ''
+      }))
+    };
+
+    console.log('📤 Enviando manejo em lote:', dadosParaEnviar);
+
+    // 4. ENVIAR PARA O BACKEND
+    try {
+      const response = await this.manejoService.salvarManejoLote(dadosParaEnviar).toPromise();
+      console.log('✅ Manejo em lote salvo com sucesso:', response);
+
+      const alert = await this.alertController.create({
+        header: 'Sucesso',
+        message: `Manejo aplicado para ${animaisFiltrados.length} animais com sucesso!`,
+        buttons: ['OK']
+      });
+      await alert.present();
+
+      // 5. LIMPAR FORMULÁRIOS APÓS SUCESSO
+      this.limparFormularios();
+
+    } catch (error: any) {
+      console.error('❌ Erro ao salvar manejo em lote:', error);
+      const alert = await this.alertController.create({
+        header: 'Erro',
+        message: 'Erro ao salvar manejo em lote. Tente novamente.',
+        buttons: ['OK']
+      });
+      await alert.present();
+    }
+  }
+
 
   // PROPRIEDADES CALCULADAS (LOTE)
   get animaisComDadosTecnicosCount(): number {
@@ -520,17 +795,244 @@ export class Manejospage implements OnInit {
     };
   }
 
+  // MÉTODO ATUALIZADO: SALVAR MANEJO INDIVIDUAL NO BANCO
   salvarManejoIndividual(): void {
-    if (!this.animalSelecionado.manejoAtual) return;
+    if (!this.animalSelecionado.manejoAtual) {
+      alert('Erro: Dados do manejo não encontrados');
+      return;
+    }
 
-    const manejo: ManejoIndividual = {
-      ...this.animalSelecionado.manejoAtual,
-      ovinoId: this.animalSelecionado.id,
-      data: new Date()
-    } as ManejoIndividual;
+    const usuarioLogado = this.authService.getCurrentUser();
 
-    console.log('Salvando manejo individual:', manejo);
-    alert('Manejo individual salvo com sucesso!');
+    if (!usuarioLogado || !usuarioLogado.id) {
+      alert('Erro: Usuário não autenticado');
+      return;
+    }
+
+    // DETECTAR AUTOMATICAMENTE OS TIPOS PREENCHIDOS
+    const tipos: string[] = [];
+    const manejo = this.animalSelecionado.manejoAtual;
+
+    // Verificar dados FÍSICOS
+    if (manejo.fisico && (
+      manejo.fisico.tosquia ||
+      manejo.fisico.caudectomia ||
+      manejo.fisico.descorna ||
+      manejo.fisico.castracao ||
+      (manejo.fisico.casqueamento && manejo.fisico.casqueamento.realizado)
+    )) {
+      tipos.push('fisico');
+    }
+
+    // Verificar dados TÉCNICOS
+    if (manejo.tecnico && (
+      manejo.tecnico.peso !== undefined ||
+      manejo.tecnico.temperatura !== undefined ||
+      manejo.tecnico.escoreCorporal !== undefined
+    )) {
+      tipos.push('tecnico');
+    }
+
+    // Verificar dados SANITÁRIOS
+    if (manejo.sanitario && (
+      manejo.sanitario.famacha !== undefined ||
+      manejo.sanitario.opg ||
+      (manejo.sanitario.medicacoes && manejo.sanitario.medicacoes.length > 0) ||
+      (manejo.sanitario.vacinas && manejo.sanitario.vacinas.length > 0)
+    )) {
+      tipos.push('sanitario');
+    }
+
+    // Verificar dados REPRODUTIVOS
+    if (manejo.reprodutivo && (
+      manejo.reprodutivo.acao ||
+      (manejo.reprodutivo.filhotes && manejo.reprodutivo.filhotes.length > 0)
+    )) {
+      tipos.push('reprodutivo');
+    }
+
+    // Se não detectou nenhum tipo, não permite salvar
+    if (tipos.length === 0) {
+      alert('Erro: Preencha pelo menos um tipo de manejo (físico, técnico ou sanitário)');
+      return;
+    }
+
+    const dadosParaSalvar = {
+      produtor_id: usuarioLogado.id,
+      ovino_id: this.animalSelecionado.id,
+      tipos: tipos,
+      data: new Date().toISOString(),
+      observacao: this.animalSelecionado.manejoAtual.observacao || '',
+
+      // Dados físicos
+      fisico_casqueamento_realizado: this.animalSelecionado.manejoAtual.fisico?.casqueamento?.realizado || false,
+      fisico_casqueamento_observacao: this.animalSelecionado.manejoAtual.fisico?.casqueamento?.observacao || null,
+      fisico_tosquia: this.animalSelecionado.manejoAtual.fisico?.tosquia || false,
+      fisico_caudectomia: this.animalSelecionado.manejoAtual.fisico?.caudectomia || false,
+      fisico_descorna: this.animalSelecionado.manejoAtual.fisico?.descorna || false,
+      fisico_castracao: this.animalSelecionado.manejoAtual.fisico?.castracao || false,
+
+      // Dados técnicos
+      tecnico_peso: this.animalSelecionado.manejoAtual.tecnico?.peso || null,
+      tecnico_escore_corporal: this.animalSelecionado.manejoAtual.tecnico?.escoreCorporal || null,
+      tecnico_temperatura: this.animalSelecionado.manejoAtual.tecnico?.temperatura || null,
+
+      // Sanitário
+      sanitario_famacha: this.animalSelecionado.manejoAtual.sanitario?.famacha || null,
+      sanitario_opg: this.animalSelecionado.manejoAtual.sanitario?.opg || false,
+
+      // Reprodutivo
+      reprodutivo_acao: this.animalSelecionado.manejoAtual.reprodutivo?.acao || null,
+      reprodutivo_tipo_parto: this.animalSelecionado.manejoAtual.reprodutivo?.tipoParto || null,
+      reprodutivo_habilidade_materna: this.animalSelecionado.manejoAtual.reprodutivo?.habilidadeMaterna || null,
+      reprodutivo_quantidade_filhotes: this.animalSelecionado.manejoAtual.reprodutivo?.quantidadeFilhotes || null
+    };
+
+    console.log('📤 Enviando dados para o backend:', dadosParaSalvar);
+    console.log('🎯 Tipos detectados:', tipos);
+
+    this.manejoService.salvarManejo(dadosParaSalvar).subscribe({
+      next: (response) => {
+        console.log('✅ Manejo salvo com sucesso:', response);
+
+        // 🔥 ADICIONAR APENAS ESTAS 3 LINHAS - NADA MAIS!
+        if (this.animalSelecionado.manejoAtual?.reprodutivo?.acao === 'parto') {
+          this.salvarRascunhoParto();
+        }
+        // 🔥 FIM DA MODIFICAÇÃO
+
+        this.mostrarAlertaSucesso('Manejo salvo com sucesso!');
+
+        // Limpar o formulário após salvar
+        this.limparManejoIndividual();
+      },
+      error: (error: any) => {
+        console.error('❌ Erro ao salvar manejo:', error);
+        this.mostrarAlertaErro('Erro ao salvar manejo. Tente novamente.');
+      }
+    });
+  }
+
+  // 🔥 ADICIONAR APENAS ESTE MÉTODO NO FINAL - NADA MAIS!
+  private salvarRascunhoParto(): void {
+    const reprodutivo = this.animalSelecionado.manejoAtual?.reprodutivo;
+
+    if (reprodutivo && reprodutivo.filhotes && reprodutivo.filhotes.length > 0) {
+      console.log('👶 Salvando rascunho do parto...');
+
+      // 🔥 CORREÇÃO: USAR ESTRUTURA COMPATÍVEL COM O RASCUNHO SERVICE
+      const dadosParaRascunho = {
+        dataParto: new Date().toLocaleDateString('pt-BR'),
+        tipoParto: 'simples',
+        identificacaoMae: this.animalSelecionado.id,
+        escoreCorporalMae: '3',
+        avaliacaoUbere: '3',
+        viabilidadeMae: '5',
+        habilidadeMaterna: '3',
+        origemPai: 'proprio',
+        observacoes: this.animalSelecionado.manejoAtual?.observacao || '',
+        filhotes: reprodutivo.filhotes.map((filhote, index) => ({
+          numeroBrinco: '',
+          sexo: filhote.sexo,
+          peso: filhote.pesoNascimento?.toString() || '',
+          viabilidade: 'vivo',
+          mamouColostro: filhote.mamouColostro || false
+        }))
+      };
+
+      // 🔥 CORREÇÃO: SALVAR NO FORMATO DO SISTEMA DE RASCUNHOS
+      const rascunhoId = `rascunho_${this.animalSelecionado.id}`;
+
+      const rascunho = {
+        id: rascunhoId,
+        mae_id: this.animalSelecionado.id,
+        mae_brinco: this.animalSelecionado.brinco,
+        data_criacao: new Date(),
+        data_atualizacao: new Date(),
+        dados: dadosParaRascunho,
+        total_filhotes: reprodutivo.filhotes.length
+      };
+
+      // 🔥 CORREÇÃO: USAR O MESMO SISTEMA DE RASCUNHOS EXISTENTE
+      const rascunhosExistentes = this.getRascunhosExistentes();
+      const outrosRascunhos = rascunhosExistentes.filter((r: any) => r.mae_id !== this.animalSelecionado.id);
+      const novosRascunhos = [rascunho, ...outrosRascunhos];
+
+      localStorage.setItem('partos_em_andamento', JSON.stringify(novosRascunhos));
+
+      console.log('💾 Rascunho salvo no formato correto:', rascunho);
+      console.log('📊 Filhotes salvos:', reprodutivo.filhotes.length);
+    } else {
+      console.log('⚠️ Parto sem filhotes - não salvando rascunho');
+    }
+  }
+
+  // 🔥 ADICIONAR ESTE MÉTODO AUXILIAR
+  private getRascunhosExistentes(): any[] {
+    try {
+      const stored = localStorage.getItem('partos_em_andamento');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  }
+
+
+  // MÉTODO PARA LIMPAR FORMULÁRIO APÓS SALVAR
+  private limparManejoIndividual(): void {
+    if (this.animalSelecionado.manejoAtual) {
+      this.animalSelecionado.manejoAtual.observacao = '';
+
+      // Limpar dados físicos
+      if (this.animalSelecionado.manejoAtual.fisico) {
+        this.animalSelecionado.manejoAtual.fisico.tosquia = false;
+        this.animalSelecionado.manejoAtual.fisico.caudectomia = false;
+        this.animalSelecionado.manejoAtual.fisico.descorna = false;
+        this.animalSelecionado.manejoAtual.fisico.castracao = false;
+        this.animalSelecionado.manejoAtual.fisico.casqueamento = { realizado: false, observacao: '' };
+      }
+
+      // Limpar dados técnicos
+      if (this.animalSelecionado.manejoAtual.tecnico) {
+        this.animalSelecionado.manejoAtual.tecnico.peso = undefined;
+        this.animalSelecionado.manejoAtual.tecnico.temperatura = undefined;
+        this.animalSelecionado.manejoAtual.tecnico.escoreCorporal = undefined;
+      }
+
+      // Limpar sanitário
+      if (this.animalSelecionado.manejoAtual.sanitario) {
+        this.animalSelecionado.manejoAtual.sanitario.famacha = undefined;
+        this.animalSelecionado.manejoAtual.sanitario.opg = false;
+      }
+
+      // Limpar reprodutivo
+      if (this.animalSelecionado.manejoAtual.reprodutivo) {
+        this.animalSelecionado.manejoAtual.reprodutivo.acao = undefined;
+        this.animalSelecionado.manejoAtual.reprodutivo.tipoParto = undefined;
+        this.animalSelecionado.manejoAtual.reprodutivo.habilidadeMaterna = undefined;
+        this.animalSelecionado.manejoAtual.reprodutivo.quantidadeFilhotes = undefined;
+        this.animalSelecionado.manejoAtual.reprodutivo.filhotes = [];
+      }
+    }
+  }
+
+  // MÉTODOS AUXILIARES PARA ALERTAS
+  private async mostrarAlertaSucesso(mensagem: string): Promise<void> {
+    const alert = await this.alertController.create({
+      header: 'Sucesso',
+      message: mensagem,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
+
+  private async mostrarAlertaErro(mensagem: string): Promise<void> {
+    const alert = await this.alertController.create({
+      header: 'Erro',
+      message: mensagem,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
   // MÉTODOS EXISTENTES (LOTE)
@@ -702,15 +1204,23 @@ export class Manejospage implements OnInit {
     };
     return descricoes[escore] || 'Selecione um escore';
   }
-
-  // MÉTODOS DE NAVEGAÇÃO E CONTROLE
   alternarSegmento(event: any): void {
     this.segmento = event.detail.value;
   }
 
-  verHistorico(animal: Animal): void {
-    console.log('Ver histórico do animal:', animal);
+  temAnimalSelecionado(): boolean {
+    return !!this.animalSelecionado?.id;
   }
+
+  verHistorico(animal: any): void {
+  if (animal?.id) {
+    console.log('Navegando para detalhes do animal:', animal.id);
+    this.router.navigate(['/detalhe-animal', animal.id]);
+  } else {
+    console.warn('ID do animal não disponível:', animal);
+  }
+}
+
 
   irParaIndividual(animal: Animal): void {
     this.segmento = 'individual';
@@ -725,7 +1235,7 @@ export class Manejospage implements OnInit {
         produtorId: 'produtor-123',
         ovinoId: animal.id,
         data: new Date(),
-        tipo: 'sanitario',
+        tipo: 'geral',
         manejoEmLote: false,
         observacao: '',
         sanitario: {
@@ -734,12 +1244,17 @@ export class Manejospage implements OnInit {
           opg: false
         },
         fisico: {
-          casqueamento: { realizado: false },
+          casqueamento: { realizado: false, observacao: '' },
           tosquia: false,
           caudectomia: false,
-          descorna: false
+          descorna: false,
+          castracao: false
         },
-        tecnico: {},
+        tecnico: {
+          peso: undefined,
+          temperatura: undefined,
+          escoreCorporal: undefined
+        },
         nutricional: {},
         reprodutivo: {
           filhotes: []
@@ -771,6 +1286,9 @@ export class Manejospage implements OnInit {
   }
 
   // NOVO MÉTODO APLICAR MANEJO LOTE COM ALERTA
+  // ============================================================
+  // MÉTODO ATUALIZADO - APLICAR MANEJO LOTE
+  // ============================================================
   async aplicarManejoLote(): Promise<void> {
     if (!this.podeAplicarManejo()) {
       const alert = await this.alertController.create({
@@ -782,6 +1300,7 @@ export class Manejospage implements OnInit {
       return;
     }
 
+    // Verificar dados técnicos incompletos
     const animaisIncompletos = this.animaisSelecionados.filter(animal => {
       const precisaPesagem = this.isManejoSelecionado('tecnico', 'pesagem');
       const precisaEscore = this.isManejoSelecionado('tecnico', 'escore');
@@ -799,7 +1318,24 @@ export class Manejospage implements OnInit {
       }
     }
 
+    // CHAMAR O NOVO MÉTODO DE SALVAR
     await this.salvarManejoLote();
+  }
+
+  voltarDashboard(): void {
+    this.limparFormularios();
+    this.router.navigate(['/dashboard'], {
+      queryParams: { refresh: new Date().getTime() }
+    });
+  }
+
+  async cancelarManejoLote(): Promise<void> {
+    this.limparFormularios();
+
+    // Espera um pouco igual no salvar
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    this.router.navigate(['/dashboard']);
   }
 
   async mostrarAlertaAnimaisIncompletos(animaisIncompletos: any[]): Promise<boolean> {
@@ -836,49 +1372,6 @@ export class Manejospage implements OnInit {
     });
   }
 
-  // NOVO MÉTODO SALVAR MANEJO LOTE
-  private async salvarManejoLote(): Promise<void> {
-    const animaisSelecionados = this.animaisSelecionados;
-    const manejosAplicados = {
-      data: new Date().toISOString(),
-      sanitario: {
-        selecionados: this.manejosSelecionados.sanitario,
-        dados: this.dadosManejoLote
-      },
-      fisico: {
-        selecionados: this.manejosSelecionados.fisico,
-        dados: {
-          tosquia: this.dadosManejoLote.tosquia,
-          casqueamento: this.dadosManejoLote.casqueamento,
-          caudectomia: this.dadosManejoLote.caudectomia
-        }
-      },
-      tecnico: {
-        selecionados: this.manejosSelecionados.tecnico,
-        dadosIndividuais: animaisSelecionados.map(animal => ({
-          id: animal.id,
-          brinco: animal.brinco,
-          manejoTecnico: { ...animal.manejoTecnico }
-        }))
-      },
-      observacoes: this.dadosManejoLote.observacoes,
-      animaisCount: animaisSelecionados.length
-    };
-
-    console.log('Aplicando manejos:', manejosAplicados);
-
-    await this.salvarManejos(manejosAplicados);
-
-    const alert = await this.alertController.create({
-      header: 'Sucesso',
-      message: `Manejo aplicado para ${animaisSelecionados.length} animais com sucesso!`,
-      buttons: ['OK']
-    });
-    await alert.present();
-
-    this.limparFormularios();
-  }
-
   // Método para salvar no banco de dados (simulado)
   private async salvarManejos(manejos: any): Promise<void> {
     console.log('Salvando manejos no banco de dados:', manejos);
@@ -887,6 +1380,15 @@ export class Manejospage implements OnInit {
 
   // Limpar todos os formulários após aplicação (LOTE)
   private limparFormularios(): void {
+
+    // FECHA TODOS OS CARDS
+    this.manejosExpandidos = {
+      sanitario: false,
+      fisico: false,
+      tecnico: false,
+      detalhesAnimais: false
+    };
+
     this.manejosSelecionados.sanitario = [];
     this.manejosSelecionados.fisico = [];
     this.manejosSelecionados.tecnico = [];
@@ -910,7 +1412,6 @@ export class Manejospage implements OnInit {
       animal.manejoTecnico = { peso: null, escore: '', observacoes: '' };
     });
   }
-
   // NOVOS MÉTODOS PARA O FAMACHA VISUAL
   abrirModalFamacha(): void {
     this.modalFamachaAberto = true;
@@ -1013,7 +1514,8 @@ export class Manejospage implements OnInit {
       manejo.fisico.tosquia === true ||
       (manejo.fisico.casqueamento && manejo.fisico.casqueamento.realizado === true) ||
       manejo.fisico.caudectomia === true ||
-      manejo.fisico.descorna === true
+      manejo.fisico.descorna === true ||
+      manejo.fisico.castracao === true
     ));
 
     const temDadosReprodutivos = !!(manejo.reprodutivo && (
@@ -1040,4 +1542,124 @@ export class Manejospage implements OnInit {
   carregarDadosExistentes(): void {
     // Implementar se necessário para edição de manejos existentes
   }
+
+  // ... métodos existentes ...
+
+  // 🔥 MÉTODOS DO MODAL DE STATUS (ADICIONAR AQUI)
+  abrirModalStatus(): void {
+    this.novoStatus = this.animalSelecionado?.situacao || 'ativo';
+    this.dataMudanca = new Date().toISOString().split('T')[0];
+    this.motivoSelecionado = '';
+    this.outroMotivo = '';
+    this.observacoesStatus = '';
+    this.modalStatusAberto = true;
+  }
+
+  fecharModalStatus(): void {
+    this.modalStatusAberto = false;
+  }
+
+  onStatusChange(event: any): void {
+    this.novoStatus = String(event.detail.value);
+  }
+async confirmarMudancaStatus(): Promise<void> {
+  // CORREÇÃO: usar animalSelecionado em vez de animal
+  if (!this.novoStatus || this.novoStatus === this.animalSelecionado?.situacao) {
+    // Não deixa confirmar se não selecionou novo status ou se é o mesmo
+    const alert = await this.alertController.create({
+      header: 'Atenção',
+      message: 'Selecione um status diferente do atual',
+      buttons: ['OK']
+    });
+    await alert.present();
+    return;
+  }
+
+  if (this.novoStatus && this.animalSelecionado?.id) {
+    console.log('📤 Enviando para API:', {
+      animalId: this.animalSelecionado.id,
+      status: this.novoStatus,
+      data: this.dataMudanca,
+      observacoes: this.observacoesStatus
+    });
+
+    try {
+      const response = await this.animalService.atualizarStatusAnimal(
+        this.animalSelecionado.id,
+        this.novoStatus,
+        this.dataMudanca,
+        this.observacoesStatus
+      ).toPromise();
+
+      console.log('✅ Status atualizado no banco:', response);
+
+      // Atualizar o status localmente
+      this.animalSelecionado.situacao = this.novoStatus;
+
+      const alert = await this.alertController.create({
+        header: 'Sucesso',
+        message: 'Status atualizado com sucesso!',
+        buttons: ['OK']
+      });
+      await alert.present();
+
+      this.fecharModalStatus();
+    } catch (error) {
+      console.error('❌ Erro ao atualizar status:', error);
+      const alert = await this.alertController.create({
+        header: 'Erro',
+        message: 'Erro ao atualizar status. Tente novamente.',
+        buttons: ['OK']
+      });
+      await alert.present();
+    }
+  } else {
+    const alert = await this.alertController.create({
+      header: 'Atenção',
+      message: 'Selecione um status válido',
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
 }
+
+  // 🔥 MÉTODO PARA CALCULAR IDADE (se não existir)
+  calcularIdade(dataNascimento: string): string {
+    if (!dataNascimento) return 'N/A';
+
+    try {
+      const nascimento = new Date(dataNascimento);
+      const hoje = new Date();
+
+      if (isNaN(nascimento.getTime())) {
+        return 'N/A';
+      }
+
+      const diffMs = hoje.getTime() - nascimento.getTime();
+      const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+      if (diffDias < 0) return 'N/A';
+
+      if (diffDias < 30) {
+        return `${diffDias} dias`;
+      } else if (diffDias < 365) {
+        const diffMeses = Math.floor(diffDias / 30);
+        return `${diffMeses} ${diffMeses === 1 ? 'mês' : 'meses'}`;
+      } else {
+        const diffAnos = Math.floor(diffDias / 365);
+        const mesesRestantes = Math.floor((diffDias % 365) / 30);
+
+        if (mesesRestantes > 0) {
+          return `${diffAnos} ${diffAnos === 1 ? 'ano' : 'anos'} e ${mesesRestantes} ${mesesRestantes === 1 ? 'mês' : 'meses'}`;
+        } else {
+          return `${diffAnos} ${diffAnos === 1 ? 'ano' : 'anos'}`;
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao calcular idade:', error);
+      return 'N/A';
+    }
+  }
+
+}
+

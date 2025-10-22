@@ -405,6 +405,12 @@ ion-badge {
   color: #2d4551 !important;    // Cor primária
 }
 
+.texto-limite {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px; /* ou o tamanho que precisar */
+}
 // ==================================================
 // AÇÕES DO ANIMAL
 // ==================================================
@@ -876,5 +882,14 @@ ion-card-content {
         font-size: 13px;
       }
     }
+  }
+}
+
+.animal-brinco {
+  .animal-name {
+    margin-left: 8px;
+    font-weight: 500;
+    //color: var(--ion-color-primary);
+    font-size: 14px;
   }
 }

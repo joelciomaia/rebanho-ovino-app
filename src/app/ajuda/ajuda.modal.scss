@@ -1,0 +1,219 @@
+
+/* ----------------------------- */
+/* FUNDO GERAL E MARGENS */
+/* ----------------------------- */
+.ajuda-content {
+  --background: #f8f9fa;
+  //padding: 24px 14px;
+  font-family: 'Arial', sans-serif;
+  //color: #2d4551;
+  line-height: 1;
+}
+
+/* ----------------------------- */
+/* HEADER FIXO COM COR FORÇADA */
+/* ----------------------------- */
+ion-header,
+ion-toolbar,
+ion-toolbar::part(container),
+ion-header::part(background),
+ion-toolbar::part(background) {
+  background: #36505f !important;
+  --background: #36505f !important;
+  --ion-toolbar-background: #36505f !important;
+  --ion-color-base: #36505f !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+ion-title {
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+ion-button {
+  --background: transparent !important;
+  --color: #ffffff !important;
+  color: #ffffff !important;
+}
+
+/* ----------------------------- */
+/* ABAS (SEGMENT BUTTONS) */
+/* ----------------------------- */
+.ajuda-tabs {
+  margin: 20px 14px center;
+  border-radius: 10px;
+  background: #eceff1;
+  padding: 6px 8px;
+}
+
+ion-segment {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+ion-segment-button {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  border: none !important;
+  font-weight: 6000;
+  text-transform: none;
+  letter-spacing: 0.3px;
+  --background: transparent !important;
+  --background-checked: transparent !important;
+  --color: #35505e !important;
+  --color-checked: #077334 !important;
+  //padding: 10px 0 8px 0;
+  transition: color 0.25s ease;
+  font-size: 18px;
+}
+
+/* Linha inferior da aba ativa */
+ion-segment-button.ion-activated::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  width: 60%;
+  height: 2px;
+  background-color: #36505f;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+ion-segment-button:not(.ion-activated)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  width: 60%;
+  height: 2px;
+  background-color: transparent;
+}
+
+/* Remove sombra nativa do Ionic */
+ion-segment-button::part(native) {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* ----------------------------- */
+/* CONTEÚDO DAS SEÇÕES */
+/* ----------------------------- */
+.ajuda-section {
+  animation: fadeIn 0.3s ease-in-out;
+  padding: 10px 14px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ajuda-section h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2d4551;
+  margin: 20px 0 10px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #5cad82;
+}
+
+.ajuda-section p {
+  font-size: 15px;
+  color: #2d4551;
+  margin-bottom: 12px;
+}
+
+/* ----------------------------- */
+/* CARDS */
+/* ----------------------------- */
+ion-card {
+  border-radius: 12px;
+  background: #ffffff !important;
+  border: 1px solid #d9dee2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin: 14px;
+}
+
+ion-card-header {
+  border-bottom: 1px solid #5cad82;
+}
+
+ion-card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #2d4551 !important;
+}
+
+/* ----------------------------- */
+/* FORMULÁRIO DE CONTATO */
+/* ----------------------------- */
+ion-item {
+  --background: #ffffff;
+  --color: #2d4551;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #dce1e5;
+}
+
+ion-input,
+ion-textarea {
+  --color: #2d4551 !important;
+  font-size: 15px;
+  padding-left: 6px;
+}
+
+/* ----------------------------- */
+/* BOTÕES */
+/* ----------------------------- */
+ion-button[expand='block'].botao-feedback {
+  --background: linear-gradient(135deg, #0a6032 0%, #0c773e 100%) !important;
+  --color: #ffffff !important;
+  border-radius: 8px !important;
+  font-weight: 600;
+  text-transform: none;
+  margin-top: 10px;
+  height: 42px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  letter-spacing: 0.4px;
+}
+
+ion-button[expand='block'].botao-feedback:hover {
+  filter: brightness(1.1);
+}
+
+ion-button[color='medium'].botao-feedback-cancelar {
+  --background: transparent !important;
+  --border-color: #078f47 !important;
+  --color: #5cad82 !important;
+  border: 1px solid #5cad82 !important;
+  font-weight: 600;
+  text-transform: none;
+}
+
+ion-button[color='medium'].botao-feedback-cancelar:hover {
+  background: rgba(92, 173, 130, 0.1) !important;
+}
+
+/* ----------------------------- */
+/* RESPONSIVIDADE */
+/* ----------------------------- */
+@media (max-width: 600px) {
+  .ajuda-content {
+    padding: 16px 12px;
+  }
+
+  .ajuda-section h2 {
+    font-size: 20px;
+  }
+
+  ion-card-content {
+    font-size: 13.5px;
+  }
+}

@@ -16,14 +16,14 @@
         <div class="stats-total">
           <div class="stats-number">{{ estatisticas.total }}</div>
           <span class="stats-variation">
-      {{ crescimentoMes >= 0 ? '+' : '' }}{{ crescimentoMes }} este mês
-    </span>
+            {{ crescimentoMes >= 0 ? '+' : '' }}{{ crescimentoMes }} este mês
+          </span>
         </div>
       </div>
 
       <div class="stats-image">
         <div class="rebanho-image">
-          <img src="assets/images/logo-ovino.png" alt="Logo OvinoGest">
+          <img src="assets/images/logo-ovino.png" alt="Logo OvinoSync">
         </div>
       </div>
     </div>
@@ -90,26 +90,30 @@
     @for (animal of animaisFiltrados; track animal.brinco) {
     <ion-card class="animal-card">
       <!-- Cabeçalho compacto COM ÍCONE DE STATUS -->
-      <!-- Cabeçalho compacto COM ÍCONE DE STATUS -->
-<div class="card-header-compact">
-  <div class="animal-identity">
-    <h3 class="animal-brinco">{{ animal.brinco }}</h3>
-    <div class="animal-badges">
-      <span class="badge-categoria">{{ animal.categoria }}</span>
-      <span class="badge-sexo">{{ animal.sexo }}</span>
-    </div>
-  </div>
-  <!-- ÍCONE DE STATUS DO ANIMAL - AGORA NA DIREITA -->
-  <div class="animal-status" [class]="getClasseStatus(animal.situacao)" [title]="getTooltipStatus(animal.situacao)">
-    <ion-icon [name]="getIconeStatus(animal.situacao)"></ion-icon>
-  </div>
-</div>
+      <div class="card-header-compact">
+        <div class="animal-identity">
+          <h3 class="animal-brinco">{{ animal.brinco }} <span class="animal-name" *ngIf="animal.nome">
+              {{ animal.nome[0].toUpperCase() + animal.nome.slice(1).toLowerCase() }}
+            </span></h3>
+
+
+          <div class="animal-badges">
+            <span class="badge-categoria">{{ animal.categoria }}</span>
+            <span class="badge-sexo">{{ animal.sexo }}</span>
+          </div>
+        </div>
+        <!-- ÍCONE DE STATUS DO ANIMAL - AGORA NA DIREITA -->
+        <div class="animal-status" [class]="getClasseStatus(animal.situacao)"
+          [title]="getTooltipStatus(animal.situacao)">
+          <ion-icon [name]="getIconeStatus(animal.situacao)"></ion-icon>
+        </div>
+      </div>
 
       <!-- Detalhes em grid compacto -->
       <div class="animal-details-compact">
         <div class="detail-item">
           <span class="detail-icon">🐑</span>
-          <span class="detail-value">{{ animal?.raca_nome || 'N/A' }}</span>
+          <span class="detail-value texto-limite">{{ animal?.raca_nome || 'N/A' }}</span>
         </div>
         <div class="detail-item">
           <span class="detail-icon">📅</span>

@@ -269,7 +269,8 @@ export class ListaAnimaisPage implements OnInit {
     this.router.navigate(['/manejos'], {
       queryParams: {
         animal: animalId,
-        tab: 'individual'
+        tab: 'individual',
+        origem: 'lista-animais'
       }
     });
   }
