@@ -7,8 +7,8 @@ class Ovino {
 
   async getAll() {
     try {
-      console.log('🔍 Tentando buscar ovinos...');
-      console.log('📊 Executando query...');
+      console.error('🔍 Tentando buscar ovinos...');
+      console.error('📊 Executando query...');
       
       const [rows] = await this.db.query(`
         SELECT 
@@ -19,13 +19,13 @@ class Ovino {
         ORDER BY o.data_cadastro DESC
       `);
       
-      console.log('✅ Ovinos encontrados:', rows.length);
+      console.error('✅ Ovinos encontrados:', rows.length);
       return rows;
     } catch (error) {
-      console.log('❌ ERRO COMPLETO:', error);
-      console.log('📌 SQL State:', error.code);
-      console.log('📌 Message:', error.message);
-      console.log('📌 Stack:', error.stack);
+      console.error('❌ ERRO COMPLETO:', error);
+      console.error('📌 SQL State:', error.code);
+      console.error('📌 Message:', error.message);
+      console.error('📌 Stack:', error.stack);
       throw new Error(`Erro ao buscar ovinos: ${error.message}`);
     }
   }
@@ -47,7 +47,7 @@ class Ovino {
       
       return rows[0];
     } catch (error) {
-      console.log('❌ ERRO getById:', error);
+      console.error('❌ ERRO getById:', error);
       throw new Error(`Erro ao buscar ovino: ${error.message}`);
     }
   }
@@ -87,7 +87,7 @@ class Ovino {
       const novoOvino = await this.getById(id);
       return novoOvino;
     } catch (error) {
-      console.log('❌ ERRO create:', error);
+      console.error('❌ ERRO create:', error);
       throw new Error(`Erro ao criar ovino: ${error.message}`);
     }
   }
@@ -127,7 +127,7 @@ class Ovino {
       const ovinoAtualizado = await this.getById(id);
       return ovinoAtualizado;
     } catch (error) {
-      console.log('❌ ERRO update:', error);
+      console.error('❌ ERRO update:', error);
       throw new Error(`Erro ao atualizar ovino: ${error.message}`);
     }
   }
@@ -165,7 +165,7 @@ class Ovino {
       const ovinoAtualizado = await this.getById(id);
       return ovinoAtualizado;
     } catch (error) {
-      console.log('❌ ERRO updateStatus:', error);
+      console.error('❌ ERRO updateStatus:', error);
       throw new Error(`Erro ao atualizar status do ovino: ${error.message}`);
     }
   }
@@ -176,7 +176,7 @@ class Ovino {
       await this.db.query('DELETE FROM ovinos WHERE id = ?', [id]);
       return { message: 'Ovino removido com sucesso' };
     } catch (error) {
-      console.log('❌ ERRO delete:', error);
+      console.error('❌ ERRO delete:', error);
       throw new Error(`Erro ao deletar ovino: ${error.message}`);
     }
   }
