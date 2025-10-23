@@ -10,6 +10,10 @@ const authRoutes = require("./routes/auth");
 const dashboardRoutes = require("./routes/dashboard");
 const atividadesRoutes = require("./routes/atividades");
 
+console.error('🛣️  Configurando rotas...');
+console.error('📡 Rota /auth:', !!authRoutes);
+console.error('📡 Rota /ovinos:', !!ovinoRoutes);
+
 app.use(cors());
 app.use(express.json());
 
@@ -22,5 +26,7 @@ app.use("/auth", authRoutes);
 app.use("/dashboard", dashboardRoutes);
 app.use("/api/atividades", atividadesRoutes);
 
+console.error('✅ Todas as rotas configuradas!');
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`Servidor rodando na porta ${PORT} (acesso externo permitido)`));
