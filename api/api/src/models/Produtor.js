@@ -41,7 +41,7 @@ class Produtor {
       email,
       telefone_whatsapp,
       preferencia_recuperacao,
-      senha_hash,
+      senha,
       cabanha_nome,
       cabanha_municipio,
       cabanha_estado,
@@ -52,7 +52,7 @@ class Produtor {
 
     const [result] = await this.db.execute(
       `INSERT INTO criadores 
-      (nome_completo, email, telefone_whatsapp, preferencia_recuperacao, senha_hash, 
+      (nome_completo, email, telefone_whatsapp, preferencia_recuperacao, senha, 
        cabanha_nome, cabanha_municipio, cabanha_estado, cabanha_localizacao_livre, 
        cabanha_latitude, cabanha_longitude) 
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -61,7 +61,7 @@ class Produtor {
         email,
         telefone_whatsapp,
         preferencia_recuperacao,
-        senha_hash,
+        senha,
         cabanha_nome,
         cabanha_municipio,
         cabanha_estado,
@@ -114,10 +114,10 @@ class Produtor {
   }
 
   // Atualizar senha
-  async updatePassword(id, senha_hash) {
+  async updatePassword(id, senha) {
     await this.db.execute(
-      'UPDATE criadores SET senha_hash = ? WHERE id = ?',
-      [senha_hash, id]
+      'UPDATE criadores SET senha = ? WHERE id = ?',
+      [senha, id]
     );
     return true;
   }
