@@ -59,7 +59,7 @@ export interface RacaOvina {
 })
 export class OvinoService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:3000/ovinos';
+  private apiUrl = 'https://rebanho-ovino-app.onrender.com/ovinos';
 
   // ============================================================
   // CRUD BÁSICO

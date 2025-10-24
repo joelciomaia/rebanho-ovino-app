@@ -42,7 +42,7 @@ interface RegisterData {
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
-  private apiUrl = 'http://localhost:3000/auth'; // Ajuste a URL se necessário
+  private apiUrl = 'https://rebanho-ovino-app.onrender.com/auth';
 
   constructor(private http: HttpClient) {
     this.loadUserFromStorage();

@@ -10,10 +10,10 @@ const authRoutes = require("./routes/auth");
 const dashboardRoutes = require("./routes/dashboard");
 const atividadesRoutes = require("./routes/atividades");
 
-// ✅ CORREÇÃO: Configurar CORS e body parser ANTES das rotas
+// ✅ CORREÇÃO: Body parser PRIMEIRO, com limites aumentados
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // ← ADICIONADO
 
 console.error('🛣️  Configurando rotas...');
 console.error('📡 Rota /auth:', !!authRoutes);
