@@ -10,12 +10,14 @@ const authRoutes = require("./routes/auth");
 const dashboardRoutes = require("./routes/dashboard");
 const atividadesRoutes = require("./routes/atividades");
 
+// ✅ CORREÇÃO: Configurar CORS e body parser ANTES das rotas
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // ← ADICIONADO
+
 console.error('🛣️  Configurando rotas...');
 console.error('📡 Rota /auth:', !!authRoutes);
 console.error('📡 Rota /ovinos:', !!ovinoRoutes);
-
-app.use(cors());
-app.use(express.json());
 
 // rotas principais
 app.use("/produtores", produtorRoutes);
