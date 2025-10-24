@@ -14,7 +14,7 @@ const atividadesRoutes = require("./routes/atividades");
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cors({
-  origin: ['http://localhost:8100', 'http://localhost:4200', 'capacitor://localhost', 'http://localhost'],
+  origin: '*', // ✅ Libera TUDO
   credentials: true
 }));
 
