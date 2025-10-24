@@ -10,10 +10,13 @@ const authRoutes = require("./routes/auth");
 const dashboardRoutes = require("./routes/dashboard");
 const atividadesRoutes = require("./routes/atividades");
 
-// ✅ CORREÇÃO: Body parser PRIMEIRO, com limites aumentados
+// ✅ Configuração segura para APK e desenvolvimento
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:8100', 'http://localhost:4200', 'capacitor://localhost', 'http://localhost'],
+  credentials: true
+}));
 
 console.error('🛣️  Configurando rotas...');
 console.error('📡 Rota /auth:', !!authRoutes);
