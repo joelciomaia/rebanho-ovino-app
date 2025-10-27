@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-auth',
@@ -88,17 +89,20 @@ export class AuthPage implements OnInit {
     private route: ActivatedRoute,
     private alertController: AlertController,
     private loadingController: LoadingController,
-    private authService: AuthService
+    private authService: AuthService,
+    private http: HttpClient
   ) { }
 
   ngOnInit() {
+    console.log('🔍 [AuthPage] Componente inicializado');
+
     // Verifica se está no modo edição
     this.route.queryParams.subscribe(params => {
-      console.log('Parâmetros da URL:', params);
+      console.log('📋 [AuthPage] Parâmetros da URL:', params);
       if (params['modo'] === 'edicao' && params['userId']) {
         this.isModoEdicao = true;
         this.userId = params['userId'];
-        console.log('Modo edição ativado para userId:', this.userId);
+        console.log('🔄 [AuthPage] Modo edição ativado para userId:', this.userId);
         this.carregarDadosUsuario();
       }
     });
@@ -107,18 +111,19 @@ export class AuthPage implements OnInit {
   // Carregar dados do usuário para edição
   carregarDadosUsuario() {
     this.isLoading = true;
+    console.log('🔍 [AuthPage] Carregando dados do usuário...');
 
     // PRIMEIRO muda para o modo cadastro/edição
     this.isLogin = false;
 
-    console.log('Tentando carregar perfil para userId:', this.userId);
+    console.log('👤 [AuthPage] Tentando carregar perfil para userId:', this.userId);
 
     // SOLUÇÃO ALTERNATIVA: Usa os dados já salvos no AuthService
     const currentUser = this.authService.getCurrentUser();
 
     if (currentUser && currentUser.id === this.userId) {
       this.isLoading = false;
-      console.log('Usando dados do usuário logado:', currentUser);
+      console.log('✅ [AuthPage] Usando dados do usuário logado:', currentUser);
 
       // Preenche os dados do formulário
       this.registerData.nomeCompleto = currentUser.nome_completo;
@@ -137,7 +142,7 @@ export class AuthPage implements OnInit {
       this.authService.getProfile(this.userId).subscribe({
         next: (user) => {
           this.isLoading = false;
-          console.log('Dados recebidos do backend:', user);
+          console.log('✅ [AuthPage] Dados recebidos do backend:', user);
 
           // Preenche os dados do formulário
           this.registerData.nomeCompleto = user.nome_completo;
@@ -153,7 +158,7 @@ export class AuthPage implements OnInit {
         },
         error: (error) => {
           this.isLoading = false;
-          console.error('Erro ao carregar dados da API:', error);
+          console.error('❌ [AuthPage] Erro ao carregar dados da API:', error);
           this.showAlert('Erro', 'Não foi possível carregar os dados do perfil');
         }
       });
@@ -162,12 +167,14 @@ export class AuthPage implements OnInit {
 
   // Alternar entre login e cadastro
   toggleAuthMode() {
+    console.log('🔄 [AuthPage] Alternando modo:', this.isLogin ? 'LOGIN → CADASTRO' : 'CADASTRO → LOGIN');
     this.isLogin = !this.isLogin;
     this.clearFormFields();
   }
 
   // Limpar campos do formulário
   private clearFormFields() {
+    console.log('🧹 [AuthPage] Limpando campos do formulário');
     if (this.isLogin) {
       // Limpa dados do cadastro
       this.registerData = {
@@ -198,82 +205,121 @@ export class AuthPage implements OnInit {
 
   // Validar formulário de cadastro/edição
   formularioValido(): boolean {
-    if (!this.registerData.nomeCompleto ||
-      !this.registerData.email ||
-      !this.registerData.telefoneWhatsapp ||
-      !this.registerData.cabanha.nome ||
-      !this.registerData.cabanha.municipio ||
-      !this.registerData.cabanha.estado) {
-      return false;
+    if (this.isModoEdicao) {
+      // No modo edição, apenas nome e email são obrigatórios
+      const valido = !!(this.registerData.nomeCompleto && this.registerData.email);
+      console.log('✅ [AuthPage] Formulário edição válido:', valido);
+      return valido;
+    } else {
+      // No modo cadastro: nome, email, senha, confirmação de senha e termos
+      const valido = !!(this.registerData.nomeCompleto &&
+        this.registerData.email &&
+        this.registerData.senha &&
+        this.registerConfirmPassword &&
+        this.aceitouTermos);
+      console.log('✅ [AuthPage] Formulário cadastro válido:', valido);
+      return valido;
     }
+  }
 
-    // No modo edição, a senha é opcional
-    if (!this.isModoEdicao) {
-      if (!this.registerData.senha || this.registerData.senha.length < 6) {
-        return false;
-      }
+  // Método de login com debug NA TELA
+  async loginComDebug() {
+    let debugInfo = '=== 🔍 DEBUG - INICIANDO LOGIN ===\n\n';
 
-      if (this.registerData.senha !== this.registerConfirmPassword) {
-        return false;
-      }
-    }
+    debugInfo += `📧 Email: ${this.loginEmail}\n`;
+    debugInfo += `🔑 Senha presente: ${!!this.loginPassword ? 'SIM' : 'NÃO'}\n`;
+    debugInfo += `📍 URL do backend: http://192.168.1.195:3000/auth/login\n`;
+    debugInfo += `📱 Platform: Cordova/Android\n\n`;
+    debugInfo += `📡 Tentando conectar...`;
 
-    if (!this.aceitouTermos && !this.isModoEdicao) {
-      return false;
-    }
+    // Mostra alerta com informações de debug
+    const alertDialog = await this.alertController.create({
+      header: '🔍 DEBUG - Informações',
+      message: `<pre style="font-size: 12px">${debugInfo}</pre>`,
+      buttons: [
+        {
+          text: 'Continuar Login',
+          handler: () => {
+            console.log('=== 🚀 CHAMANDO LOGIN ORIGINAL ===');
+            this.login();
+          }
+        },
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        }
+      ]
+    });
 
-    // Validação básica de email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(this.registerData.email)) {
-      return false;
-    }
-
-    return true;
+    await alertDialog.present();
   }
 
   // Processar login
   async login() {
+    console.log('🔍 [AuthPage] Iniciando processo de login...');
+    console.log('📧 [AuthPage] Email:', this.loginEmail);
+    console.log('🔑 [AuthPage] Senha:', '[PROTEGIDO]');
+
     // Validação
     if (!this.loginEmail || !this.loginPassword) {
+      console.log('❌ [AuthPage] Campos não preenchidos');
       this.showAlert('Erro', 'Por favor, preencha todos os campos');
       return;
     }
 
     this.isLoading = true;
+    console.log('⏳ [AuthPage] Loading iniciado');
 
     const loading = await this.loadingController.create({
       message: 'Entrando...'
     });
 
     await loading.present();
+    console.log('⏳ [AuthPage] Loading apresentado');
 
     // Login REAL com backend
+    console.log('🚀 [AuthPage] Chamando AuthService.login()');
     this.authService.login(this.loginEmail, this.loginPassword).subscribe({
       next: (response) => {
+        console.log('✅ [AuthPage] Login bem-sucedido no componente');
         this.isLoading = false;
         loading.dismiss();
+        console.log('🏠 [AuthPage] Navegando para /tabs');
 
         //this.showSuccessAlert('Login realizado com sucesso!');
         this.router.navigate(['/tabs']);
       },
       error: (error) => {
+        console.error('❌ [AuthPage] Erro no login no componente:', error);
         this.isLoading = false;
         loading.dismiss();
 
         const errorMessage = error.error?.erro || 'Erro ao fazer login';
-        this.showAlert('Erro', errorMessage);
+        console.error('💬 [AuthPage] Mensagem de erro:', errorMessage);
+
+        // Mostra alerta de erro com detalhes
+        this.showAlert('Erro no Login',
+          `Mensagem: ${errorMessage}\n\n` +
+          `Status: ${error.status || 'N/A'}\n` +
+          `URL: ${error.url || 'N/A'}\n` +
+          `Detalhes: ${JSON.stringify(error.error || {})}`
+        );
       }
     });
   }
 
   // Processar cadastro OU atualização
   async register() {
+    console.log('🔍 [AuthPage] Iniciando processo de registro...');
+
     if (!this.formularioValido()) {
+      console.log('❌ [AuthPage] Formulário inválido');
       this.showAlert('Erro', 'Por favor, preencha todos os campos obrigatórios' + (this.isModoEdicao ? '' : ' e aceite os termos'));
       return;
     }
 
     this.isLoading = true;
+    console.log('⏳ [AuthPage] Loading iniciado para registro');
 
     const loading = await this.loadingController.create({
       message: this.isModoEdicao ? 'Atualizando perfil...' : 'Criando conta...'
@@ -283,12 +329,13 @@ export class AuthPage implements OnInit {
 
     if (this.isModoEdicao) {
       // ATUALIZAR perfil existente (sem parseInt - UUID é string)
+      console.log('🔄 [AuthPage] Atualizando perfil existente');
       this.authService.updateProfile(this.userId, this.registerData).subscribe({
         next: (response) => {
           this.isLoading = false;
           loading.dismiss();
 
-          console.log('Perfil atualizado:', response);
+          console.log('✅ [AuthPage] Perfil atualizado:', response);
           this.showSuccessAlert('Perfil atualizado com sucesso!');
 
           // Atualiza os dados locais também (sem criar objeto complexo)
@@ -322,12 +369,18 @@ export class AuthPage implements OnInit {
       });
     } else {
       // CRIAR nova conta
+      console.log('🆕 [AuthPage] Criando nova conta');
+      // No método register(), antes de chamar this.authService.register()
+      console.log('📦 Dados enviados para registro:', {
+        ...this.registerData,
+        senha: '[PROTEGIDO]'
+      });
       this.authService.register(this.registerData).subscribe({
         next: (response) => {
           this.isLoading = false;
           loading.dismiss();
 
-          console.log('Conta criada:', response);
+          console.log('✅ [AuthPage] Conta criada:', response);
           this.showSuccessAlert('Conta criada com sucesso! Faça login para continuar.');
 
           // Volta para o login após cadastro
@@ -347,6 +400,7 @@ export class AuthPage implements OnInit {
 
   // Esqueci a senha
   async forgotPassword() {
+    console.log('🔍 [AuthPage] Esqueci a senha clicado');
     const alert = await this.alertController.create({
       header: 'Recuperar Senha',
       message: 'Digite seu email para recuperar a senha:',
@@ -417,6 +471,7 @@ export class AuthPage implements OnInit {
     await alert.present();
   }
 
+
   async showSuccessAlert(message: string) {
     const alert = await this.alertController.create({
       header: 'Sucesso!',
@@ -438,4 +493,35 @@ export class AuthPage implements OnInit {
   cancelarEdicao() {
     this.router.navigate(['/dashboard']);
   }
+
+
+  // Método de teste rápido:
+  async testarConexoes() {
+    console.log('=== 🧪 TESTE DE CONEXÕES ===');
+
+    // Testa API externa
+    this.http.get('https://jsonplaceholder.typicode.com/todos/1').subscribe({
+      next: (data) => {
+        console.log('✅ CONEXÃO EXTERNA FUNCIONA!', data);
+        this.showAlert('Teste', '✅ Conexão externa: OK');
+      },
+      error: (err) => {
+        console.error('❌ CONEXÃO EXTERNA FALHOU:', err);
+        this.showAlert('Teste', '❌ Conexão externa: FALHOU - ' + err.message);
+      }
+    });
+
+    // Testa backend LOCAL
+    this.http.get('http://192.168.1.195:3000/ovinos').subscribe({
+      next: (data) => {
+        console.log('✅ BACKEND LOCAL FUNCIONA!', data);
+        this.showAlert('Teste', '✅ Backend local: OK');
+      },
+      error: (err) => {
+        console.error('❌ BACKEND LOCAL FALHOU:', err);
+        this.showAlert('Teste', '❌ Backend local: FALHOU - ' + err.message);
+      }
+    });
+  }
+
 }

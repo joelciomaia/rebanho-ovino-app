@@ -22,6 +22,7 @@ console.error('🛣️  Configurando rotas...');
 console.error('📡 Rota /auth:', !!authRoutes);
 console.error('📡 Rota /ovinos:', !!ovinoRoutes);
 
+//app.options('*', (req, res) => res.sendStatus(200));
 // rotas principais
 app.use("/produtores", produtorRoutes);
 app.use("/ovinos", ovinoRoutes);

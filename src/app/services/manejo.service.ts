@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
     providedIn: 'root'
 })
 export class ManejoService {
-    private apiUrl = 'https://rebanho-ovino-app.onrender.com/manejos'; 
+    private apiUrl = 'http://192.168.1.195:3000/manejos';
 
     constructor(private http: HttpClient) { }
 

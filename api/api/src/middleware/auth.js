@@ -2,13 +2,17 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET || "segredo123";
 
 function auth(req, res, next) {
-  const token = req.headers['authorization'];
+  const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+  const token = authHeader && authHeader.replace('Bearer ', '');
+
+  console.log('🔐 HEADERS:', req.headers);
+  console.log('🔐 TOKEN RECEBIDO:', token);
 
   if (!token) return res.status(403).json({ erro: "Token não fornecido" });
 
-  jwt.verify(token.split(" ")[1], JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
     if (err) return res.status(401).json({ erro: "Token inválido" });
-    req.usuario = decoded;
+    req.user = decoded;
     next();
   });
 }

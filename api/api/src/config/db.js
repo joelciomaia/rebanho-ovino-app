@@ -8,18 +8,15 @@ console.error('📡 Host:', process.env.DB_HOST);
 console.error('🚪 Porta:', process.env.DB_PORT);
 console.error('👤 Usuário:', process.env.DB_USER);
 console.error('🔑 Senha:', process.env.DB_PASS ? '***' : 'não definida');
-console.error('🗄️ Banco: defaultdb [FINAL]');
+console.error('🗄️ Banco: gerenciamentoovino [FINAL]'); 
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
-  database: 'defaultdb',
-  ssl: {
-    rejectUnauthorized: true,
-    ca: fs.readFileSync(path.join(__dirname, '../ca.pem'))
-  },
+  database: 'gerenciamentoovino',
+  
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0

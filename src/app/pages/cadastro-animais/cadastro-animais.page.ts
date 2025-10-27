@@ -11,10 +11,28 @@ import {
   IonDatetime, IonIcon, IonSegment, IonSegmentButton, IonListHeader,
   ModalController, LoadingController, AlertController
 } from '@ionic/angular/standalone';
-import { OvinoService, Genitor, RacaOvina } from '../../services/ovino.service';
+import { AnimalService } from '../../services/animal.service';
 import { ManejoService } from '../../services/manejo.service';
 import { RascunhoService } from '../../services/rascunho.service';
 
+// Interfaces locais
+export interface Genitor {
+  id: string;
+  brinco: string;
+  nome: string;
+  raca_id?: number | null;
+  data_nascimento: string;
+  idade_meses?: number;
+  categoria?: string;
+  situacao?: string;
+  descarte_data?: string;
+}
+
+export interface RacaOvina {
+  id: number;
+  nome: string;
+  ativa?: boolean;
+}
 
 @Component({
   selector: 'app-cadastro-animais',
@@ -66,7 +84,7 @@ export class CadastroAnimaisPage implements OnInit {
   private alertController = inject(AlertController);
   private http = inject(HttpClient);
   private loadingController = inject(LoadingController);
-  private ovinoService = inject(OvinoService);
+  private animalService = inject(AnimalService);
   private manejoService = inject(ManejoService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -91,7 +109,7 @@ export class CadastroAnimaisPage implements OnInit {
       this.modoEdicao = true;
       await this.carregarAnimalParaEdicao(animalId);
     } else {
-      this.carregarGenitores();
+      this.carregarGenitores(this.obterDataAtualFormatada());
       this.iniciarAutoSave();
     }
   }
@@ -138,12 +156,43 @@ export class CadastroAnimaisPage implements OnInit {
   }
 
   async carregarRacas() {
-    try {
-      const racas = await this.ovinoService.getRacasOvinas().toPromise();
-      this.racasOvinas = racas || [];
-    } catch (error) {
-      console.error('❌ Erro ao carregar raças ovinas:', error);
+  try {
+    console.log('🔍 Buscando raças da API...');
+    
+    // Chamada direta SEM headers (rota pública)
+    const racas = await this.http.get<RacaOvina[]>('http://192.168.1.195:3000/ovinos/racas-ovinas').toPromise();
+    
+    if (racas && racas.length > 0) {
+      this.racasOvinas = racas;
+      console.log('✅ Raças carregadas da API:', this.racasOvinas.length);
+    } else {
+      throw new Error('Nenhuma raça retornada');
     }
+  } catch (error) {
+    console.error('❌ Erro ao carregar raças ovinas:', error);
+    
+    // Fallback mínimo
+    this.racasOvinas = [
+      { id: 1, nome: 'Santa Inês' },
+      { id: 2, nome: 'SRD' }
+    ];
+    console.log('⚠️ Usando raças padrão (erro na API)');
+  }
+}
+
+  private getRacasFromAPI() {
+    // Implementar chamada API se necessário
+    return this.http.get<RacaOvina[]>('http://192.168.1.195:3000/racas-ovinas');
+  }
+
+  private getRacasPadrao(): RacaOvina[] {
+    return [
+      { id: 1, nome: 'Santa Inês' },
+      { id: 2, nome: 'Dorper' },
+      { id: 3, nome: 'Suffolk' },
+      { id: 4, nome: 'Ile de France' },
+      { id: 5, nome: 'Texel' }
+    ];
   }
 
   async carregarAnimalParaEdicao(animalId: string) {
@@ -154,7 +203,7 @@ export class CadastroAnimaisPage implements OnInit {
     await loading.present();
 
     try {
-      const animal = await this.ovinoService.getOvinoById(animalId).toPromise();
+      const animal = await this.animalService.getAnimalById(animalId).toPromise();
       this.animalEditando = animal;
       await this.carregarDadosGenitores(animal);
 
@@ -182,11 +231,11 @@ export class CadastroAnimaisPage implements OnInit {
   async carregarDadosGenitores(animal: any) {
     try {
       if (animal.mae_id) {
-        const mae = await this.ovinoService.getOvinoById(animal.mae_id).toPromise();
+        const mae = await this.animalService.getAnimalById(animal.mae_id).toPromise();
         if (mae) this.maeDisplay = this.formatarExibicaoGenitor(mae);
       }
       if (animal.pai_id) {
-        const pai = await this.ovinoService.getOvinoById(animal.pai_id).toPromise();
+        const pai = await this.animalService.getAnimalById(animal.pai_id).toPromise();
         if (pai) this.paiDisplay = this.formatarExibicaoGenitor(pai);
       }
     } catch (error) {
@@ -245,11 +294,10 @@ export class CadastroAnimaisPage implements OnInit {
       if (maeId) {
         this.maeAtualId = maeId;
       }
-      this.determinarRacaAutomaticamente();
     });
 
     this.formNascidos.get('identificacaoPai')?.valueChanges.subscribe(() => {
-      this.determinarRacaAutomaticamente();
+      // Lógica para determinar raça se necessário
     });
 
     this.formNascidos.get('origemPai')?.valueChanges.subscribe(() => {
@@ -365,55 +413,36 @@ export class CadastroAnimaisPage implements OnInit {
     this.detector.detectChanges();
   }
 
-  preencherFormularioCompradoEdicao(animal: any) {
-    this.formComprados.patchValue({
-      numeroBrinco: animal?.brinco || '',
-      sexo: animal?.sexo || '',
-      dataCompra: this.formatarDataParaExibicao(animal?.data_compra) || this.obterDataAtualFormatada(),
-      valorCompra: animal?.valor_compra ?? '',
-      vendedor: animal?.vendedor ?? '',
-      origem: animal?.origem ?? '',
-      raca: animal?.raca_id?.toString() ?? '',
-      peso: animal?.peso_atual ?? '',
-      idadeAproximada: animal?.idade_aproximada ?? '',
-      numeroDentes: animal?.numero_dentes ?? '',
-      escoreCorporal: (animal?.escore_corporal ?? '3').toString(),
-      possuiRegistro: !!animal?.possui_registro,
-      nomeAnimal: animal?.nome ?? '',
-      numeroRegistro: animal?.numero_registro ?? '',
-      entidadeRegistro: animal?.entidade_registro ?? 'arco',
-      statusReprodutivo: animal?.status_reprodutivo ?? 'vazia',
-      observacoes: animal?.observacao_compra ?? animal?.observacao_nascimento ?? ''
-    });
-  }
+  async carregarGenitores(dataNascimento?: string) {
+    console.log('🔍 [DEBUG] Carregando genitores com AnimalService');
+    
+    this.carregandoGenitores = true;
+    try {
+      const todosAnimais = await this.animalService.getAnimais().toPromise();
+      
+      // Filtrar fêmeas aptas (matrizes ativas)
+      this.animaisFemeas = todosAnimais?.filter(animal => 
+        animal.sexo === 'femea' && 
+        animal.situacao === 'ativo' &&
+        animal.categoria === 'matriz'
+      ) || [];
 
-  preencherFormularioNascidoEdicao(animal: any) {
-    this.formNascidos.patchValue({
-      dataParto: this.formatarDataParaExibicao(animal?.data_nascimento) || this.obterDataAtualFormatada(),
-      tipoParto: animal?.tipo_parto_nascimento ?? 'simples',
-      identificacaoMae: animal?.mae_id ?? '',
-      identificacaoPai: animal?.pai_id ?? '',
-      nomeAnimal: animal?.nome ?? '',
-      escoreCorporalMae: (animal?.escore_corporal_mae ?? '3').toString(),
-      avaliacaoUbere: (animal?.avaliacao_ubre ?? '3').toString(),
-      viabilidadeMae: (animal?.viabilidade_mae ?? '5').toString(),
-      habilidadeMaterna: (animal?.habilidade_materna_nascimento ?? '3').toString(),
-      observacoes: animal?.observacao_nascimento ?? ''
-    });
+      // Filtrar machos aptos (reprodutores ativos)  
+      this.animaisMachos = todosAnimais?.filter(animal => 
+        animal.sexo === 'macho' && 
+        animal.situacao === 'ativo' &&
+        animal.categoria === 'reprodutor'
+      ) || [];
 
-    if (this.filhotesArray.length > 0) {
-      this.filhotesArray.at(0).patchValue({
-        numeroBrinco: animal?.brinco || '',
-        nomeAnimal: animal?.nome || '',
-        sexo: animal?.sexo || '',
-        peso: animal?.peso_nascimento ?? '',
-        viabilidade: this.mapearNumeroParaViabilidade(animal?.vigor_nascimento),
-        mamouColostro: animal?.mamou_colostro !== undefined ? Boolean(animal.mamou_colostro) : true
-      });
-    }
+      console.log('🐑 Fêmeas aptas:', this.animaisFemeas.length);
+      console.log('🐏 Machos aptos:', this.animaisMachos.length);
 
-    if (animal?.pai_id) {
-      this.formNascidos.patchValue({ origemPai: 'proprio' });
+    } catch (error) {
+      console.error('❌ Erro ao carregar genitores:', error);
+      this.animaisFemeas = [];
+      this.animaisMachos = [];
+    } finally {
+      this.carregandoGenitores = false;
     }
   }
 
@@ -435,43 +464,6 @@ export class CadastroAnimaisPage implements OnInit {
     this.formNascidos.get('identificacaoPai')?.updateValueAndValidity();
     this.formNascidos.get('identificacaoPaiTerceiros')?.updateValueAndValidity();
     this.formNascidos.get('identificacaoSemen')?.updateValueAndValidity();
-  }
-
-  async carregarGenitores(dataNascimento?: string) {
-    console.log('🔍 [DEBUG] Iniciando carregarGenitores com data:', dataNascimento);
-
-    this.carregandoGenitores = true;
-    try {
-      const dataParaBusca = dataNascimento ? this.formatarDataParaBanco(dataNascimento) : undefined;
-
-      const [femeas, machos] = await Promise.all([
-        this.ovinoService.getFemeasParaMaternidade(dataParaBusca).toPromise(),
-        this.ovinoService.getMachosParaReproducao(dataParaBusca).toPromise()
-      ]);
-
-      this.animaisFemeas = femeas || [];
-      this.animaisMachos = machos || [];
-
-    } catch (error) {
-      console.error('❌ Erro ao carregar genitores:', error);
-      this.animaisFemeas = [];
-      this.animaisMachos = [];
-    } finally {
-      this.carregandoGenitores = false;
-    }
-  }
-
-  async determinarRacaAutomaticamente() {
-    const maeId = this.formNascidos.get('identificacaoMae')?.value;
-    const paiId = this.formNascidos.get('identificacaoPai')?.value;
-    if (maeId && paiId) {
-      try {
-        const resultado = await this.ovinoService.determinarRacaCordeiro(maeId, paiId).toPromise();
-        console.log('Raça determinada automaticamente:', resultado?.raca_id);
-      } catch (error) {
-        console.error('Erro ao determinar raça:', error);
-      }
-    }
   }
 
   formatarExibicaoGenitor(genitor: any): string {
@@ -544,6 +536,58 @@ export class CadastroAnimaisPage implements OnInit {
     }
   }
 
+  preencherFormularioCompradoEdicao(animal: any) {
+    this.formComprados.patchValue({
+      numeroBrinco: animal?.brinco || '',
+      sexo: animal?.sexo || '',
+      dataCompra: this.formatarDataParaExibicao(animal?.data_compra) || this.obterDataAtualFormatada(),
+      valorCompra: animal?.valor_compra ?? '',
+      vendedor: animal?.vendedor ?? '',
+      origem: animal?.origem ?? '',
+      raca: animal?.raca_id?.toString() ?? '',
+      peso: animal?.peso_atual ?? '',
+      idadeAproximada: animal?.idade_aproximada ?? '',
+      numeroDentes: animal?.numero_dentes ?? '',
+      escoreCorporal: (animal?.escore_corporal ?? '3').toString(),
+      possuiRegistro: !!animal?.possui_registro,
+      nomeAnimal: animal?.nome ?? '',
+      numeroRegistro: animal?.numero_registro ?? '',
+      entidadeRegistro: animal?.entidade_registro ?? 'arco',
+      statusReprodutivo: animal?.status_reprodutivo ?? 'vazia',
+      observacoes: animal?.observacao_compra ?? animal?.observacao_nascimento ?? ''
+    });
+  }
+
+  preencherFormularioNascidoEdicao(animal: any) {
+    this.formNascidos.patchValue({
+      dataParto: this.formatarDataParaExibicao(animal?.data_nascimento) || this.obterDataAtualFormatada(),
+      tipoParto: animal?.tipo_parto_nascimento ?? 'simples',
+      identificacaoMae: animal?.mae_id ?? '',
+      identificacaoPai: animal?.pai_id ?? '',
+      nomeAnimal: animal?.nome ?? '',
+      escoreCorporalMae: (animal?.escore_corporal_mae ?? '3').toString(),
+      avaliacaoUbere: (animal?.avaliacao_ubre ?? '3').toString(),
+      viabilidadeMae: (animal?.viabilidade_mae ?? '5').toString(),
+      habilidadeMaterna: (animal?.habilidade_materna_nascimento ?? '3').toString(),
+      observacoes: animal?.observacao_nascimento ?? ''
+    });
+
+    if (this.filhotesArray.length > 0) {
+      this.filhotesArray.at(0).patchValue({
+        numeroBrinco: animal?.brinco || '',
+        nomeAnimal: animal?.nome || '',
+        sexo: animal?.sexo || '',
+        peso: animal?.peso_nascimento ?? '',
+        viabilidade: this.mapearNumeroParaViabilidade(animal?.vigor_nascimento),
+        mamouColostro: animal?.mamou_colostro !== undefined ? Boolean(animal.mamou_colostro) : true
+      });
+    }
+
+    if (animal?.pai_id) {
+      this.formNascidos.patchValue({ origemPai: 'proprio' });
+    }
+  }
+
   async cadastrarNascido() {
     console.log('🔄 Iniciando cadastro de nascido...');
     console.log('📋 Form válido:', this.formNascidos.valid);
@@ -593,7 +637,7 @@ export class CadastroAnimaisPage implements OnInit {
           console.log(`👶 Editando filhote existente:`, filhote);
 
           const dadosFilhote = await this.prepararDadosFilhote(filhote, formData, maeId, dataParto);
-          const response = await this.ovinoService.atualizarOvino(this.animalEditando.id, dadosFilhote).toPromise();
+          const response = await this.animalService.updateAnimal(this.animalEditando.id, dadosFilhote).toPromise();
 
           primeiroAnimalId = this.animalEditando.id;
           console.log('✅ Animal atualizado:', primeiroAnimalId);
@@ -604,7 +648,7 @@ export class CadastroAnimaisPage implements OnInit {
             console.log(`👶 Processando filhote ${i + 1}:`, filhote);
 
             const dadosFilhote = await this.prepararDadosFilhote(filhote, formData, maeId, dataParto);
-            const response = await this.ovinoService.criarOvino(dadosFilhote).toPromise();
+            const response = await this.animalService.createAnimal(dadosFilhote).toPromise();
 
             if (i === 0 && response && response.id) {
               primeiroAnimalId = response.id;
@@ -685,16 +729,6 @@ export class CadastroAnimaisPage implements OnInit {
       paiId = formData.identificacaoPai;
     }
 
-    let racaDeterminada: number | null = null;
-    if (maeId && paiId) {
-      try {
-        const resultado = await this.ovinoService.determinarRacaCordeiro(maeId, paiId).toPromise();
-        racaDeterminada = resultado?.raca_id || null;
-      } catch (error) {
-        console.warn('Erro ao determinar raça:', error);
-      }
-    }
-
     return {
       brinco: filhote.numeroBrinco,
       nome: filhote.nomeAnimal || formData.nomeAnimal || null,
@@ -715,7 +749,7 @@ export class CadastroAnimaisPage implements OnInit {
       categoria: this.determinarCategoriaNascido(filhote.sexo),
       origem: 'nascido',
       produtor_id: 'd4a3b2c1-1234-5678-90ab-cdef12345678',
-      ...(racaDeterminada && { raca_id: racaDeterminada })
+      raca_id: formData.raca ? parseInt(formData.raca) : null
     };
   }
 
@@ -747,6 +781,7 @@ export class CadastroAnimaisPage implements OnInit {
   }
 
   async cadastrarComprado() {
+    console.log('Token no cadastro INICIO:', localStorage.getItem('token'));
     if (this.formComprados.valid) {
       const loading = await this.loadingController.create({
         message: this.modoEdicao ? 'Atualizando animal...' : 'Cadastrando animal...'
@@ -785,12 +820,12 @@ export class CadastroAnimaisPage implements OnInit {
 
         let response;
         if (this.modoEdicao && this.animalEditando) {
-          response = await this.ovinoService.atualizarOvino(this.animalEditando.id, dadosParaEnvio).toPromise();
+          response = await this.animalService.updateAnimal(this.animalEditando.id, dadosParaEnvio).toPromise();
           await loading.dismiss();
           this.mostrarAlerta('Sucesso', 'Animal atualizado com sucesso!');
           this.router.navigate(['/detalhe-animal', this.animalEditando.id]);
         } else {
-          response = await this.ovinoService.criarOvino(dadosParaEnvio).toPromise();
+          response = await this.animalService.createAnimal(dadosParaEnvio).toPromise();
           await loading.dismiss();
 
           if (response && response.id) {
@@ -821,6 +856,7 @@ export class CadastroAnimaisPage implements OnInit {
       this.marcarCamposInvalidos(this.formComprados);
       this.mostrarAlerta('Atenção', 'Por favor, preencha todos os campos obrigatórios.');
     }
+    console.log('Token no cadastro FINAL:', localStorage.getItem('token'));
   }
 
   private marcarCamposInvalidos(form: FormGroup) {

@@ -845,14 +845,14 @@
 
         @if (animalSelecionado.manejoAtual?.reprodutivo?.acao === 'parto') {
         <div class="subsecao">
-          <ion-item>
-            <ion-select label="Tipo de Parto" [ngModel]="animalSelecionado.manejoAtual?.reprodutivo?.tipoParto"
+          <!--<ion-item>
+             <ion-select label="Tipo de Parto" [ngModel]="animalSelecionado.manejoAtual?.reprodutivo?.tipoParto"
               (ngModelChange)="animalSelecionado.manejoAtual!.reprodutivo!.tipoParto = $event">
               <ion-select-option value="natural">Natural</ion-select-option>
               <ion-select-option value="induzido">Induzido</ion-select-option>
               <ion-select-option value="cesarea">Cesárea</ion-select-option>
-            </ion-select>
-          </ion-item>
+            </ion-select> 
+          </ion-item> -->
 
           <ion-item>
             <ion-input type="number" label="Quantidade de Filhotes"

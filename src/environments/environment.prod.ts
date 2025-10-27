@@ -1,8 +1,6 @@
 export const environment = {
   production: true,
-  //apiUrl: 'http://192.168.1.251:3000',
-  //apiUrl: 'http://localhost:3000',
-  apiUrl: 'https://rebanho-ovino-app.onrender.com',
+  apiUrl: 'http://192.168.1.195:3000',
   firebase: {
     apiKey: "AIzasyBX22zt1fgkTCHfbmTwrfzrULFqlFV14AU",
     authDomain: "rebanho-ovino.firebaseapp.com",

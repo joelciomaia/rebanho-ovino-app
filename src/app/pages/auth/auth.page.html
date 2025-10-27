@@ -6,15 +6,14 @@
 
 <ion-content [fullscreen]="true" class="auth-content">
   <div class="container">
-    
+
     <!-- CABEÇALHO -->
     <div class="header">
       <div class="logo">
         <div class="menu-logo">
           <h1>OvinoSync</h1>
-      <img src="assets/images/logo-ovino.png" alt="Logo OvinoSync">
-    </div>
-        
+          <img src="assets/images/logo-ovino.png" alt="Logo OvinoSync">
+        </div>
       </div>
       <p class="subtitle">Gestão inteligente do seu rebanho ovino</p>
     </div>
@@ -22,39 +21,27 @@
     <!-- Form Section -->
     <div class="form-section">
       <h2>{{ isLogin ? 'Acesse sua conta' : 'Crie sua conta' }}</h2>
-      
+
       <!-- LOGIN FORM -->
       <div *ngIf="isLogin" class="form-container">
         <ion-item lines="none" class="form-item">
           <ion-label position="stacked">E-mail</ion-label>
-          <ion-input 
-            type="email" 
-            placeholder="seu@email.com"
-            [(ngModel)]="loginEmail"
-            class="input-field">
+          <ion-input type="email" placeholder="seu@email.com" [(ngModel)]="loginEmail" class="input-field">
           </ion-input>
         </ion-item>
 
         <ion-item lines="none" class="form-item">
           <ion-label position="stacked">Senha</ion-label>
-          <ion-input 
-            type="password" 
-            placeholder="Sua senha"
-            [(ngModel)]="loginPassword"
-            [type]="hidePassword ? 'password' : 'text'"
-            class="input-field">
+          <ion-input type="password" placeholder="Sua senha" [(ngModel)]="loginPassword"
+            [type]="hidePassword ? 'password' : 'text'" class="input-field">
           </ion-input>
           <ion-button fill="clear" slot="end" (click)="hidePassword = !hidePassword" class="eye-button">
             <ion-icon [name]="hidePassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
           </ion-button>
         </ion-item>
 
-        <ion-button 
-          expand="block" 
-          color="primary" 
-          (click)="login()"
-          [disabled]="isLoading || !loginEmail || !loginPassword"
-          class="submit-button">
+        <ion-button expand="block" color="primary" (click)="login()"
+          [disabled]="isLoading || !loginEmail || !loginPassword" class="submit-button">
           <ion-spinner *ngIf="isLoading" name="crescent" class="spinner"></ion-spinner>
           <span *ngIf="!isLoading">ENTRAR</span>
         </ion-button>
@@ -68,48 +55,42 @@
 
       <!-- REGISTER FORM EXPANDIDO -->
       <div *ngIf="!isLogin" class="form-container">
-        
+
+        <!-- Botões de navegação APENAS no modo edição -->
+        <div *ngIf="isModoEdicao" class="navigation-buttons">
+          <ion-button expand="block" color="medium" fill="outline" (click)="cancelarEdicao()">
+            Cancelar
+          </ion-button>
+        </div>
+
         <!-- SEÇÃO 1: DADOS PESSOAIS -->
         <ion-list-header>
           <ion-label class="section-header">Dados Pessoais</ion-label>
         </ion-list-header>
 
         <ion-item lines="none" class="form-item">
-          <ion-label position="stacked" class="required-label">Nome completo</ion-label>
-          <ion-input 
-            type="text" 
-            placeholder="Seu nome completo"
-            [(ngModel)]="registerData.nomeCompleto"
+          <ion-label position="stacked" [class.required-label]="!isModoEdicao">Nome completo</ion-label>
+          <ion-input type="text" placeholder="Seu nome completo" [(ngModel)]="registerData.nomeCompleto"
             class="input-field">
           </ion-input>
         </ion-item>
 
         <ion-item lines="none" class="form-item">
-          <ion-label position="stacked" class="required-label">E-mail</ion-label>
-          <ion-input 
-            type="email" 
-            placeholder="seu@email.com"
-            [(ngModel)]="registerData.email"
+          <ion-label position="stacked" [class.required-label]="!isModoEdicao">E-mail</ion-label>
+          <ion-input type="email" placeholder="seu@email.com" [(ngModel)]="registerData.email" class="input-field">
+          </ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="form-item">
+          <ion-label position="stacked">Telefone/WhatsApp</ion-label>
+          <ion-input type="tel" placeholder="+55 (DDD) 99999-9999" [(ngModel)]="registerData.telefoneWhatsapp"
             class="input-field">
           </ion-input>
         </ion-item>
 
         <ion-item lines="none" class="form-item">
-          <ion-label position="stacked" class="required-label">Telefone/WhatsApp</ion-label>
-          <ion-input 
-            type="tel" 
-            placeholder="+55 (DDD) 99999-9999"
-            [(ngModel)]="registerData.telefoneWhatsapp"
-            class="input-field">
-          </ion-input>
-        </ion-item>
-
-        <ion-item lines="none" class="form-item">
-          <ion-label position="stacked" class="required-label">Preferência de recuperação</ion-label>
-          <ion-select 
-            [(ngModel)]="registerData.preferenciaRecuperacao" 
-            placeholder="Selecione"
-            interface="action-sheet"
+          <ion-label position="stacked">Preferência de recuperação</ion-label>
+          <ion-select [(ngModel)]="registerData.preferenciaRecuperacao" placeholder="Selecione" interface="action-sheet"
             class="input-field">
             <ion-select-option value="whatsapp">WhatsApp</ion-select-option>
             <ion-select-option value="email">E-mail</ion-select-option>
@@ -122,32 +103,23 @@
         </ion-list-header>
 
         <ion-item lines="none" class="form-item">
-          <ion-label position="stacked" class="required-label">Nome da Cabanha</ion-label>
-          <ion-input 
-            type="text" 
-            placeholder="Nome da sua propriedade"
-            [(ngModel)]="registerData.cabanha.nome"
+          <ion-label position="stacked">Nome da Cabanha</ion-label>
+          <ion-input type="text" placeholder="Nome da sua propriedade" [(ngModel)]="registerData.cabanha.nome"
             class="input-field">
           </ion-input>
         </ion-item>
 
         <ion-item lines="none" class="form-item">
-          <ion-label position="stacked" class="required-label">Município</ion-label>
-          <ion-input 
-            type="text" 
-            placeholder="Cidade onde fica a propriedade"
-            [(ngModel)]="registerData.cabanha.municipio"
-            class="input-field">
+          <ion-label position="stacked">Município</ion-label>
+          <ion-input type="text" placeholder="Cidade onde fica a propriedade"
+            [(ngModel)]="registerData.cabanha.municipio" class="input-field">
           </ion-input>
         </ion-item>
 
         <ion-item lines="none" class="form-item">
-          <ion-label position="stacked" class="required-label">Estado</ion-label>
-          <ion-select 
-            [(ngModel)]="registerData.cabanha.estado" 
-            placeholder="Selecione o estado"
-            interface="action-sheet"
-            class="input-field">
+          <ion-label position="stacked">Estado</ion-label>
+          <ion-select [(ngModel)]="registerData.cabanha.estado" placeholder="Selecione o estado"
+            interface="action-sheet" class="input-field">
             <ion-select-option value="AC">Acre</ion-select-option>
             <ion-select-option value="AL">Alagoas</ion-select-option>
             <ion-select-option value="AP">Amapá</ion-select-option>
@@ -180,69 +152,57 @@
 
         <ion-item lines="none" class="form-item">
           <ion-label position="stacked">Localização Livre</ion-label>
-          <ion-textarea 
-            placeholder="Ex: Zona rural, Estrada para..., Sítio..."
-            [(ngModel)]="registerData.cabanha.localizacaoLivre"
-            rows="2"
-            class="input-field">
+          <ion-textarea placeholder="Ex: Zona rural, Estrada para..., Sítio..."
+            [(ngModel)]="registerData.cabanha.localizacaoLivre" rows="2" class="input-field">
           </ion-textarea>
         </ion-item>
 
-        <!-- SEÇÃO 3: SEGURANÇA -->
-        <ion-list-header>
-          <ion-label class="section-header">Segurança</ion-label>
-        </ion-list-header>
+        <!-- SEÇÃO 3: SEGURANÇA (APENAS no cadastro) -->
+        <div *ngIf="!isModoEdicao">
+          <ion-list-header>
+            <ion-label class="section-header">Segurança</ion-label>
+          </ion-list-header>
 
-        <ion-item lines="none" class="form-item">
-          <ion-label position="stacked" class="required-label">Senha</ion-label>
-          <ion-input 
-            type="password" 
-            placeholder="Crie uma senha segura"
-            [(ngModel)]="registerData.senha"
-            [type]="hidePassword ? 'password' : 'text'"
-            class="input-field">
-          </ion-input>
-          <ion-button fill="clear" slot="end" (click)="hidePassword = !hidePassword" class="eye-button">
-            <ion-icon [name]="hidePassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
-          </ion-button>
-        </ion-item>
+          <ion-item lines="none" class="form-item">
+            <ion-label position="stacked" class="required-label">Senha</ion-label>
+            <ion-input type="password" placeholder="Crie uma senha segura" [(ngModel)]="registerData.senha"
+              [type]="hidePassword ? 'password' : 'text'" class="input-field">
+            </ion-input>
+            <ion-button fill="clear" slot="end" (click)="hidePassword = !hidePassword" class="eye-button">
+              <ion-icon [name]="hidePassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </ion-button>
+          </ion-item>
 
-        <ion-item lines="none" class="form-item">
-          <ion-label position="stacked" class="required-label">Confirmar Senha</ion-label>
-          <ion-input 
-            type="password" 
-            placeholder="Digite a senha novamente"
-            [(ngModel)]="registerConfirmPassword"
-            [type]="hideConfirmPassword ? 'password' : 'text'"
-            class="input-field">
-          </ion-input>
-          <ion-button fill="clear" slot="end" (click)="hideConfirmPassword = !hideConfirmPassword" class="eye-button">
-            <ion-icon [name]="hideConfirmPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
-          </ion-button>
-        </ion-item>
+          <ion-item lines="none" class="form-item">
+            <ion-label position="stacked" class="required-label">Confirmar Senha</ion-label>
+            <ion-input type="password" placeholder="Digite a senha novamente" [(ngModel)]="registerConfirmPassword"
+              [type]="hideConfirmPassword ? 'password' : 'text'" class="input-field">
+            </ion-input>
+            <ion-button fill="clear" slot="end" (click)="hideConfirmPassword = !hideConfirmPassword" class="eye-button">
+              <ion-icon [name]="hideConfirmPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </ion-button>
+          </ion-item>
 
-        <!-- TERMOS DE USO -->
-        <ion-item lines="none" class="form-item">
-          <ion-checkbox slot="start" [(ngModel)]="aceitouTermos"></ion-checkbox>
-          <ion-label class="termos-label">
-            Concordo com os <a href="#" (click)="abrirTermos($event)">Termos de Uso</a> e 
-            <a href="#" (click)="abrirPolitica($event)">Política de Privacidade</a>
-          </ion-label>
-        </ion-item>
+          <!-- TERMOS DE USO (APENAS no cadastro) -->
+          <ion-item lines="none" class="form-item">
+            <ion-checkbox slot="start" [(ngModel)]="aceitouTermos"></ion-checkbox>
+            <ion-label class="termos-label">
+              Concordo com os <a href="#" (click)="abrirTermos($event)">Termos de Uso</a> e
+              <a href="#" (click)="abrirPolitica($event)">Política de Privacidade</a>
+            </ion-label>
+          </ion-item>
+        </div>
 
-        <ion-button 
-          expand="block" 
-          color="primary" 
-          (click)="register()"
-          [disabled]="!formularioValido()"
+        <!-- BOTÃO DE AÇÃO PRINCIPAL -->
+        <ion-button expand="block" color="primary" (click)="register()" [disabled]="!formularioValido()"
           class="submit-button">
           <ion-spinner *ngIf="isLoading" name="crescent" class="spinner"></ion-spinner>
-          <span *ngIf="!isLoading">CRIAR CONTA</span>
+          <span *ngIf="!isLoading">{{ isModoEdicao ? 'ATUALIZAR PERFIL' : 'CRIAR CONTA' }}</span>
         </ion-button>
       </div>
 
-      <!-- ALTERNA ENTRE LOGIN E CADASTRO -->
-      <div class="auth-switch">
+      <!-- ALTERNA ENTRE LOGIN E CADASTRO (APENAS se não for modo edição) -->
+      <div *ngIf="!isModoEdicao" class="auth-switch">
         <p>
           {{ isLogin ? 'Não tem uma conta?' : 'Já tem uma conta?' }}
           <ion-button fill="clear" color="primary" (click)="toggleAuthMode()" class="switch-button">

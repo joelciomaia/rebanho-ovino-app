@@ -59,7 +59,7 @@ export interface RacaOvina {
 })
 export class OvinoService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://rebanho-ovino-app.onrender.com/ovinos';
+  private apiUrl = 'http://192.168.1.195:3000/ovinos';
 
   // ============================================================
   // CRUD BÁSICO
@@ -92,10 +92,16 @@ export class OvinoService {
   }
 
   getFemeasParaMaternidade(dataNascimento?: string): Observable<Genitor[]> {
-    const params: any = {};
-    if (dataNascimento) params.dataNascimento = dataNascimento;
-    return this.http.get<Genitor[]>(`${this.apiUrl}/femeas-para-maternidade`, { params });
-  }
+  const token = localStorage.getItem('token');
+  const headers = { 'Authorization': `Bearer ${token}` };
+  const params: any = {};
+  if (dataNascimento) params.dataNascimento = dataNascimento;
+  
+  return this.http.get<Genitor[]>(`${this.apiUrl}/femeas-para-maternidade`, { 
+    params, 
+    headers 
+  });
+}
 
   getMachosParaReproducao(dataNascimento?: string): Observable<Genitor[]> {
     const params: any = {};
@@ -114,6 +120,8 @@ export class OvinoService {
   }
 
   getRacasOvinas(): Observable<RacaOvina[]> {
-    return this.http.get<RacaOvina[]>(`${this.apiUrl}/racas-ovinas`);
-  }
+  // Chamada SEM headers de autenticação (rota pública)
+  console.log('🔍 Buscando raças ovinas (sem autenticação)');
+  return this.http.get<RacaOvina[]>(`${this.apiUrl}/racas-ovinas`);
+}
 }

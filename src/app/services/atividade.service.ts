@@ -19,7 +19,7 @@ export interface Atividade {
 })
 export class AtividadeService {
 
-  private apiUrl = 'http://localhost:3000/api/atividades';
+  private apiUrl = 'http://192.168.1.195:3000/api/atividades';
 
   constructor(private http: HttpClient) { }
 

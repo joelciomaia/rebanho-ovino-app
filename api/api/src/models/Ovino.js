@@ -5,9 +5,9 @@ class Ovino {
     this.db = db;
   }
 
-  async getAll() {
+  async getAll(produtorId) {
     try {
-      console.error('🔍 Tentando buscar ovinos...');
+      console.error('🔍 Tentando buscar ovinos do produtor:', produtorId);
       console.error('📊 Executando query...');
       
       const [rows] = await this.db.query(`
@@ -16,8 +16,9 @@ class Ovino {
           r.nome as raca_nome
         FROM ovinos o
         LEFT JOIN racas_ovinas r ON o.raca_id = r.id
+        WHERE o.produtor_id = ?
         ORDER BY o.data_cadastro DESC
-      `);
+      `, [produtorId]);
       
       console.error('✅ Ovinos encontrados:', rows.length);
       return rows;

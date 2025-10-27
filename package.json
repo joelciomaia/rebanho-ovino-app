@@ -29,6 +29,7 @@
     "@capacitor/keyboard": "7.0.2",
     "@capacitor/status-bar": "7.0.2",
     "@ionic/angular": "^8.0.0",
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.2.3",
     "firebase": "^11.10.0",
     "ionicons": "^7.0.0",
